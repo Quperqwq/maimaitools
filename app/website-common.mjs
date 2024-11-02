@@ -1,3 +1,4 @@
+import { error } from 'console'
 import express from 'express'
 import Fs from 'fs'
 import Path from 'path'
@@ -31,6 +32,23 @@ class Tools {
             return new Error('not_file')
         }
         return Fs.readFileSync(path, 'utf-8')
+    }
+
+    /**
+     * 获取目录下的所有文件
+     * @param {string} path 目标路径
+     */
+    readDir(path) {
+        if (this.isDir(path)) {
+            return new Error('invalid_path')
+        }
+        /**@type {string[]} */
+        let file_list = []
+        // ~(!)这种写法可能会出现错误
+        Fs.readdirSync(path).forEach((filename) => {
+            file_list.push(Path.join(path, filename))
+        })
+        return file_list
     }
 
     /**
@@ -172,7 +190,10 @@ class OutputLog {
 
     }
 
-    error(cont = '') { this.output(cont, 3) }
+    error(cont = '') {
+        this.output(cont, 3)
+        return new Error(cont)
+    }
     warn(cont = '') { this.output(cont, 2) }
     info(cont = '') { this.output(cont, 1) }
     debug(cont = '') { this.output(cont, 0) }
@@ -188,18 +209,34 @@ export class HttpApp {
         static_path = './src/static',
         html_path = './src/html'
     }) {
+        const app = express()
+
+        // 确保路径有效性
+        if (!(tool.isDir(static_path) || tool.isDir(html_path))) {
+            throw log.error('invalid_path')
+        }
+
+
         /**Express实例对象 */
-        this.expressApp = express()
+        this.expressApp = app
 
         /**HTTP服务目标监听端口 */
         this.port = port
         /**HTTP服务目标监听Host */
         this.host = host
 
-        // 初始化这个这个HTTP服务
-
-
-
+        // 读取并缓存HTML文件以实现更好的效率
+        const dir_html_file = tool.readDir(html_path)
+        if (dir_html_file instanceof Error) {
+            throw log.error('invalid_path')
+        }
+        dir_html_file.forEach((file_name) => {
+            // 匹配文件扩展名是否是超文本文件
+            if (['.html', '.htm'].includes(Path.extname(file_name))) {
+                // ~(LAST)
+                
+            }
+        })
     }
 
 
@@ -232,11 +269,35 @@ export class HttpApp {
 
     /**运行这个HTTP服务 */
     run() {
-        const {host, port} = this
-        const server = this.expressApp.listen(this.port, this.host, () => {
+
+        const {host, port, expressApp} = this
+        // 未匹配到路由 
+        expressApp.use((req, res) => {
+            // ~(TAG)404 page
+
+            res.status(404)
+            res.send()
+        })
+
+
+
+        const server = expressApp.listen(this.port, this.host, () => {
             console.log(`Server is running on http://${host + ':' + port}`)
         })
         this.server = server
+
+    }
+
+    //
+    // 页面
+    //
+
+    outputHtml() {
+        tool.readFileToStr()
+    }
+
+    renderHtml() {
+        
     }
 }
 

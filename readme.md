@@ -11,6 +11,9 @@
 - - 为机厅提供留言板功能;
 - 基于开源项目[舞萌 DX | 中二节奏查分器](https://www.diving-fish.com/maimaidx/prober/)
 - - 为玩家提供查分操作([b50图](https://github.com/Diving-Fish/mai-bot));
+- 建议
+- - 增加查歌曲定数;
+
 
 ------------------------------------
 
