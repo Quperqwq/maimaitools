@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "main": "app.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": ""
+    "test": "node ./app/server.mjs",
+    "dev": "nodemon --watch ./app/server.mjs --watch ./app/website-common.mjs --watch ./app/app.mjs --watch ./app/server.mjs"
   },
   "keywords": [
     "maimaidx"
