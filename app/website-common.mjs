@@ -1,7 +1,11 @@
-import { error } from 'console'
 import express from 'express'
 import Fs from 'fs'
 import Path from 'path'
+
+
+/**@typedef {import('../ts/types').apiReqBody} apiReqBody  */
+
+/**@typedef {import('../ts/types').apiReqBody} apiResBody */
 
 
 /**
@@ -217,10 +221,7 @@ class OutputLog {
  * 构建一个HTTP服务
  */
 export class HttpApp {
-    
-    /**@typedef {{[x: string]: Object, target: string}} apiReqBody api请求体的标准样式 */
-    /**@typedef {{valid: boolean, message: string, data: object | void}} apiResBody api响应的标准样式 */
-    /**@typedef { function(apiReqBody, apiResBody, function(string): void): void } apiProcFunc api处理函数*/
+    /**@typedef { function(apiReqBody, apiResBody, function(string): void): void } apiProcCallback api处理函数*/
     /**
      * 
      * @param {Object} param0 
@@ -229,7 +230,8 @@ export class HttpApp {
      * @param {string} param0.static_path 静态文件存放路径
      * @param {string} param0.static_rout 静态文件在站内的路由
      * @param {string} param0.html_path 网页文件存放路径
-     * @param {string} param0.print_req 打印访问日志
+     * @param {boolean} param0.print_req 打印访问日志
+     * @param {boolean} param0.cache_html 缓存HTML文件以提高性能
      */
     constructor({
         host = '0.0.0.0',
@@ -237,7 +239,8 @@ export class HttpApp {
         static_path = './src/static',
         static_rout = '/',
         html_path = './src/html',
-        print_req = true
+        print_req = true,
+        cache_html = true
     }) {
         const app = express()
 
@@ -255,7 +258,12 @@ export class HttpApp {
         /**HTTP服务目标监听Host */
         this.host = host
 
-        /**API方法 @type {{[x: string]: apiProcFunc}} */
+        /**HTML目录在文件系统位置 */
+        this.path_html = html_path
+        /**静态目录在文件系统位置 */
+        this.path_static = static_path
+
+        /**API方法 @type {{[x: string]: apiProcCallback}} */
         this.api_method = {}
 
         // 打印请求内容
@@ -266,27 +274,38 @@ export class HttpApp {
             })
         }
 
+
+
         /* 设置静态文件路由 */ app.use(static_rout, express.static(static_path))// 中间件部分
 
         /* 配置json解析中间件 */ app.use(express.json())
 
+
+
         // 读取并缓存HTML文件以实现更好的效率
+        /**使用缓存的HTML内容, 否则将随用随取 */
+        this.use_cache_html = cache_html
         /**
          * HTML文件会缓存为这个对象, 目标格式为`<filename: file_content>`
          * @type {{[x: string]: string}}
          */
         this.html_cont = {}
-        const dir_html_file = tool.readDir(html_path)
-        if (dir_html_file instanceof Error) {
-            throw log.error(`invalid_path: ${html_path}`)
-        }
-        dir_html_file.forEach((path_name) => {
-            // 匹配文件扩展名是否是超文本文件
-            if (['.html', '.htm'].includes(Path.extname(path_name))) {
-                this.html_cont[Path.basename(path_name)] = tool.readFileToStr(path_name)
+        if (cache_html) { // 但有时也无需缓存
+            const dir_html_file = tool.readDir(html_path)
+            if (dir_html_file instanceof Error) {
+                throw log.error(`invalid_path: ${html_path}`)
             }
-        })
-        // console.log(this.html_cont)
+            dir_html_file.forEach((path_name) => {
+                // 匹配文件扩展名是否是HTML文件
+                // log.debug(path_name)
+                if (['.html', '.htm'].includes(Path.extname(path_name))) {
+                    const filename = Path.basename(path_name)
+                    this.html_cont[filename] = this.readHtml(filename)
+                }
+            })
+            // console.log(this.html_cont)
+
+        }
         
 
         // 初始化...
@@ -310,8 +329,6 @@ export class HttpApp {
             }
             /**响应体 @type {apiResBody} */
             let res_body = {} // 初始化响应体
-            // ~(LAST)未解决
-            console.log(req_body)
             const use_target = req_body['target']
 
             const execute = /* 在这里执行 */ this.api_method[use_target]
@@ -349,12 +366,17 @@ export class HttpApp {
      */ 
     page(path, html_name) {
         const {expressApp, html_cont} = this
-        const content = html_cont[html_name]
-        if (!(typeof(content) === 'string')) {
-            throw log.error(`invalid_file_name: ${html_name}`)
-        }
-
         expressApp.get(path, (req, res) => {
+            let content = ''
+            if (this.use_cache_html) {
+                content = html_cont[html_name]
+                if (!(typeof(content) === 'string')) {
+                    throw log.error(`invalid_file_name: ${html_name}`)
+                }
+            } else {
+                // log.debug('no cache read')
+                content = this.readHtml(html_name)
+            }
             res.send(content)
             res.end()
         })
@@ -365,12 +387,26 @@ export class HttpApp {
      * 
      * 在APP上使用 `POST <host>/api <DATA>(Object)`来调用
      * @param {string} target 表示当使用POST请求时请求体target值为何时触发指定函数
-     * @param {apiProcFunc} func 处理体
+     * @param {apiProcCallback} callback 处理体
      */
-    api(target, func) {
-        /* 在这里添加 */this.api_method[target] = func
+    api(target, callback) {
+        /* 在这里添加 */this.api_method[target] = callback
     }
 
+    //
+    // H5FILE
+    //
+
+
+    /**
+     * 读取一个HTML文件的内容(在this.)
+     * @param {string} filename HTML文件名
+     */
+    readHtml(filename) {
+        const target = Path.join(this.path_html, filename)
+        if (!tool.isFile(target)) throw log.error(`invalid_html_name: ${target}`)
+        return tool.readFileToStr(target)
+    }
 
 
     /**运行这个HTTP服务 */

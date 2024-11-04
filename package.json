@@ -1,7 +1,7 @@
 {
   "name": "maimaitools",
   "version": "0.0.1",
-  "main": "app.mjs",
+  "main": "./app/server.mjs",
   "scripts": {
     "test": "node ./app/server.mjs",
     "dev": "nodemon --watch ./app/server.mjs --watch ./app/website-common.mjs --watch ./app/app.mjs --watch ./app/server.mjs"
