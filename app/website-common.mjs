@@ -3,9 +3,9 @@ import Fs from 'fs'
 import Path from 'path'
 
 
-/**@typedef {import('../ts/types').apiReqBody} apiReqBody  */
+/**@typedef {import('./types').apiReqBody} apiReqBody  */
 
-/**@typedef {import('../ts/types').apiReqBody} apiResBody */
+/**@typedef {import('./types').apiReqBody} apiResBody */
 
 
 /**
@@ -29,11 +29,14 @@ class Tools {
     /**
      * 读取一个纯文本文件为String
      * @param {string} path 目标文件路径
+     * @param {boolean} [_check_file=true] 在读取前检查文件有效性
      */
-    readFileToStr(path) {
+    readFileToStr(path, _check_file = true) {
         // 过滤非文件路径
-        if (!this.isFile(path)) {
-            return new Error('not_file')
+        if (_check_file) {
+            if (!this.isFile(path)) {
+                return new Error('not_file')
+            }
         }
         return Fs.readFileSync(path, 'utf-8')
     }
@@ -41,8 +44,26 @@ class Tools {
     /**
      * 获取目录下的所有文件
      * @param {string} path 目标路径
+     * @param {'path' | 'file_name' | 'file_name_no_ext'} [style='path'] 获取样式
      */
-    readDir(path) {
+    readDir(path, style = 'path') {
+        /**
+         * 自动设置样式
+         * @param {string} path 
+         * @param {string} filename 
+         */
+        const setStyle = (path, filename) => {
+            switch (style) {
+                case 'path':
+                    return Path.join(path, filename)
+                case 'file_name':
+                    return Path.join(filename)
+                case 'file_name_no_ext':
+                    return Path.basename(filename, Path.extname(filename))
+                default:
+                    return Path.join(path, filename)
+            }
+        }
         if (!this.isDir(path)) {
             return new Error('invalid_path')
         }
@@ -50,7 +71,7 @@ class Tools {
         let file_list = []
         // ~(!)这种写法可能会出现错误
         Fs.readdirSync(path).forEach((filename) => {
-            file_list.push(Path.join(path, filename))
+            file_list.push(setStyle(path, filename))
         })
         return file_list
     }
@@ -139,7 +160,7 @@ class OutputLog {
             out: (c) => { console.debug(c) }
         },
         'req': {
-            name: 'REQ ',
+            name: 'Request',
             color: '',
             out: (c) => { console.log(c) }
         }
@@ -229,9 +250,11 @@ export class HttpApp {
      * @param {string} param0.port 监听(运行)在端口
      * @param {string} param0.static_path 静态文件存放路径
      * @param {string} param0.static_rout 静态文件在站内的路由
+     * @param {string} param0.template_path 模板文件存放路径
      * @param {string} param0.html_path 网页文件存放路径
      * @param {boolean} param0.print_req 打印访问日志
-     * @param {boolean} param0.cache_html 缓存HTML文件以提高性能
+     * @param {boolean} param0.use_cache_file 使用缓存文件以提高性能
+     * @param {string} param0.common_html_head 在HTML头部(使用`<REPLACE>`标记的待替换内容)公用的标签
      */
     constructor({
         host = '0.0.0.0',
@@ -239,13 +262,15 @@ export class HttpApp {
         static_path = './src/static',
         static_rout = '/',
         html_path = './src/html',
+        template_path = './src/html/template',
         print_req = true,
-        cache_html = true
+        use_cache_file = true,
+        common_html_head = '<script src="/script/common.js"></script><link rel="stylesheet" href="/style/picnic.css">'
     }) {
         const app = express()
 
         // 确保路径有效性
-        if (!(tool.isDir(static_path) || tool.isDir(html_path))) {
+        if (!(tool.isDir(static_path) || tool.isDir(html_path) || tool.isDir(template_path))) {
             throw log.error('invalid_path: constructor HttpAPP failed.')
         }
 
@@ -260,8 +285,12 @@ export class HttpApp {
 
         /**HTML目录在文件系统位置 */
         this.path_html = html_path
+        /**模板目录在文件系统位置 */
+        this.path_template = template_path
         /**静态目录在文件系统位置 */
         this.path_static = static_path
+        /**在HTML头部(使用`<REPLACE>`标记的待替换内容)公用的标签 */
+        this.html_head = common_html_head
 
         /**API方法 @type {{[x: string]: apiProcCallback}} */
         this.api_method = {}
@@ -284,25 +313,41 @@ export class HttpApp {
 
         // 读取并缓存HTML文件以实现更好的效率
         /**使用缓存的HTML内容, 否则将随用随取 */
-        this.use_cache_html = cache_html
+        this.use_cache_html = use_cache_file
         /**
-         * HTML文件会缓存为这个对象, 目标格式为`<filename: file_content>`
-         * @type {{[x: string]: string}}
+         * HTML文件会缓存为这个对象
+         * @typedef {{[x: string]: string | void}} cacheObj
+         * @type {cacheObj}
          */
-        this.html_cont = {}
-        if (cache_html) { // 但有时也无需缓存
-            const dir_html_file = tool.readDir(html_path)
-            if (dir_html_file instanceof Error) {
-                throw log.error(`invalid_path: ${html_path}`)
-            }
-            dir_html_file.forEach((path_name) => {
-                // 匹配文件扩展名是否是HTML文件
-                // log.debug(path_name)
-                if (['.html', '.htm'].includes(Path.extname(path_name))) {
-                    const filename = Path.basename(path_name)
-                    this.html_cont[filename] = this.readHtml(filename)
+        this.cont_html = {}
+        /**
+         * 模板文件会缓存为这个对象
+         * @type {cacheObj}
+         */
+        this.cont_template = {}
+
+        if (use_cache_file) { // 但有时也无需缓存
+            /**
+             * 缓存到对象
+             * @param {string} path 
+             * @param {object} target 
+             */
+            const cache = (path, target) => {
+                const file_list = tool.readDir(path)
+                if (file_list instanceof Error) {
+                    throw log.error(`invalid_path: ${html_path}`)
                 }
-            })
+                file_list.forEach((path_name) => {
+                    // 匹配文件扩展名是否是HTML文件
+                    // log.debug(path_name)
+                    if (['.html', '.htm'].includes(Path.extname(path_name))) {
+                        const filename = Path.basename(path_name)
+                        target[filename] = tool.readFileToStr(path_name)
+                    }
+                })
+            }
+            cache(html_path, this.cont_html)
+            cache(template_path, this.cont_template)
             // console.log(this.html_cont)
 
         }
@@ -340,6 +385,11 @@ export class HttpApp {
             // 正常的执行处理函数
             execute(req_body, res_body, endReq)
         })
+
+
+
+        // 打印当前服务器状态
+        log.info(`Cache Mode: ${use_cache_file ? 'Yes' : 'No'}`)
     }
 
 
@@ -365,20 +415,16 @@ export class HttpApp {
      * @param {string} html_name 
      */ 
     page(path, html_name) {
-        const {expressApp, html_cont} = this
-        expressApp.get(path, (req, res) => {
+        const {expressApp} = this
+        expressApp.get(path, (_, res) => {
             let content = ''
-            if (this.use_cache_html) {
-                content = html_cont[html_name]
-                if (!(typeof(content) === 'string')) {
-                    throw log.error(`invalid_file_name: ${html_name}`)
-                }
-            } else {
-                // log.debug('no cache read')
-                content = this.readHtml(html_name)
+                
+            content = this.readHtml(html_name)
+            if (!content) {
+                return res.status(500).send('Server Error!').end()
             }
-            res.send(content)
-            res.end()
+            
+            res.send(content).end()
         })
     }
 
@@ -399,13 +445,51 @@ export class HttpApp {
 
 
     /**
-     * 读取一个HTML文件的内容(在this.)
+     * 读取一个HTML文件的内容(在`this.path_html`中), 并按照规则替换`<REPLACE>`的内容
      * @param {string} filename HTML文件名
+     * @param {boolean} [is_template=false] 是模板文件目录下的html文件
      */
-    readHtml(filename) {
-        const target = Path.join(this.path_html, filename)
-        if (!tool.isFile(target)) throw log.error(`invalid_html_name: ${target}`)
-        return tool.readFileToStr(target)
+    readHtml(filename, is_template = false) {
+        const {path_html, path_template} = this
+
+
+        /**预渲染HTML文件 @param {string} cont */
+        const render = (cont) => {
+            // ~(?)这里以后可以做性能优化
+            const list = tool.readDir(path_template, 'file_name_no_ext')
+            if (list instanceof Error) return ''
+            cont = cont.replace(/<!(\S+?)>/g, (_, template_name) => {
+                if (!list.includes(template_name)) return ''
+                const target = template_name + '.html'
+                const cont = this.readHtml(target, true)
+                // log.debug(cont)
+                return cont ? cont : ''
+            })
+            return cont.replace('<REPLACE>', this.html_head)
+        }
+
+
+        let content = '' // 初始化内容
+
+        if (this.use_cache_html) {
+            // 有缓存的情况
+            const target = is_template ? this.cont_template : this.cont_html
+            content = target[filename]
+            if (!content) return ''
+        } else {
+            // 无缓存的情况
+            const file_name = Path.join(is_template ? path_template : path_html, filename) 
+            // log.debug(file_name)
+            content = tool.readFileToStr(file_name)
+            if (typeof(content) !== 'string') return ''
+        }
+
+        if (!is_template) {// 预渲染非模板文件的HTML文件
+            return render(content)
+        }
+
+
+        return content
     }
 
 
@@ -415,7 +499,6 @@ export class HttpApp {
         // 未匹配到路由 
         expressApp.use((req, res) => {
             // ~(TAG)404 page
-
             res.status(404)
             res.send()
         })

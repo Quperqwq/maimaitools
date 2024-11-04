@@ -1,16 +1,17 @@
 {
   "name": "maimaitools",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "main": "./app/server.mjs",
   "scripts": {
-    "test": "node ./app/server.mjs",
+    "test": "node ./app/test.mjs",
+    "start": "node ./app/server.mjs",
     "dev": "nodemon --watch ./app/server.mjs --watch ./app/website-common.mjs --watch ./app/app.mjs --watch ./app/server.mjs"
   },
   "keywords": [
     "maimaidx"
   ],
   "author": "Quper",
-  "license": "ISC",
+  "license": "",
   "description": "",
   "dependencies": {
     "express": "^4.21.1",
