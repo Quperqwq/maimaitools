@@ -1,5 +1,6 @@
 import {HttpApp, tool, log} from './website-common.mjs'
-import {config} from './config.mjs'
+import config from './config.mjs'
+import {hall} from './app.mjs';
 
 const httpd = new HttpApp({
     html_path: './src/html',
@@ -10,12 +11,26 @@ const httpd = new HttpApp({
 })
 
 
-httpd.page('/', 'info.html')
+httpd.page('/', 'home.html')
 
 httpd.page('/dev', 'dev.html')
+
+
+// API...
 
 httpd.api('test', (req, res, end) => {
     end()
 })
+
+httpd.api('get_hall_player', (req, res, end) => {
+    res.data = hall.all_hall
+    end()
+})
+httpd.api('change_hall_data', (req, res, end) => {
+    const {id, type, method, value} = req
+    end(hall.change(id, method, type, value))
+})
+
+
 
 httpd.run()

@@ -5,8 +5,15 @@ export interface apiReqBody {
     /**请求内容 */
     [key: string]: Object | string
     /**请求目标 */
-    'target': string
+    'target': string,
+    
 }
+
+// interface apiResBodyHall extends apiResBody {
+//     target: 'get_all_hall'
+
+//     data: GameHallMain
+// }
 
 /**api响应体的标准样式 */
 export interface apiResBody {
@@ -22,7 +29,9 @@ export interface apiResBody {
 /**游戏厅 */
 export interface GameHallMain {
     /**所有游戏厅数据 */
-    [id: number]: GameHallItem
+    halls: {
+        [id: number]: GameHallItem
+    }
     /**上一个游戏厅ID */
     last_number: number
 }
@@ -31,15 +40,31 @@ export interface GameHallMain {
 export interface GameHallItem {
     /**游戏厅名 */
     name: string
+    /**游戏厅别名 */
+    nickname: string[]
     /**游戏厅含有的游戏 */
     games: string[]
     /**游戏厅位置 */
     pos: string | void
     /**玩家上限 */
     max_player: number | void
+    /**当前机厅人数 */
+    player: number
+    /**对象操作时间 */
+    time: {
+        /**创建时间 */
+        new: number
+        /**更新玩家时间 */
+        change_player: number
+        /**更改时间 */
+        change: number
+    }
     /**玩家评论 */
     comments: {
-        [uid: number]: PlayerComments
+        /**评论ID对应评论内容 */
+        [comment_id: number]: PlayerComments
+        /**上一个评论ID */
+        last_id: number
     }
 }
 

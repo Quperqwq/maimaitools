@@ -1,0 +1,179 @@
+<section class="hall-player-main">
+    <style>
+        .hall-player-main {
+            font-size: .8em;
+        }
+
+        .hall-header {
+            overflow: hidden;
+        }
+
+        .hall-player-main .left {
+            float: left;
+        }
+
+        .hall-player-main .right {
+            float: right;
+        }
+
+        .right::after,
+        .left::after {
+            content: '.';
+            display: block;
+            clear: both;
+            overflow: hidden;
+            height: 0;
+        }
+
+        /* .left::after,
+        .right::after {
+            content: '';
+            height: 100%;
+            display: inline-block;
+        } */
+
+        .left.title h2 {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .right.operate {
+            margin-top: .8em;
+        }
+
+
+        #hall-player-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        #hall-player-list li {
+            --padding: 1em;
+            --border-size: .14em;
+            overflow: hidden;
+            border: var(--border-size) solid #000;
+            padding: var(--padding);
+        }
+
+        #hall-player-list h2,
+        #hall-player-list h3 {
+            padding: 0;
+        }
+
+
+        #hall-player-list .left .name::before {
+            content: '机厅名称: ';
+        }
+
+        #hall-player-list .left .note::before {
+            content: '备注: ';
+        }
+
+        #hall-player-list .left .note::before,
+        #hall-player-list .left .name::before {
+            color: #666;
+        }
+
+        #hall-player-list .left .note {
+            margin-top: 1em;
+        }
+
+        #hall-player-list .right {
+            padding-left: var(--padding);
+            border-left: var(--border-size) solid #000;
+        }
+
+        .right .hall-number {
+            font-size: 2em;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+
+        .right .hall-number::before {
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: .2em;
+            background-color: #eee;
+            border-radius: .2em;
+        }
+
+        .right .hall-number::after {
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            width: var(--percent);
+            height: .2em;
+            background-color: #aaa;
+            border-radius: .2em;
+        }
+
+        .hall-number.no {
+            color: green;
+        }
+
+        .hall-number.few {
+            color: greenyellow;
+        }
+
+        .hall-number.some {
+            color: yellow;
+        }
+
+        .hall-number.many {
+            color: red;
+        }
+    </style>
+    <div class="hall-header">
+        <div class="left title">
+            <h2> 机厅排卡 </h2>
+            <!-- <button class="icon-refresh" type="button" id="refresh-hall" title="刷新"> </button> -->
+        </div>
+        <div class="right operate">
+            <button type="button" id="refresh-hall"> 刷新 </button>
+            <button type="button"> 数量管理 </button>
+            <button type="button"> 详细设置 </button>
+        </div>
+        <!-- <div class="clear-both">  </div> -->
+    </div>
+    <ul id="hall-player-list">
+        <li>
+            <section class="left">
+                <h3 class="name"> 断触星球 </h3>
+                <h3 class="note"> 我真服了这断触了 </h3>
+            </section>
+            <section class="right">
+                <label for="window-change-player">
+                    <h3> 当前人数 </h3>
+                    <h2 class="hall-number" style="--percent: 50%;"> 10 </h2>
+                </label>
+            </section>
+        </li>
+    </ul>
+
+    <div class="modal">
+        <input id="window-change-player" type="checkbox" />
+        <label for="window-change-player" class="overlay"></label>
+        <article>
+            <header>
+                <h3> 更新机厅人数 </h3>
+                <label for="window-change-player" class="close">&times;</label>
+            </header>
+            <section class="content">
+                <input type="number" name="player" title="当前玩家人数">
+                <button type="button" id="plus-player"> + </button>
+                <button type="button" id="min-player"> - </button>
+            </section>
+            <footer>
+                <button type="button"> 确定 </button>
+                <label for="window-change-player" class="button dangerous"> 取消 </label>
+            </footer>
+        </article>
+    </div>
+    <script src="script/tmp-hall-player.js"> </script>
+</section>

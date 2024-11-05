@@ -265,7 +265,7 @@ export class HttpApp {
         template_path = './src/html/template',
         print_req = true,
         use_cache_file = true,
-        common_html_head = '<script src="/script/common.js"></script><link rel="stylesheet" href="/style/picnic.css">'
+        common_html_head = '<script src="/script/common.js"></script><link rel="stylesheet" href="/style/picnic.css"><link rel="stylesheet" href="/style/common.css">'
     }) {
         const app = express()
 
@@ -500,7 +500,7 @@ export class HttpApp {
         expressApp.use((req, res) => {
             // ~(TAG)404 page
             res.status(404)
-            res.send()
+            res.send(this.readHtml('404.html'))
         })
 
 

@@ -1,0 +1,32 @@
+@font-face {
+    font-family: 'icomoon';
+    src:  url('/fonts/icomoon.eot?xevzpl');
+    src:  url('/fonts/icomoon.eot?xevzpl#iefix') format('embedded-opentype'),
+      url('/fonts/icomoon.ttf?xevzpl') format('truetype'),
+      url('/fonts/icomoon.woff?xevzpl') format('woff'),
+      url('/fonts/icomoon.svg?xevzpl#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+/* .clear-both {
+    clear: both;
+} */
+
+
+
+/* 设置字体图标before样式/(TAG)字体图标/ */
+
+[class*="icon-"]::before {
+    font-family: 'icomoon';
+    display: inline-block;
+    margin-top: -0.2em;
+    color: #000;
+}
+
+[class*="icon-"].min-icon::before {
+    font-size: .8em;
+}
+
+.icon-refresh::before {content: '\e984';}

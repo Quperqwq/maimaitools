@@ -25,6 +25,7 @@ class Data {
         let cache = this._cache[data_name]
         const cont = tool.readFileToStr(this._getDataPath(data_name))
         if (cont instanceof Error) return {}
+        // ~(!)这里在解析时, 若文件为空可能会触发错误
         if (!cache) cache = JSON.parse(cont)
         
         return cache
@@ -37,6 +38,7 @@ class Data {
      */
     update(data_name, data_cont = {}) {
         const target = this._getDataPath(data_name)
+        console.log(target)
         /**
          * 写入到目标文件
          * @param {object} cont 写入对象
