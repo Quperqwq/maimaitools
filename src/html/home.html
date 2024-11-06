@@ -25,13 +25,17 @@
                 color: #444;
             }
 
-            .intro {
+            /* .intro {
                 margin-top: 3em;
-            }
+            } */
 
 
             .intro p {
                 text-indent: 2em;
+            }
+
+            .placard .placard-content {
+                font-size: .8em;
             }
 
             .placard ol {
@@ -46,26 +50,21 @@
             <h2> 简介 </h2>
             <!-- 这里后续可以加一个滚动图 -->
             <p>
-                maimai是一款由SEGA开发的，形似洗衣机的街机音乐游戏。其主要玩法为配合音乐节奏，通过按下按键或触摸屏幕进行相应操作。
-            </p>
-            <p>
-                maimai初代于2012年7月11日在日本开始运营。游戏内置多首乐曲并配有不同难度的谱面供玩家游玩。玩家可以通过一次投币（Credit）游玩数曲（Track）。游戏定期通过网络更新来进行版本、UI、乐曲、谱面、游戏机制等内容的更新。
-                <a href="https://mzh.moegirl.org.cn/Maimai%E7%B3%BB%E5%88%97">详阅...</a>
+                使用该网站可进行简单的机厅人数的上报。
             </p>
         </section>
 
         <section class="placard space card-item">
             <h2> 公告 </h2>
-            <section class="space">
+            <section class="space placard-content">
                 <h3> 更新变化: </h3>
                 <ol>
-                    <li> 变化一 </li>
-                    <li> 变化二 </li>
+                    <li> 进行了新的UI设计。 </li>
                 </ol>
             </section>
         </section>
 
-        <section class="hall space">
+        <section class="hall space" id="game-hall">
             <!hall_player>
         </section>
 

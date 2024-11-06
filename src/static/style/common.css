@@ -10,9 +10,21 @@
     font-display: block;
 }
 
-/* .clear-both {
-    clear: both;
-} */
+@media (max-width: 60em) {
+    /* 手机版大小媒体响应 */
+
+}
+
+body {
+    margin: 0 auto;
+    max-width: 38em;
+    min-width: 22em;
+}
+
+.modal footer {
+    overflow: hidden;
+}
+
 
 
 
@@ -30,3 +42,5 @@
 }
 
 .icon-refresh::before {content: '\e984';}
+.icon-arr-top-right::before {content: '\ea3b';}
+.icon-link::before {content: '\ea7e';}

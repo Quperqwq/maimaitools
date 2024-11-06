@@ -38,7 +38,7 @@ class Data {
      */
     update(data_name, data_cont = {}) {
         const target = this._getDataPath(data_name)
-        console.log(target)
+        // console.log(target)
         /**
          * 写入到目标文件
          * @param {object} cont 写入对象

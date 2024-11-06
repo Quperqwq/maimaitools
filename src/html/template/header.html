@@ -1,4 +1,18 @@
-<nav>
+<nav class="nav-bar">
+    <style>
+        body::before {
+            content: '';
+            display: block;
+            height: 3em;
+        }
+
+        .nav-bar .menu div.title {
+            background-color: cornflowerblue;
+            color: #fff;
+            text-align: center;
+            font-weight: 800;
+        }
+    </style>
     <span class="brand">
         <img class="logo" src="/image/logo.png" alt="logo" />
         <span> maimai tools </span>
@@ -8,9 +22,11 @@
     <label for="bmenub" class="burger pseudo button"> 菜单 </label>
 
     <div class="menu">
+        <div class="pseudo button title"> MAITOOLS </div>
         <!-- <a href="/profile" class="buttone"> 个人主页 </a> -->
         <a href="/" class="pseudo button"> 机厅 </a>
         <a href="/score" class="pseudo button"> 查分 </a>
+        <a href="/about" class="pseudo button"> 关于我们 </a>
 
     </div>
 </nav>

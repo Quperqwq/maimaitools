@@ -3271,7 +3271,7 @@ nav .burger {
     display: none
 }
 
-@media all and (max-width: 60em) {
+@media (max-width: 60em) {
     nav .burger {
         display:inline-block;
         cursor: pointer;

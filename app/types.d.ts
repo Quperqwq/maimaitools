@@ -29,11 +29,14 @@ export interface apiResBody {
 /**游戏厅 */
 export interface GameHallMain {
     /**所有游戏厅数据 */
-    halls: {
-        [id: number]: GameHallItem
-    }
+    halls: GameHalls
     /**上一个游戏厅ID */
     last_number: number
+}
+
+/**所有游戏厅数据 */
+export interface GameHalls {
+    [id: number]: GameHallItem
 }
 
 /**单个游戏厅 */

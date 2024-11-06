@@ -64,13 +64,15 @@ class GameHall {
         /**@type {GameHallItem} */
         const hall_data = {
             'games': games ? games : [],
-            'max_player': max_player ? max_player : 20,
+            'max_player': max_player ? max_player : 10,
             'name': name,
             'nickname': [],
             'pos': pos ? pos : '',
             'player': 0,
             'time': {
-                'new': this._time
+                'new': this._time,
+                'change': this._time,
+                'change_player': this._time
             },
             'comments': {
                 'last_id': 0
@@ -112,10 +114,20 @@ class GameHall {
         const execute = {
             player: {
                 append: () => {
+                    target.time.change_player = this._time
                     if (target.player + value > target.max_player) return target.player = target.max_player
                     return target.player += value
                 },
-                change: () => { target.player = +value }
+                change: () => {
+                    target.time.change_player = this._time
+                    const set = value => target.player = value
+
+                    const number = +value
+                    if (isNaN(number)) return set(0)
+                    if (number <= 0) return set(0)
+                    if (number > target.max_player) return set(target.max_player)
+                    set(number)
+                }
             },
             games: {
                 append: () => { appendArrayItem(target.games) },
@@ -163,18 +175,6 @@ class GameHall {
         const exe = exe_type[method]
         if (!exe) return 'invalid_method'
         exe()
-
-        // switch (type) {
-        //     case 'player':
-        //         target.player = +value
-        //         target.time.change_player = time
-        //         break
-        //     case 'games':
-        //         target.games = typeof(value) === 'string' ? [value] : value 
-        //         break
-        //     default:
-        //         return 'type_not_found'
-        // }
 
         target.time.change = time
         this._updateHall(id, target)

@@ -15,6 +15,8 @@ httpd.page('/', 'home.html')
 
 httpd.page('/dev', 'dev.html')
 
+httpd.page('/about', 'about.html')
+
 
 // API...
 
@@ -23,11 +25,12 @@ httpd.api('test', (req, res, end) => {
 })
 
 httpd.api('get_hall_player', (req, res, end) => {
-    res.data = hall.all_hall
+    res.data = hall.all_hall.halls
     end()
 })
 httpd.api('change_hall_data', (req, res, end) => {
     const {id, type, method, value} = req
+    // console.log(req)
     end(hall.change(id, method, type, value))
 })
 

@@ -10,10 +10,18 @@
 
         .hall-player-main .left {
             float: left;
+            /* text-align: center; */
+            max-width: 17em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-wrap: nowrap;
+            white-space: nowrap;
         }
 
         .hall-player-main .right {
             float: right;
+            text-overflow: ellipsis;
+            overflow: hidden;
         }
 
         .right::after,
@@ -50,6 +58,8 @@
         #hall-player-list li {
             --padding: 1em;
             --border-size: .14em;
+            font-size: .8em;
+            min-width: 25em;
             overflow: hidden;
             border: var(--border-size) solid #000;
             padding: var(--padding);
@@ -60,6 +70,26 @@
             padding: 0;
         }
 
+        #hall-player-list .left .more {
+            margin-top: .5em;
+        }
+        
+        #hall-player-list .left .more label {
+            font-size: .9em;
+            font-weight: 400;
+            color: #444;
+            padding: .2em .4em;
+        }
+        #hall-player-list .left .more label:not(:last-child) {
+            margin-right: .2em;
+        }
+        #hall-player-list .left .more label::before {
+            margin-right: 0;
+        }
+
+        #hall-player-list .left h3::before {
+            font-weight: 400;
+        }
 
         #hall-player-list .left .name::before {
             content: '机厅名称: ';
@@ -83,11 +113,13 @@
             border-left: var(--border-size) solid #000;
         }
 
-        .right .hall-number {
+        #hall-player-list .right .hall-number {
+            /* padding-top: .25em; */
             font-size: 2em;
             text-align: center;
             position: relative;
             overflow: hidden;
+            text-shadow: 1px 1px 0px #aaa;
         }
 
 
@@ -113,21 +145,29 @@
             border-radius: .2em;
         }
 
+
+        /* 根据人数来确定显示字体颜色 */
+
         .hall-number.no {
             color: green;
         }
 
         .hall-number.few {
-            color: greenyellow;
+            color: green;
         }
 
         .hall-number.some {
+            color: greenyellow;
+        }
+
+        .hall-number.sev {
             color: yellow;
         }
 
         .hall-number.many {
             color: red;
         }
+
     </style>
     <div class="hall-header">
         <div class="left title">
@@ -135,45 +175,124 @@
             <!-- <button class="icon-refresh" type="button" id="refresh-hall" title="刷新"> </button> -->
         </div>
         <div class="right operate">
-            <button type="button" id="refresh-hall"> 刷新 </button>
-            <button type="button"> 数量管理 </button>
-            <button type="button"> 详细设置 </button>
+            <button type="button" id="refresh-halls" class="pseudo "> 刷新 </button>
+            <!-- <button type="button" class="pseudo"> 数量管理 </button> -->
+            <label for="window-detail-set" class="pseudo button"> 详细设置 </label>
         </div>
-        <!-- <div class="clear-both">  </div> -->
     </div>
     <ul id="hall-player-list">
         <li>
             <section class="left">
-                <h3 class="name"> 断触星球 </h3>
-                <h3 class="note"> 我真服了这断触了 </h3>
+                <h3 class="name"> 稍等 </h3>
+                <!-- <h3 class="note"> 我真服了这断触了 </h3> -->
+                <h3 class="more">
+                    <label class="pseudo button icon-link" for=""> 评论 </label>
+                    <label class="pseudo button icon-link" for=""> 详情 </label>
+                </h3>
             </section>
             <section class="right">
                 <label for="window-change-player">
                     <h3> 当前人数 </h3>
-                    <h2 class="hall-number" style="--percent: 50%;"> 10 </h2>
+                    <h2 class="hall-number" style="--percent: 100%;"> -- </h2>
                 </label>
             </section>
         </li>
     </ul>
 
+    <!-- window-player-number -->
     <div class="modal">
         <input id="window-change-player" type="checkbox" />
-        <label for="window-change-player" class="overlay"></label>
+        <section class="overlay"></section>
         <article>
             <header>
                 <h3> 更新机厅人数 </h3>
-                <label for="window-change-player" class="close">&times;</label>
+                <!-- <label for="window-change-player" class="close">&times;</label> -->
             </header>
             <section class="content">
-                <input type="number" name="player" title="当前玩家人数">
-                <button type="button" id="plus-player"> + </button>
-                <button type="button" id="min-player"> - </button>
+                <input id="current-player-number" type="number" name="player" title="当前玩家人数">
+                <button id="add-player-number" type="button" id="plus-player"> + </button>
+                <button id="min-player-number" type="button" id="min-player"> - </button>
             </section>
             <footer>
-                <button type="button"> 确定 </button>
+                <button type="button" id="submit-player-number"> 确定 </button>
                 <label for="window-change-player" class="button dangerous"> 取消 </label>
             </footer>
         </article>
     </div>
+
+
+    <!-- window-detail-set -->
+    <div class="modal">
+        <input id="window-detail-set" type="checkbox" />
+        <label for="window-detail-set" class="overlay"></label>
+        <article>
+            <header>
+                <h3> 详细设置 </h3>
+                <label for="window-detail-set" class="close">&times;</label>
+            </header>
+            <section class="content">
+                <!-- content -->
+
+            </section>
+            <footer>
+                <button type="button" id="submit-player-number"> 确定 </button>
+                <label for="window-detail-set" class="button dangerous"> 取消 </label>
+            </footer>
+        </article>
+    </div>
+
+    <!-- window-player-comment -->
+    <div class="modal">
+        <input id="window-player-comment" type="checkbox" />
+        <label for="window-player-comment" class="overlay"></label>
+        <article>
+            <header>
+                <h3> 玩家评论 </h3>
+                <label for="window-player-comment" class="close">&times;</label>
+            </header>
+            <section class="content">
+                <!-- content -->
+
+            </section>
+            <footer>
+                <label for="window-player-comment" class="button right"> 好 </label>
+            </footer>
+        </article>
+    </div>
+    
+    <!-- window-hall-detail -->
+    <div class="modal">
+        <input id="window-hall-detail" type="checkbox" />
+        <label for="window-hall-detail" class="overlay"></label>
+        <article>
+            <header>
+                <h3> 详情 </h3>
+                <label for="window-hall-detail" class="close">&times;</label>
+            </header>
+            <section class="content hall-detail">
+                <!-- content -->
+                <p>
+                    机厅别名: <span id="detail-hall-nickname"></span>
+                </p>
+                <p>
+                    机厅位置: <span id="detail-hall-pos"></span>
+                </p>
+                <p>
+                    最大容纳: <span id="detail-hall-max"></span>人
+                </p>
+                <hr>
+                <p>
+                    <strong id="detail-hall-name">游戏厅</strong>当前游玩人数<strong id="detail-hall-player">0</strong>人, 预计需要排队<strong id="detail-hall-time-wait">0分钟</strong>。
+                </p>
+                <p>
+                    上次更新时间是<strong id="detail-hall-time-update">0分钟</strong>前。
+                </p>
+            </section>
+            <footer>
+                <label for="window-hall-detail" class="button right"> 好 </label>
+            </footer>
+        </article>
+    </div>
+
     <script src="script/tmp-hall-player.js"> </script>
 </section>
