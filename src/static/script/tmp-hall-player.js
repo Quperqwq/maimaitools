@@ -5,7 +5,8 @@
 const doc = {
     window: {
         change_player: getEBI('window-change-player'),
-        show_detail: getEBI('window-hall-detail')
+        show_detail: getEBI('window-hall-detail'),
+        show_set: getEBI('window-hall-set')
     },
     input: {
         player_number: {
@@ -14,6 +15,24 @@ const doc = {
             add: getEBI('add-player-number'),
             min: getEBI('min-player-number'),
             refresh: getEBI('refresh-halls')
+        },
+        hall_set: {
+            submit: getEBI('submit-hall-set'),
+            name: getEBI('set-hall-name'),
+            nickname: {
+                /**ul li*n */
+                element: getEBI('set-hall-nickname-list'),
+                /**input Element */
+                input: getEBI('set-hall-nickname')
+            },
+            pos: getEBI('set-hall-pos'),
+            player: getEBI('set-hall-max_player'),
+            games: {
+                /**ul li*n */
+                element: getEBI('set-hall-games-list')
+                /**input Element */,
+                input: getEBI('set-hall-games')
+            }
         }
     },
     text: {
@@ -25,6 +44,10 @@ const doc = {
             nickname: getEBI('detail-hall-nickname'),
             pos: getEBI('detail-hall-pos'),
             max: getEBI('detail-hall-max')
+        },
+        player_number: {
+            name: getEBI('player-number-name'),
+            change_time: getEBI('player-number-change_time') 
         }
     },
     list: getEBI('hall-player-list')
@@ -33,6 +56,7 @@ const doc = {
 const callbacks = {
     /**当提交玩家人数时会触发此函数,该函数会传入一个控制window是否显示的Element元素 @type {function(Element): void}  */
     submitPlayerNumber: () => {},
+    // showPlayerNumber: () => {},
     /**当用户触发显示机厅详情是会触发此函数 */
     showDetail: () => {},
 }
@@ -52,21 +76,24 @@ const _init = () => {
         playerNumber: () => {
             const { refresh, add, min, input, submit } = doc.input.player_number
             const { change_player } = doc.window
-
             /**刷新按钮 */
             refresh.addEventListener('click', () => {
                 refreshList()
             })
+
+            const changePlayerNumber = (target) => {
+                const { max, min } = input
+                if (target > max) return input.value = max
+                if (target < min) return input.value = min
+                input.value = target
+            }
             /**添加人数按钮 */
             add.addEventListener('click', () => {
-                const { value } = input
-                input.value = +value + 1
+                changePlayerNumber(+input.value + 1)
             })
             /**减少人数按钮 */
             min.addEventListener('click', () => {
-                input.value -= 1
-                const { value } = input
-                if (value <= 0) input.value = 0
+                changePlayerNumber(+input.value - 1)
             })
             /**提交按钮 */
             submit.addEventListener('click', () => {
@@ -82,6 +109,15 @@ const _init = () => {
                 if (!event.target.checked) return
                 runCommand(callbacks.showDetail)
             })
+        },
+
+        /**机厅设置或新建 */
+        hallSet: () => {
+            // 添加机厅
+            // ~(LAST) 三思二后写
+
+            // 修改机厅
+            //
         }
     }
 
@@ -125,29 +161,45 @@ const refreshList = (sorting) => {
             const {max_player, player, name} = hall
             const {input} = doc.input.player_number
 
-            const changePlayer = () => {
-                // 打开更改玩家人数窗口时
+            // 打开更改玩家人数窗口时
+            const showPlayerNumber = () => {
+                // 更新机厅名
+                const {name, change_time} = doc.text.player_number
+                name.innerText = hall.name
+                change_time.innerText = getChangeTime(hall.time.change_player)
+                
+
+                // 设置输入限制
                 input.value = player
+                input.max = max_player
+                input.min = 0
                 callbacks.submitPlayerNumber = (show) => {
+                    // 提交玩家数量逻辑
                     show.checked = false
+                    // (ADD)这里后续需要增加一个等待提示
+
                     useApi('change_hall_data', {
                         id: id,
                         type: 'player',
                         method: 'change',
                         value: input.value
                     }, (res) => {
+                        // (ADD)等待结束
                         console.log(res)
                         refreshList()
                     })
                 }
             }
 
+            // 打开玩家人数窗口时
+
+            // 当打开显示详情窗口时
             const showDetail = () => {
                 const {name, player, time_update, time_wait, nickname, pos, max} = doc.text.hall_detail
                 const {change_player} = hall.time
                 callbacks.showDetail = () => {
                     const time = {
-                        update: getTime(new Date().getTime() - change_player),
+                        update: getChangeTime(change_player),
                         wait: hall.player ? getTime( hall.player / 2 * 15 * 60000 ) : 0
                     }
                     name.innerText = hall.name
@@ -161,10 +213,22 @@ const refreshList = (sorting) => {
                 }
             }
 
+            // 当打开显示评论窗口时
+            const showComment = () => {
+
+            }
+
+            // 当打开显示设置机厅窗口时
+            const showSet = () => {
+
+            }
+
+
+
 
             const e_right = create('section', {class: 'right'})
             join(e_right, 
-                join(create('label', {for: 'window-change-player'}, changePlayer), {
+                join(create('label', {for: 'window-change-player'}, showPlayerNumber), {
                     title: create('h3', {}, '当前人数'),
                     number: create('h2', {class: `hall-number ${setColor(player)}`, style: `--percent: ${(player / max_player) * 100}%;`}, player)
                 })
@@ -173,8 +237,9 @@ const refreshList = (sorting) => {
             const e_left = create('section', {class: 'left'})
             const e_more = create('h3', {class: 'more'})
             join(e_more, {
-                show_comment: create('label', {class: 'pseudo button icon-link', for: 'window-player-comment'}, '评论'),
+                show_comment: create('label', {class: 'pseudo button icon-link', for: 'window-player-comment'}, showComment, '评论'),
                 show_detailed: create('label', {class: 'pseudo button icon-link', for: 'window-hall-detail'}, showDetail, '详情'),
+                show_setting: create('label', {class: 'pseudo button icon-config', for: 'window-hall-set'}, showDetail, '设置'),
             })
             join(e_left, {
                 title: create('h3', {class: 'name'}, name),

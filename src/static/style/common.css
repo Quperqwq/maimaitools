@@ -1,18 +1,31 @@
 @font-face {
     font-family: 'icomoon';
-    src:  url('/fonts/icomoon.eot?xevzpl');
-    src:  url('/fonts/icomoon.eot?xevzpl#iefix') format('embedded-opentype'),
-      url('/fonts/icomoon.ttf?xevzpl') format('truetype'),
-      url('/fonts/icomoon.woff?xevzpl') format('woff'),
-      url('/fonts/icomoon.svg?xevzpl#icomoon') format('svg');
+    src: url('/fonts/icomoon.eot?xevzpl');
+    src: url('/fonts/icomoon.eot?xevzpl#iefix') format('embedded-opentype'),
+        url('/fonts/icomoon.ttf?xevzpl') format('truetype'),
+        url('/fonts/icomoon.woff?xevzpl') format('woff'),
+        url('/fonts/icomoon.svg?xevzpl#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
 }
 
-@media (max-width: 60em) {
-    /* 手机版大小媒体响应 */
+/* 隐藏上下箭头 */
+input[type=number] {
+    -moz-appearance: textfield;
+    /* Firefox */
+    -webkit-appearance: none;
+    /* Safari 和 Chrome */
+    appearance: none;
+    /* 其他现代浏览器 */
+}
 
+@media (max-width: 60em) {
+
+    /* 手机版大小媒体响应 */
+    nav.nav-bar .menu div.title {
+        display: block;
+    }
 }
 
 body {
@@ -41,6 +54,22 @@ body {
     font-size: .8em;
 }
 
-.icon-refresh::before {content: '\e984';}
-.icon-arr-top-right::before {content: '\ea3b';}
-.icon-link::before {content: '\ea7e';}
+.icon-refresh::before {
+    content: '\e984';
+}
+
+.icon-arr-top-right::before {
+    content: '\ea3b';
+}
+
+.icon-link::before {
+    content: '\ea7e';
+}
+
+.icon-config::before {
+    content: '\e994';
+}
+
+.icon-message::before {
+    content: '\e96e';
+}

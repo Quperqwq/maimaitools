@@ -15,6 +15,8 @@ httpd.page('/', 'home.html')
 
 httpd.page('/dev', 'dev.html')
 
+httpd.page('/score', 'score.html')
+
 httpd.page('/about', 'about.html')
 
 

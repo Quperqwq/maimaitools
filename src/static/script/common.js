@@ -158,13 +158,21 @@ const getTime = (time) => {
         if (seconds > 0) {
             time_description.push(`${seconds}秒`)
         }
-        return time_description.join('')
+        return valid(time_description.join(''), '刚刚')
     }
     if (time > 100000000000) return _toNowTime(time)
     if (!time) return _toNowTime(new Date().getTime())
 
     return _toTime(Math.round(time / 1000))
 
+}
+
+/**
+ * 获取一个时间戳是现在的多少时间前(可读字符串样式)
+ * @param {number} time 过去的某个时间戳
+ */
+const getChangeTime = (time) => {
+    return getTime(new Date().getTime() - time)
 }
 
 /**

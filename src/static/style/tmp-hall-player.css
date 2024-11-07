@@ -1,0 +1,275 @@
+
+
+.hall-player-main {
+    font-size: .8em;
+}
+
+.hall-header {
+    overflow: hidden;
+}
+
+.hall-player-main .left {
+    float: left;
+    /* text-align: center; */
+    max-width: 17em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.hall-player-main .right {
+    float: right;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.right::after,
+.left::after {
+    content: '.';
+    display: block;
+    clear: both;
+    overflow: hidden;
+    height: 0;
+}
+
+/* .left::after,
+.right::after {
+    content: '';
+    height: 100%;
+    display: inline-block;
+} */
+
+.left.title h2 {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.right.operate {
+    margin-top: .8em;
+}
+
+
+#hall-player-list {
+    list-style: none;
+    padding: 0;
+}
+
+#hall-player-list li {
+    --padding: 1em;
+    --border-size: .14em;
+    font-size: .8em;
+    min-width: 25em;
+    overflow: hidden;
+    border: var(--border-size) solid #000;
+    padding: var(--padding);
+}
+
+#hall-player-list h2,
+#hall-player-list h3 {
+    padding: 0;
+}
+
+#hall-player-list .left .more {
+    margin-top: .5em;
+}
+
+#hall-player-list .left .more label {
+    font-size: .9em;
+    font-weight: 400;
+    color: #444;
+    padding: .2em .4em;
+}
+#hall-player-list .left .more label:not(:last-child) {
+    margin-right: .2em;
+}
+#hall-player-list .left .more label::before {
+    margin-right: .2em;
+}
+
+#hall-player-list .left h3::before {
+    font-weight: 400;
+}
+
+#hall-player-list .left .name::before {
+    content: '机厅名称: ';
+}
+
+#hall-player-list .left .note::before {
+    content: '备注: ';
+}
+
+#hall-player-list .left .note::before,
+#hall-player-list .left .name::before {
+    color: #666;
+}
+
+#hall-player-list .left .note {
+    margin-top: 1em;
+}
+
+#hall-player-list .right {
+    padding-left: var(--padding);
+    border-left: var(--border-size) solid #000;
+}
+
+#hall-player-list .right .hall-number {
+    /* padding-top: .25em; */
+    font-size: 2em;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    text-shadow: 1px 1px 0px #aaa;
+}
+
+
+.right .hall-number::before {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: .2em;
+    background-color: #eee;
+    border-radius: .2em;
+}
+
+.right .hall-number::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: var(--percent);
+    height: .2em;
+    background-color: #aaa;
+    border-radius: .2em;
+}
+
+
+/* 根据人数来确定显示字体颜色 */
+
+.hall-number.no {
+    color: green;
+}
+
+.hall-number.few {
+    color: green;
+}
+
+.hall-number.some {
+    color: greenyellow;
+}
+
+.hall-number.sev {
+    color: yellow;
+}
+
+.hall-number.many {
+    color: red;
+}
+
+
+
+/* 机厅玩家人数设置 */
+
+.window-change-player .content .hall-name,
+.window-change-player .content .change-time {
+    text-align: center;
+}
+
+.window-change-player .content .change-player {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.window-change-player .content .change-player button {
+    margin: 0;
+    padding: .2em .5em;
+    font-size: 2em;
+    border-radius: 0;
+    background-color: #eee;
+    color: #000;
+}
+
+.window-change-player .content .change-player input {
+    font-size: 2.2em;
+    padding: 0 .2em;
+    margin: 0 .2em;
+    width: 2em;
+    text-align: center;
+    /* text-decoration: underline; */
+}
+
+/* 机厅设置 */
+
+.window-hall-set input {
+    background-color: transparent;
+}
+
+.window-hall-set .line {
+    display: block;
+    background-color: #fcfcfc;
+    border-radius: .4em;
+    padding: .2em .4em;
+}
+
+.window-hall-set .line label {
+    display: inline-block;
+    font-weight: 500;
+    padding: .2em .4em;
+    border-radius: .4em;
+    margin-bottom: .2em;
+    background-color: #f2f2f2;
+    color: #777;
+}
+
+
+
+.window-hall-set ul,
+.window-hall-set ul li {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+
+.window-hall-set ul li {
+    display: inline-block;
+    list-style: none;
+    margin: 0;
+    margin-right: .2em;
+    transition: .2s ease background-color;
+    padding: .1em .2em;
+    border-radius: .2em;
+    cursor: default;
+}
+
+.window-hall-set ul li.item:hover {
+    background-color: #ffebeb;
+    /* color: #bbb; */
+    transition: opacity ease .2s;
+    opacity: 1;
+}
+
+.window-hall-set ul li.item.not {
+    display: none;
+    opacity: 0;
+}
+
+.window-hall-set .content .input-list {
+    padding: 0;
+}
+
+.window-hall-set .content .input-list input {
+    width: 4em;
+    height: 1.2em;
+    padding: .1em .2em;
+    border: none;
+    border-radius: 0;
+    border-bottom: .2px solid #000;
+}
+
+.window-hall-set .line:not(:nth-child(1)) {
+    margin-top: .7em;
+}
+

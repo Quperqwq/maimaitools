@@ -3547,8 +3547,8 @@ input.stack:focus+input,input.stack:focus+textarea,input.stack:focus+select,text
     display: block;
     opacity: 1;
     max-height: 10000px;
-    transition: all .3s
-}
+    transition: 300ms -1.98906ms;
+    }
 
 .modal>input:checked~.overlay~* {
     max-height: 90%;
