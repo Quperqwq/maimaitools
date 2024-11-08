@@ -30,6 +30,9 @@ const useApi = (target, req_data = {}, callback) => {
 
 
 
+// DOM
+
+
 /**
  * (DOM)(document.createElement)创建一个元素
  * @param {string} tag_name 传入标签名
@@ -126,6 +129,85 @@ const getElements = (obj) => {
     return new_obj
 }
 
+class InputList {
+    /**
+     * (DOM)绑定两个元素, 并创建一个输入添加或删除的列表
+     * @param {Element} list_element 列表元素(通常是<ul>,<ol>等列表元素)
+     * @param {HTMLInputElement} input_element 输入元素
+     * @param {string[]} [values] 指定初始值
+     */
+    constructor(list_element, input_element, values) {
+        /** 所有输入的值 @type {object.<string, Element>} */
+        this._value = {}
+        list_element.replaceChildren()
+
+        this.list_element = list_element
+        this.input_element = input_element
+
+        if (values) this.setValue(values)
+
+
+        // 添加
+        input_element.addEventListener('blur', () => {
+            const { value } = input_element
+            input_element.value = ''
+            if (!value) return // 如果用户没有输入内容将不会添加
+
+            this.appendValue(value)
+        })
+    }
+
+    /**
+     * 向列表后添加一个元素
+     * @param {string} value 
+     */
+    appendValue(value) {
+        this._value[value] = this.list_element.appendChild(
+            create('li', { class: 'item' }, (event) => {
+                // (ADD)这里以后需要添加销毁DOM的操作, 而非使用CSS隐藏元素
+                event.target.classList.add('not')
+                delete this._value[value]
+            }, value)
+        )
+    }
+
+    /**
+     * 设置输入值
+     * @param {string[]} values 
+     */
+    setValue(values) {
+        values.forEach((value) => {
+            this.appendValue(value)
+        })
+    }
+
+    /**重置输入元素 */
+    reset() {
+        this._value = {}
+        this.list_element.replaceChildren()
+        
+    }
+
+    /**输入列表 */
+    get value() {
+        return Object.keys(this._value)
+    }
+}
+
+
+/**
+ * 冒出一个消息提示
+ * @param {string} message 弹出消息内容
+ * @param {object} setting 样式设置
+ */
+const infoBar = (message, setting) => {
+
+}
+
+
+// tool & dev
+
+
 /**
  * 获取时间的可读字符串样式
  * @param {number} [time] 若不指定将会使用默认系统时间
@@ -138,13 +220,13 @@ const getTime = (time) => {
     }
     const _toTime = (time) => {
 
-    // (i)注意: 以下代码由AI代写
-    let days = Math.floor(time / 86400) // 计算天数
-    let hours = Math.floor((time % 86400) / 3600) // 计算小时
-    let minutes = Math.floor((time % 3600) / 60) // 计算分钟
-    let seconds = time % 60 // 计算秒
+        // (i)注意: 以下代码由AI代写
+        let days = Math.floor(time / 86400) // 计算天数
+        let hours = Math.floor((time % 86400) / 3600) // 计算小时
+        let minutes = Math.floor((time % 3600) / 60) // 计算分钟
+        let seconds = time % 60 // 计算秒
 
-    let time_description = []
+        let time_description = []
 
         if (days > 0) {
             time_description.push(`${days}天`)
@@ -175,6 +257,7 @@ const getChangeTime = (time) => {
     return getTime(new Date().getTime() - time)
 }
 
+
 /**
  * 确保一个值有效
  * @param {any} value 指定需要检查的值
@@ -184,7 +267,6 @@ const valid = (value, normal) => {
     if (Array.isArray(value)) return value.length > 0 ? value : normal
     return value ? value : normal
 }
-
 
 
 /**用于DEBUG时检查某个传单值 */

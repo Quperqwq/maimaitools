@@ -236,6 +236,13 @@ class OutputLog {
         let cont = `${req.method} ${req.path}`
         this.output(cont, -1)
     }
+
+    /**
+     * 在控制台打印更多信息
+     */
+    det(cont = '') {
+        console.log('    ↪', cont)
+    }
 }
 
 /**
@@ -436,7 +443,10 @@ export class HttpApp {
      * @param {apiProcCallback} callback 处理体
      */
     api(target, callback) {
-        /* 在这里添加 */this.api_method[target] = callback
+        /* 在这里添加 */this.api_method[target] = (...arg) => {
+            log.det(`target: ${target}`)
+            callback(...arg)
+        }
     }
 
     //

@@ -26,14 +26,21 @@ httpd.api('test', (req, res, end) => {
     end()
 })
 
-httpd.api('get_hall_player', (req, res, end) => {
+httpd.api('get_hall_player', (_, res, end) => {
     res.data = hall.all_hall.halls
     end()
 })
-httpd.api('change_hall_data', (req, res, end) => {
-    const {id, type, method, value} = req
-    // console.log(req)
-    end(hall.change(id, method, type, value))
+httpd.api('change_hall_data', (req, _, end) => {
+    const {id, type, method = '', value = {}} = req
+    
+    if (type === 'all') return end(hall.update(id, value)) 
+
+    return end(hall.change(id, method, type, value))
+})
+httpd.api('new_hall', (req, _, end) => {
+    const {value = {}} = req
+    const name = value.name
+    return end(hall.new(name, value))
 })
 
 

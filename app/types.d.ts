@@ -3,7 +3,7 @@
 /**api请求体的标准样式 */
 export interface apiReqBody {
     /**请求内容 */
-    [key: string]: Object | string
+    [key: string]: any
     /**请求目标 */
     'target': string,
     

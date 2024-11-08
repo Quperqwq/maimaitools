@@ -1,12 +1,13 @@
 /**hall_player.html关联的JS文件 */
 /**@typedef {import('../../../app/types').GameHallMain} GameHallMain */
 /**@typedef {import('../../../app/types').GameHalls} GameHalls */
+/**@typedef {import('../../../app/types').GameHallItem} GameHallItem */
 
 const doc = {
     window: {
         change_player: getEBI('window-change-player'),
         show_detail: getEBI('window-hall-detail'),
-        show_set: getEBI('window-hall-set')
+        show_set_hall: getEBI('window-hall-set')
     },
     input: {
         player_number: {
@@ -17,6 +18,7 @@ const doc = {
             refresh: getEBI('refresh-halls')
         },
         hall_set: {
+            form: getEBI('set-hall-form'),
             submit: getEBI('submit-hall-set'),
             name: getEBI('set-hall-name'),
             nickname: {
@@ -32,7 +34,8 @@ const doc = {
                 element: getEBI('set-hall-games-list')
                 /**input Element */,
                 input: getEBI('set-hall-games')
-            }
+            },
+            new_hall: getEBI('window-hall-new')
         }
     },
     text: {
@@ -57,10 +60,23 @@ const callbacks = {
     /**当提交玩家人数时会触发此函数,该函数会传入一个控制window是否显示的Element元素 @type {function(Element): void}  */
     submitPlayerNumber: () => {},
     // showPlayerNumber: () => {},
-    /**当用户触发显示机厅详情是会触发此函数 */
+    /**当用户打开显示机厅详情窗口时会触发此函数 */
     showDetail: () => {},
+    /**
+     * 当用户提交设置机厅内容的时候会触发此函数
+     * @param {GameHallItem} input
+     * @param {function(boolean)} onWait
+     */
+    submitSetHall: (input, onWait) => {  },
+    
+    /**
+     * 当用户打开更改或新建机厅窗口时时会触发此函数
+     * @param {{nickname: InputList, games: InputList}} input_list 
+     */
+    showSetHall: (input_list) => { }
 }
 
+// 初始化页面函数, 它们通常只会执行一次
 const _init = () => {
     /**
      * 检查对象是否是有效函数, 如果是将会自动执行
@@ -97,6 +113,7 @@ const _init = () => {
             })
             /**提交按钮 */
             submit.addEventListener('click', () => {
+                // #(LAST)请按照hallSet的等待按钮来修改
                 runCommand(callbacks.submitPlayerNumber, change_player)
             })
         },
@@ -113,11 +130,72 @@ const _init = () => {
 
         /**机厅设置或新建 */
         hallSet: () => {
-            // 添加机厅
-            // ~(LAST) 三思二后写
+            const { window: { show_set_hall }, input: {hall_set: {form, nickname, games, new_hall}} } = doc
 
-            // 修改机厅
-            //
+            const list = {
+                nickname: new InputList(nickname.element, nickname.input),
+                games: new InputList(games.element, games.input)
+            }
+
+            // 添加(新建)机厅
+            new_hall.addEventListener('click', () => {
+                callbacks.submitSetHall = (input, wait) => {
+                    wait(true)
+                    // 新建机厅
+                    useApi('new_hall', {value: input}, (res_data) => {
+                        wait(false)
+                        const { valid, message } = res_data
+                        if (!valid) {
+                            infoBar('新建失败!')
+                            console.error('error message:', message)
+                        }
+                        show_set_hall.checked = false
+                        refreshList()
+                    })
+                }
+            })
+
+            // 打开窗口
+            show_set_hall.addEventListener('change', (event) => {
+                if (!event.target.checked) return
+                form.reset()
+                
+                runCommand(callbacks.showSetHall, list)
+                callbacks.showSetHall = void 0
+            })
+
+            // 重置表单
+            form.addEventListener('reset', () => {
+                Object.values(list).forEach((inputList) => {
+                    inputList.reset()
+                })
+            })
+
+            // 提交时, 将表单内容作为参数传递给处理函数
+            form.addEventListener('submit', (event) => {
+                event.preventDefault()
+                const {name, pos, player} = doc.input.hall_set
+                /**@type {GameHallItem} */
+                const form_data = {
+                    'games': list.games.value,
+                    'max_player': valid(player.value, 10),
+                    'name': valid (name.value, '未指定'),
+                    'nickname': list.nickname.value,
+                    'pos': pos.value
+                }
+                // 将等待函数用作参数传递给处理函数
+                const onWait = (is_wait) => {
+                    const { submit } = doc.input.hall_set
+                    if (is_wait) {
+                        submit.innerText = '稍等'
+                        submit.disabled = true
+                    } else {
+                        submit.innerText = '就这样'
+                        submit.disabled = false
+                    }
+                }
+                runCommand(callbacks.submitSetHall, form_data, onWait)
+            })
         }
     }
 
@@ -158,7 +236,7 @@ const refreshList = (sorting) => {
             // 根据对象创建网页元素并绑定相关事件
             const id = +key
             const hall = halls[id]
-            const {max_player, player, name} = hall
+            const {max_player, player, name, games, nickname} = hall
             const {input} = doc.input.player_number
 
             // 打开更改玩家人数窗口时
@@ -220,7 +298,34 @@ const refreshList = (sorting) => {
 
             // 当打开显示设置机厅窗口时
             const showSet = () => {
-
+                // 打开窗体
+                /**@param {boolean} is_wait */
+                callbacks.showSetHall = (input) => {
+                    input.games.setValue(games)
+                    input.nickname.setValue(nickname)
+                    const {name, pos, player} = doc.input.hall_set
+                    name.value = hall.name
+                    pos.value = hall.pos
+                    player.value = hall.max_player
+                }
+                // 提交内容
+                callbacks.submitSetHall = (input, wait) => {
+                    wait(true)
+                    useApi('change_hall_data', {
+                        type: 'all',
+                        value: input,
+                        id
+                    }, (res_data) => {
+                        const {valid, message} = res_data
+                        wait(false)
+                        doc.window.show_set_hall.checked = false
+                        if (!valid) {
+                            infoBar('更新失败!')
+                            console.error('error message:', message)
+                        }
+                        refreshList()
+                    })
+                }
             }
 
 
@@ -239,7 +344,7 @@ const refreshList = (sorting) => {
             join(e_more, {
                 show_comment: create('label', {class: 'pseudo button icon-link', for: 'window-player-comment'}, showComment, '评论'),
                 show_detailed: create('label', {class: 'pseudo button icon-link', for: 'window-hall-detail'}, showDetail, '详情'),
-                show_setting: create('label', {class: 'pseudo button icon-config', for: 'window-hall-set'}, showDetail, '设置'),
+                show_setting: create('label', {class: 'pseudo button icon-config', for: 'window-hall-set'}, showSet, '设置'),
             })
             join(e_left, {
                 title: create('h3', {class: 'name'}, name),

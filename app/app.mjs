@@ -181,6 +181,33 @@ class GameHall {
         return ''
     }
 
+    /**
+     * 更新机厅数据
+     * @param {number} id 机厅ID
+     * @param {GameHallItem} new_data 更新数据
+     */
+    update(id, new_data) {
+        if (!new_data) return 'param_not_fond'
+        const target = this._getHall(id)
+        if (!target) return 'game_hall_not_found'
+        const change = (key_name, value) => {
+            target[key_name] = value ? value : target[key_name]
+        }
+        const {games, name, max_player, nickname, pos} = new_data
+        
+        // #(FIX) 人性化?优化?
+        change('games', games)
+        change('max_player', max_player)
+        change('name', name)
+        change('nickname', nickname)
+        change('pos', pos)
+        change(target.time.change, this._time)
+        // console.log(target);
+        
+
+        this._updateHall(id, target)
+    }
+
 }
 
 
