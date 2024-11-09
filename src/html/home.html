@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <REPLACE>
-        <title> Ciallo～(∠・ω[ )⌒☆ </title>
+        <title> maimai tools </title>
         <style>
             .banner {
                 background: url('/image/banner/banner_1.webp') center/cover no-repeat;
@@ -20,7 +20,7 @@
             }
 
             .card-item {
-                border-bottom: #eee solid .2em;
+                /* border-bottom: #eee solid .2em; */
                 margin-top: .4em;
                 background-color: #fff;
                 /* border-radius: 1em; */
@@ -53,6 +53,21 @@
             #game-hall.hall {
                 padding-bottom: 5em;
             }
+
+            footer.main {
+                font-size: .6em;
+                padding: .2em .4em;
+                margin: 0 .2em;
+                
+            }
+
+            footer.main .version {
+                text-align: right;
+
+            }
+            footer.main .version::before {
+                content: '版本号:';
+            }
         </style>
 </head>
 
@@ -71,21 +86,9 @@
             </p>
             
             <p>
-                未来在条件允许的前提下，我们可能会推出更多功能。如果你有任何想法或愿意主提供的建议，
+                未来在条件允许的前提下，我们可能会推出更多功能。如果你有任何想法或愿意主提供的建议，可联系或在留言区发送留言。
             </p>
-            <p>
-                可联系或在留言区发送留言。
-            </p>
-            <p>
-                开发者 bilibili 账号: 
-                <a href="https://space.bilibili.com/3546378525477343">Quper_qwq</a>
-            </p>
-            <p>
-                其他联系方式: (QQ)3622171662
-            </p>
-            <p>
-                <a href="mailto:superqan@outlook.com"> 邮箱 </a>
-            </p>
+            <hr class="slide">
         </section>
 
         <section class="placard space card-item none">
@@ -96,12 +99,19 @@
                     <li> 进行了新的UI设计。 </li>
                 </ol>
             </section>
+            <hr>
         </section>
 
         <section class="hall space" id="game-hall">
             <!hall_player>
         </section>
 
+    <footer class="main">
+        <div id="version" class="version"> 
+            <!-- White(Run) or Black(Dev) -->
+            White-1109_3
+        </div>
+    </footer>
 </body>
 
 </html>

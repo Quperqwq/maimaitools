@@ -58,11 +58,16 @@
 #hall-player-list li {
     --padding: 1em;
     --border-size: .14em;
-    font-size: .8em;
+    font-size: 1em;
     min-width: 25em;
     overflow: hidden;
     border: var(--border-size) solid #000;
     padding: var(--padding);
+    margin: 0;
+}
+
+#hall-player-list li:not(:last-child) {
+    margin-bottom: 1em;
 }
 
 #hall-player-list h2,
@@ -205,11 +210,14 @@
 
 .window-hall-set input {
     background-color: transparent;
+    color: #000;
 }
 
 .window-hall-set .line {
+    --font-color: #454545;
+    color: var(--font-color);
     display: block;
-    background-color: #fcfcfc;
+    background-color: #f8f9ff;
     border-radius: .4em;
     padding: 0.4em .8em;
 }
@@ -221,8 +229,24 @@
     border-radius: .4em;
     margin-bottom: .2em;
     /* margin-top: .4em; */
-    background-color: #f2f2f2;
-    color: #777;
+    background-color: #f0f2ff;
+}
+
+.window-hall-set .line .tip {
+    display: block;
+    padding: 0 .4em;
+    margin-left: .4em;
+    border-left: var(--font-color) .2em solid;
+    /* opacity: 0;
+    transition: opacity .2s ease; */
+}
+/* .window-hall-set .line:hover .tip {
+    opacity: 1;
+} */
+
+.window-hall-set .line .tip::before {
+    content: '提示:';
+    font-weight: 600;
 }
 
 
@@ -239,6 +263,7 @@
     list-style: none;
     margin: 0;
     margin-right: .2em;
+    color: #000;
     transition: .2s ease background-color;
     padding: .1em .2em;
     border-radius: .2em;
@@ -263,7 +288,7 @@
 }
 
 .window-hall-set .content .input-list input {
-    width: 4em;
+    width: 6em;
     height: 1.2em;
     padding: .1em .2em;
     border: none;

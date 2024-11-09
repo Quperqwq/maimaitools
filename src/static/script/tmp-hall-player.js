@@ -113,7 +113,6 @@ const _init = () => {
             })
             /**提交按钮 */
             submit.addEventListener('click', () => {
-                // #(LAST)请按照hallSet的等待按钮来修改
                 runCommand(callbacks.submitPlayerNumber, change_player)
             })
         },
@@ -268,8 +267,6 @@ const refreshList = (sorting) => {
                     })
                 }
             }
-
-            // 打开玩家人数窗口时
 
             // 当打开显示详情窗口时
             const showDetail = () => {

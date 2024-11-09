@@ -12,12 +12,50 @@
 
 /* 隐藏上下箭头 */
 input[type=number] {
-    -moz-appearance: textfield;
-    /* Firefox */
-    -webkit-appearance: none;
-    /* Safari 和 Chrome */
-    appearance: none;
-    /* 其他现代浏览器 */
+    -moz-appearance: textfield; /* Firefox */
+    -webkit-appearance: none; /* Safari 和 Chrome */
+    appearance: none;  /* 其他现代浏览器 */
+}
+
+section {
+    position: relative;
+}
+
+hr.slide::before, hr::after, hr.slide {
+    height: 1em;
+    background-size: 1em;
+    background-position: center center;
+}
+hr.slide {
+    width: 100%;
+    border: none;
+    /* position: relative;
+    background-image: url('/image/slide_main.webp');
+    background-repeat: no-repeat;
+    background-color:transparent; */
+    z-index: 2;
+}
+
+hr.slide::before, hr.slide::after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 50%;
+    background-size: .8em;
+    background-repeat: repeat-x;
+    z-index: 0;
+}
+
+hr.slide::before {
+    background-image: url('/image/slide_right.webp');
+    left: 0;
+    background-position: left center;
+}
+
+hr.slide::after {
+    background-image: url('/image/slide_left.webp');
+    right: 0;
+    background-position: right center;
 }
 
 @media (max-width: 60em) {

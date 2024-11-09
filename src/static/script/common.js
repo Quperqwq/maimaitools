@@ -28,6 +28,9 @@ const useApi = (target, req_data = {}, callback) => {
     xhr.send(req_body)
 }
 
+/**仅在此脚本之内使用的全局变量 */
+const _this = {}
+
 
 
 // DOM
@@ -199,9 +202,22 @@ class InputList {
  * 冒出一个消息提示
  * @param {string} message 弹出消息内容
  * @param {object} setting 样式设置
+ * @param {number} setting.show_time 样式设置
  */
-const infoBar = (message, setting) => {
-
+const infoBar = (message = '', setting = {
+    'show_time': 2000
+}) => {
+    // #(FIX)这里需要一个全局变量来拿取固定数据
+    const info_bar = getEBI('info-bar')
+    const { show_time } = setting
+    const { timeout_info_bar } = _this
+    if (timeout_info_bar) clearTimeout(timeout_info_bar)
+    
+    info_bar.querySelector('.content').innerText = message
+    info_bar.classList.add('show')
+    _this.timeout_info_bar = setTimeout(() => {
+        info_bar.classList.remove('show')
+    }, show_time)
 }
 
 
@@ -274,3 +290,4 @@ const print = (any) => {
     console.log(any)
     return any
 }
+

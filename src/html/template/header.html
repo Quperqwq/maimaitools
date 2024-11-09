@@ -1,3 +1,36 @@
+<section id="info-bar" class="info-bar">
+    <style>
+        .info-bar {
+            position: fixed;
+            overflow: hidden;
+            top: -2em;
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            transition: all ease .4s;
+            z-index: 1000000;
+        }
+
+        .info-bar.show {
+            opacity: 1;
+            top: 2em;
+        }
+
+        .info-bar .content {
+            display: inline-block;
+            padding: .2em 1em;
+            border-radius: .4em;
+            background-color: #0000005f;
+            /* backdrop-filter: blur(2px); */
+            color: #fff;
+            text-shadow: .1em #000;
+            font-weight: 600;
+        }
+    </style>
+    <!-- 请把我放在body前面 -->
+    <p class="content"> ... </p>
+</section>
+
 <nav class="nav-bar">
     <style>
         body::before {
@@ -27,6 +60,7 @@
         <!-- <a href="/profile" class="buttone"> 个人主页 </a> -->
         <a href="/" class="pseudo button"> 机厅 </a>
         <a href="/score" class="pseudo button"> 查分 </a>
+        <a href="/document" class="pseudo button"> 帮助文档 </a>
         <a href="/about" class="pseudo button"> 关于我们 </a>
 
     </div>
