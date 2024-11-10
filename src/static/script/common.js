@@ -61,7 +61,7 @@ const create = (tag_name, tag_attrib = {}, cont_or_func = '', bool_or_str = fals
                 setInnerHtml(cont_or_func)
                 break
             }
-            setInnerHtml(App.toStrTime(cont_or_func))
+            // setInnerHtml(App.toStrTime(cont_or_func))
             break
         case 'function':
             element.addEventListener('click', (event) => {

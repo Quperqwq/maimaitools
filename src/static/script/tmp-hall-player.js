@@ -259,9 +259,12 @@ const refreshList = (sorting, callback) => {
                 change: getChangeTime(hall.time.change_player)
             }
 
-            // 当点击机厅名时
-            const clickHallName = () => {
-
+            /**
+             * 当点击机厅名时
+             * @param {MouseEvent} event 
+             */
+            const clickHallName = (event) => {
+                // event.target.classList.add('go')
             }
 
             // 打开更改玩家人数窗口时
@@ -269,7 +272,7 @@ const refreshList = (sorting, callback) => {
                 // 更新机厅名
                 const {name, change_time} = doc.text.player_number
                 name.innerText = hall.name
-                change_time.innerText = getChangeTime()
+                change_time.innerText = time.change
                 
 
                 // 设置输入限制
@@ -361,10 +364,11 @@ const refreshList = (sorting, callback) => {
 
             const e_right = create('section', {class: 'right'})
             join(e_right, 
-                join(create('label', {for: 'window-change-player'}, showPlayerNumber), {
+                print(join(
+                    create('label', {for: 'window-change-player'}, showPlayerNumber), {
                     title: create('h3', {}, '当前人数'),
                     number: create('h2', {class: `hall-number ${setColor(player)}`, style: `--percent: ${(player / max_player) * 100}%;`}, player)
-                })
+                }))
             )
 
             const e_left = create('section', {class: 'left'})
