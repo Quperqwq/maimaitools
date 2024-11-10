@@ -123,10 +123,18 @@ class Tools {
     
     /**
      * 获取可读的日期字符串
-     * @param {string} style 获取的格式
+     * @param {'day_time' | 'date'} [style] 获取的格式
      */
     getDate(style) {
-        return new Date().toLocaleString()
+        const date = new Date()
+        switch (style) {
+            case 'day_time':
+                return `${date.getHours()}:${date.getMinutes()}.${date.getSeconds()}`
+            case 'date':
+                return `${date.getFullYear()}/${date.getMonth()}/${date.getDay()}`
+            default:
+                return date.toLocaleString()
+        }
     }
 }
 
@@ -188,6 +196,9 @@ class OutputLog {
 
         this.level_log = show_level
         this.level_write = write_level
+
+        // 为便打印日志使用
+        OutputLog._next_log_hours = -1
     }
 
 
@@ -204,7 +215,21 @@ class OutputLog {
         let header = ''
         header += `[${level_obj.name ? level_obj.name : 'unknown'}] `
         if (this.use_date) {
-            header += `${tool.getDate()} |`
+            // ~(LAST)继续完成日期: 以分钟为间隔打印日期日志
+
+            // 241110前的写法, 一条日志一行
+            // header += `${tool.getDate()} |`
+            // 241110后的写法, 一小时打印一次日期
+            const date = tool.getDate('date')
+            const time = tool.getDate('day_time')
+            let hours = new Date().getHours()
+            
+            // ~(FIX)这种写法有少数情况不会触发函数
+            if (OutputLog._next_log_hours !== hours) {
+                OutputLog._next_log_hours = hours
+                console.log(`      ${date} ⤵`)
+            }
+            header += `${time} |`
         }
         const text = `${header} ${content}`
         if (level_obj) {

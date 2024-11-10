@@ -249,13 +249,13 @@ const refreshList = (sorting, callback) => {
             // 根据对象创建网页元素并绑定相关事件
             const id = +key
             const hall = halls[id]
-            const {max_player, player, name, games, nickname} = hall
+            const {max_player, player, name, games, nickname, pos} = hall
             const {input} = doc.input.player_number
 
             /**时间相关内容 */
             const time = {
                 update: getChangeTime(hall.time.change_player),
-                wait: hall.player ? getTime( hall.player / 2 * 15 * 60000 ) : '0秒',
+                wait: player ? getTime( player / 2 * 15 * 60000 ) : '0秒',
                 change: getChangeTime(hall.time.change_player)
             }
 
@@ -300,15 +300,15 @@ const refreshList = (sorting, callback) => {
             // 当打开显示详情窗口时
             const showDetail = () => {
                 callbacks.showDetail = (elements) => {
-                    const {name, player, time_update, time_wait, nickname, pos, max} = elements
-                    name.innerText = hall.name
-                    player.innerText = hall.player
-                    time_update.innerText = time.update
+                    const {name: e_name, player: e_player, time_update: e_time_update, time_wait: e_time_wait, nickname: e_nickname, pos: e_pos, max: e_max} = elements
+                    e_name.innerText = name
+                    e_player.innerText = player
+                    e_time_update.innerText = time.update
                     // (i)预计需要排队计算
-                    time_wait.innerText = time.wait
-                    nickname.innerText = valid(hall.nickname.toString(), '暂无别名')
-                    pos.innerText = valid(hall.pos, '未指定')
-                    max.innerText = max_player
+                    e_time_wait.innerText = time.wait
+                    e_nickname.innerText = valid(nickname.toString(), '暂无别名')
+                    e_pos.innerText = valid(pos, '未指定')
+                    e_max.innerText = max_player
                 }
             }
 

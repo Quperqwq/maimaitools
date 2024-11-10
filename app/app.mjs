@@ -53,21 +53,37 @@ class GameHall {
     /**
      * 新建一个机厅
      * @param {string} name 机厅名
-     * @param {object} base_data 机厅基本数据
-     * @param {string} [base_data.pos] 位置
-     * @param {string[]} base_data.games 游戏
-     * @param {number} [base_data.max_player] 机厅可容纳最多人数
+     * @param {GameHallItem} base_data 机厅基本数据可容纳最多人数
      */
     new(name, base_data) {
-        const {pos, games, max_player} = base_data
-        // init
+        /**
+         * 返回一个有效的值
+         * @param {any} value 
+         * @param {'array' | 'string' | 'number'} type
+         * @param {any} normal 
+         */
+        const valid = (value, type, normal) => {
+            switch (type) {
+                case 'array':
+                    return Array.isArray(value) ? value : normal
+                case 'string':
+                    return typeof(value.toString) === 'function' ? value.toString() : value
+                case 'number':
+                    const new_value = +value
+                    return Number.isNaN(new_value) ? normal : new_value
+                default:
+                    return
+            }
+        }
+        const {pos, games, max_player, nickname} = base_data
+        // init ~(TAG)在这里创建新的机厅数据
         /**@type {GameHallItem} */
         const hall_data = {
-            'games': games ? games : [],
-            'max_player': max_player ? max_player : 10,
-            'name': name,
-            'nickname': [],
-            'pos': pos ? pos : '',
+            'games': valid(games, 'array', []),
+            'max_player': valid(max_player, 'number', 10),
+            'name': valid(name, 'string', '无效机厅名'),
+            'nickname': valid(nickname, 'array', []),
+            'pos': valid(pos, 'string', '无效位置'),
             'player': 0,
             'time': {
                 'new': this._time,
@@ -76,6 +92,10 @@ class GameHall {
             },
             'comments': {
                 'last_id': 0
+            },
+            'open_hours': {
+                'close': 0,
+                'open': 0
             }
         }
         const org_data = this.all_hall
@@ -208,6 +228,18 @@ class GameHall {
         this._updateHall(id, target)
     }
 
+    // ~(LAST)继续完善
+    /**
+     * 添加一个正在前往机厅的玩家
+     * @param {number} id 
+     */
+    addGoing(id) {}
+
+    /**
+     * 移去一个正在前往机厅的玩家, 并添加一个
+     * @param {number} id 
+     */
+    removeGoing(id) {}
 }
 
 

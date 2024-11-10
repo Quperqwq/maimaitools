@@ -39,6 +39,7 @@ export interface GameHalls {
     [id: number]: GameHallItem
 }
 
+// TO app.mjs: ~(TAG)在这里创建新的机厅数据
 /**单个游戏厅 */
 export interface GameHallItem {
     /**游戏厅名 */
@@ -53,6 +54,8 @@ export interface GameHallItem {
     max_player: number | void
     /**当前机厅人数 */
     player: number
+    /**正在前往机厅的人数 */
+    going: number
     /**对象操作时间 */
     time: {
         /**创建时间 */
@@ -68,6 +71,13 @@ export interface GameHallItem {
         [comment_id: number]: PlayerComments
         /**上一个评论ID */
         last_id: number
+    }
+    /**营业时间 */
+    open_hours: {
+        /**开店时间 */
+        open: number
+        /**闭店时间 */
+        close: number
     }
 }
 

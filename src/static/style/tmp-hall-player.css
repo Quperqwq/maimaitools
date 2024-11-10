@@ -22,14 +22,10 @@ ul.row li {
 
 .hall-player-main .left {
     float: left;
-    /* text-align: center; */
-    /* max-width: 75%; */
-    width: 75%;
     overflow: hidden;
     text-overflow: ellipsis;
     text-wrap: nowrap;
     white-space: nowrap;
-    /* position: relative; */
 }
 
 .hall-player-main .right {
@@ -67,6 +63,10 @@ ul.row li {
 #hall-player-list {
     list-style: none;
     padding: 0;
+}
+
+#hall-player-list .left {
+    width: 75%;
 }
 
 #hall-player-list li.hall-item {
