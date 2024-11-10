@@ -272,7 +272,7 @@ export class HttpApp {
         template_path = './src/html/template',
         print_req = true,
         use_cache_file = true,
-        common_html_head = '<script src="/script/common.js"></script><link rel="stylesheet" href="/style/picnic.css"><link rel="stylesheet" href="/style/common.css">'
+        // common_html_head = ''
     }) {
         const app = express()
 
@@ -296,8 +296,8 @@ export class HttpApp {
         this.path_template = template_path
         /**静态目录在文件系统位置 */
         this.path_static = static_path
-        /**在HTML头部(使用`<REPLACE>`标记的待替换内容)公用的标签 */
-        this.html_head = common_html_head
+        // /**在HTML头部(使用`<REPLACE>`标记的待替换内容)公用的标签 */
+        // this.html_head = common_html_head
 
         /**API方法 @type {{[x: string]: apiProcCallback}} */
         this.api_method = {}
@@ -475,7 +475,7 @@ export class HttpApp {
                 // log.debug(cont)
                 return cont ? cont : ''
             })
-            return cont.replace('<REPLACE>', this.html_head)
+            return cont
         }
 
 

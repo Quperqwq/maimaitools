@@ -12,23 +12,12 @@
             <label id="window-hall-new" for="window-hall-set" class="pseudo button"> 添加机厅 </label>
         </div>
     </div>
-    <ul id="hall-player-list">
-        <li>
-            <section class="left">
-                <h3 class="name"> 稍等 </h3>
-                <h3 class="more">
-                    <label class="pseudo button icon-link" for=""> 评论 </label>
-                    <label class="pseudo button icon-link" for=""> 详情 </label>
-                </h3>
-            </section>
-            <section class="right">
-                <label for="window-change-player">
-                    <h3> 当前人数 </h3>
-                    <h2 class="hall-number" style="--percent: 100%;"> -- </h2>
-                </label>
-            </section>
-        </li>
-    </ul>
+
+    <div class="trip">
+
+    </div>
+
+    <ul class="row" id="hall-player-list"></ul>
 
     <!-- window-player-number -->
     <div class="modal window-change-player">
@@ -114,7 +103,7 @@
                     <label for="set-hall-nickname"> 机厅别名 </label>
                     <p class="tip"> 输入完成后，点击其他位置以增加。若需输入更多内容，请重复此操作。 </p>
                     <section class="input-list">
-                        <ul id="set-hall-nickname-list">
+                        <ul class="row" id="set-hall-nickname-list">
                             <li class="item"> nickname1 </li>
                             <li class="item"> nickname2 </li>
                         </ul>
@@ -134,7 +123,7 @@
                     <label for="set-hall-games"> 游戏项目 </label>
             
                     <section class="input-list">
-                        <ul id="set-hall-games-list">
+                        <ul class="row" id="set-hall-games-list">
                             <li class="item"> 舞萌 </li>
                         </ul>
                         <input id="set-hall-games" type="text" name="hall-games" title="游戏项目" list="data-game-list" maxlength="8" placeholder="添加...">

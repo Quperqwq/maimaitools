@@ -86,7 +86,8 @@ const create = (tag_name, tag_attrib = {}, cont_or_func = '', bool_or_str = fals
 const join = (root_element, child_elements) => {
     if (!child_elements) return
     if (child_elements instanceof Element) {
-        return root_element.appendChild(child_elements)
+        root_element.appendChild(child_elements)
+        return root_element
     }
     if (Array.isArray(child_elements)) {
         child_elements.forEach((element) => {
@@ -227,6 +228,7 @@ const infoBar = (message = '', setting = {
 /**
  * 获取时间的可读字符串样式
  * @param {number} [time] 若不指定将会使用默认系统时间
+ * @returns {string}
  */
 const getTime = (time) => {
     const _toNowTime = (time) => {

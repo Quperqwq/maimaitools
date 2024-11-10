@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <REPLACE>
-        <title> maimai tools </title>
-        <style>
+    <!head>
+    <title> maimai tools </title>
+    <style>
             .banner {
                 background: url('/image/banner/banner_1.webp') center/cover no-repeat;
                 border-radius: 0 0 2em 2em;
@@ -17,6 +17,10 @@
 
             .space {
                 margin: 0 2em;
+            }
+
+            .min-space {
+                margin: 0 .5em;
             }
 
             .card-item {
@@ -68,13 +72,13 @@
             footer.main .version::before {
                 content: '版本号:';
             }
-        </style>
+    </style>
 </head>
 
 <body>
     <!header>
-        <section class="banner">  </section>
-        <section class="intro space card-item">
+    <section class="banner">  </section>
+    <section class="intro space card-item">
             <h2> 欢迎！ </h2>
             <!-- 这里后续可以加一个滚动图 -->
                 
@@ -89,27 +93,27 @@
                 未来在条件允许的前提下，我们可能会推出更多功能。如果你有任何想法或愿意主提供的建议，可联系或在留言区发送留言。
             </p>
             <hr class="slide">
-        </section>
+    </section>
 
-        <section class="placard space card-item none">
-            <h2> 公告 </h2>
-            <section class="space placard-content">
-                <h3> 更新变化: </h3>
-                <ol>
-                    <li> 进行了新的UI设计。 </li>
-                </ol>
-            </section>
-            <hr>
+    <section class="placard space card-item none">
+        <h2> 公告 </h2>
+        <section class="space placard-content">
+            <h3> 更新变化: </h3>
+            <ol>
+                <li> 进行了新的UI设计。 </li>
+            </ol>
         </section>
+        <hr>
+    </section>
 
-        <section class="hall space" id="game-hall">
-            <!hall_player>
-        </section>
+    <section class="hall min-space" id="game-hall">
+        <!hall_player>
+    </section>
 
     <footer class="main">
         <div id="version" class="version"> 
             <!-- White(Run) or Black(Dev) -->
-            White-1109_3
+            Black-1110_1
         </div>
     </footer>
 </body>

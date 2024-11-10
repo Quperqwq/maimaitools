@@ -29,10 +29,11 @@ hr.slide::before, hr::after, hr.slide {
 hr.slide {
     width: 100%;
     border: none;
-    /* position: relative;
+    position: relative;
     background-image: url('/image/slide_main.webp');
     background-repeat: no-repeat;
-    background-color:transparent; */
+    background-color:transparent;
+    background-size: 1.2em;
     z-index: 2;
 }
 
@@ -40,7 +41,7 @@ hr.slide::before, hr.slide::after {
     content: '';
     display: block;
     position: absolute;
-    width: 50%;
+    width: calc(50% - .5em);
     background-size: .8em;
     background-repeat: repeat-x;
     z-index: 0;
@@ -49,21 +50,13 @@ hr.slide::before, hr.slide::after {
 hr.slide::before {
     background-image: url('/image/slide_right.webp');
     left: 0;
-    background-position: left center;
+    background-position: right center;
 }
 
 hr.slide::after {
     background-image: url('/image/slide_left.webp');
     right: 0;
-    background-position: right center;
-}
-
-@media (max-width: 60em) {
-
-    /* 手机版大小媒体响应 */
-    nav.nav-bar .menu div.title {
-        display: block;
-    }
+    background-position: left center;
 }
 
 body {
@@ -76,38 +69,64 @@ body {
     overflow: hidden;
 }
 
-
+.hidden-scrollbar {
+    scrollbar-width: none;
+}
+.hidden-scrollbar::-webkit-scrollbar {
+    display: none;
+}
 
 
 /* 设置字体图标before样式/(TAG)字体图标/ */
 
-[class*="icon-"]::before {
+[class*="icon-"]:not(.right-icon)::before,
+[class*="icon-"].right-icon::after {
+    content: var(--content);
+    --icon-color: #000;
+    display: inline;
     font-family: 'icomoon';
     display: inline-block;
-    margin-top: -0.2em;
-    color: #000;
+    /* margin-top: -0.2em; */
+    color: var(--icon-color);
 }
 
-[class*="icon-"].min-icon::before {
+[class*="icon-"].right-icon::before {
+    margin: 0;
+}
+
+[class*="icon-"].min-icon::before,
+[class*="icon-"].right-icon.min-icon::after {
     font-size: .8em;
 }
 
-.icon-refresh::before {
-    content: '\e984';
+.icon-refresh {
+    --content: '\e984';
 }
 
-.icon-arr-top-right::before {
-    content: '\ea3b';
+.icon-arr-top-right {
+    --content: '\ea3b';
 }
 
-.icon-link::before {
-    content: '\ea7e';
+.icon-link {
+    --content: '\ea7e';
 }
 
-.icon-config::before {
-    content: '\e994';
+.icon-config {
+    --content: '\e994';
 }
 
-.icon-message::before {
-    content: '\e96e';
+.icon-message {
+    --content: '\e96e';
+}
+
+.icon-go {
+    --content: '\ea3b';
+}
+
+@media (max-width: 60em) {
+
+    /* 手机版大小媒体响应 */
+    nav.nav-bar .menu div.title {
+        display: block;
+    }
 }

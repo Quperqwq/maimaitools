@@ -60,8 +60,11 @@ const callbacks = {
     /**当提交玩家人数时会触发此函数,该函数会传入一个控制window是否显示的Element元素 @type {function(Element): void}  */
     submitPlayerNumber: () => {},
     // showPlayerNumber: () => {},
-    /**当用户打开显示机厅详情窗口时会触发此函数 */
-    showDetail: () => {},
+    /**
+     * 当用户打开显示机厅详情窗口时会触发此函数
+     * @param {Object.<string, Element | undefined>} elements
+     */
+    showDetail: (elements) => {},
     /**
      * 当用户提交设置机厅内容的时候会触发此函数
      * @param {GameHallItem} input
@@ -94,7 +97,15 @@ const _init = () => {
             const { change_player } = doc.window
             /**刷新按钮 */
             refresh.addEventListener('click', () => {
-                refreshList()
+                const bar_config = {
+                    'show_time': 1000
+                }
+                refresh.disabled = true
+                infoBar('正在刷新...', bar_config)
+                refreshList({}, () => {
+                    refresh.disabled = false
+                    infoBar('刷新完成', bar_config)
+                })
             })
 
             const changePlayerNumber = (target) => {
@@ -120,10 +131,9 @@ const _init = () => {
         /**机厅详情 */
         hallDetail: () => {
             const { show_detail } = doc.window
-            // const {name, player, time_update, time_wait} = doc.text.hall_detail
             show_detail.addEventListener('change', (event) => {
                 if (!event.target.checked) return
-                runCommand(callbacks.showDetail)
+                runCommand(callbacks.showDetail, doc.text.hall_detail)
             })
         },
 
@@ -203,9 +213,12 @@ const _init = () => {
 
 /**
  * 更新当前玩家列表
- * @param {string} sorting 排序方式
+ * @param {object} sorting 排序方式
+ * @param {'normal' | 'player' | 'change_time'} sorting.method 排序方法
+ * @param {boolean} sorting.is_ascending 正序, 否则将会倒叙排列
+ * @param {function} [callback] 刷新完成后调用
  */
-const refreshList = (sorting) => {
+const refreshList = (sorting, callback) => {
     /**
      * 设置机厅人的数量决定人数的字体颜色
      * @param {number} number 机厅人数
@@ -232,18 +245,31 @@ const refreshList = (sorting) => {
         
 
         Object.keys(halls).forEach((key) => {
+            if (callback) callback()
             // 根据对象创建网页元素并绑定相关事件
             const id = +key
             const hall = halls[id]
             const {max_player, player, name, games, nickname} = hall
             const {input} = doc.input.player_number
 
+            /**时间相关内容 */
+            const time = {
+                update: getChangeTime(hall.time.change_player),
+                wait: hall.player ? getTime( hall.player / 2 * 15 * 60000 ) : '0秒',
+                change: getChangeTime(hall.time.change_player)
+            }
+
+            // 当点击机厅名时
+            const clickHallName = () => {
+
+            }
+
             // 打开更改玩家人数窗口时
             const showPlayerNumber = () => {
                 // 更新机厅名
                 const {name, change_time} = doc.text.player_number
                 name.innerText = hall.name
-                change_time.innerText = getChangeTime(hall.time.change_player)
+                change_time.innerText = getChangeTime()
                 
 
                 // 设置输入限制
@@ -270,13 +296,8 @@ const refreshList = (sorting) => {
 
             // 当打开显示详情窗口时
             const showDetail = () => {
-                const {name, player, time_update, time_wait, nickname, pos, max} = doc.text.hall_detail
-                const {change_player} = hall.time
-                callbacks.showDetail = () => {
-                    const time = {
-                        update: getChangeTime(change_player),
-                        wait: hall.player ? getTime( hall.player / 2 * 15 * 60000 ) : 0
-                    }
+                callbacks.showDetail = (elements) => {
+                    const {name, player, time_update, time_wait, nickname, pos, max} = elements
                     name.innerText = hall.name
                     player.innerText = hall.player
                     time_update.innerText = time.update
@@ -289,7 +310,7 @@ const refreshList = (sorting) => {
             }
 
             // 当打开显示评论窗口时
-            const showComment = () => {
+            const showComment = (event) => {
 
             }
 
@@ -326,6 +347,16 @@ const refreshList = (sorting) => {
             }
 
 
+            /**
+             * [`create() -> Element`的简写] 创建一个li元素
+             * @param {string} content 元素的内容
+             * @param {object} attribute 元素的属性
+             */
+            const createLi = (content, attribute) => {
+                return create('li', attribute, content)
+            }
+
+
 
 
             const e_right = create('section', {class: 'right'})
@@ -344,13 +375,26 @@ const refreshList = (sorting) => {
                 show_setting: create('label', {class: 'pseudo button icon-config', for: 'window-hall-set'}, showSet, '设置'),
             })
             join(e_left, {
-                title: create('h3', {class: 'name'}, name),
+                title: join(
+                    create('h3', {class: 'name icon-go right-icon'}, clickHallName),
+                    create('span', {class: 'content hidden-scrollbar'}, name)
+                ),
+                state: join(
+                    create('ul', {class: 'row state hidden-scrollbar'}), {
+                        tag: createLi('', {class: 'tag none'}),
+                        nickname: nickname.length > 0 ? createLi(
+                            nickname.toString(), {class: 'nickname'}
+                        ) : void 0,
+                        wait_time: createLi(time.wait, {class: 'wait'}),
+                        games: createLi(hall.games.toString(), { class: 'games' })
+                    }
+                ),
                 more: e_more
             })
             
             
             doc.list.appendChild(
-                join( create('li'), [e_left, e_right] )
+                join( createLi('', {class: 'hall-item'}), [e_left, e_right] )
             )
 
         })
