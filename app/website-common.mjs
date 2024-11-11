@@ -475,14 +475,24 @@ export class HttpApp {
      */
     _getCookie(cookies) {
         /**字符内容映射表, 若cookie的value与键相同将会被转换为该值 */
-        if (!cookies) return {}
         const mapping = {
             'true': true,
             'false': false
         }
+
+        let content = {
+            /**
+             * 获取cookie的某个值
+             * @param {string} key 需要获取的字段名(键)
+             * @param {any} normal 若该值不存在指定一个默认值
+             */
+            get: (key, normal = undefined) => {
+            const cont = content[key]
+            return cont === undefined ? normal : cont
+        }}
+        if (!cookies) content
         const mapping_key = Object.keys(mapping)
         const cookie_list = cookies.split('; ')
-        let content = {}
         cookie_list.forEach((cookie) => {
             const item = cookie.split('=')
             let value = item[1]
@@ -494,15 +504,6 @@ export class HttpApp {
             }
             content[key] = value
         })
-        /**
-         * 获取cookie的某个值
-         * @param {string} key 需要获取的字段名(键)
-         * @param {any} normal 若该值不存在指定一个默认值
-         */
-        content.get = (key, normal = undefined) => {
-            const cont = content[key]
-            return cont === undefined ? normal : cont
-        }
         return content
     }
 

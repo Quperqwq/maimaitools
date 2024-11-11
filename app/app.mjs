@@ -129,11 +129,10 @@ class GameHall {
 
         /**
          * 确保一个玩家数量的值有效
-         * @param {number} add_number 需要添加的玩家数量
+         * @param {number} target_number 当前玩家数量
          */
-        const validPlayer = (add_number) => {
+        const validPlayer = (target_number) => {
             target.time.change_player = this._time
-            const target_number = +target.player + add_number
 
             if (Number.isNaN(target_number)) return 0
             
@@ -149,26 +148,15 @@ class GameHall {
         const execute = {
             player: {
                 append: () => {
-                    // target.time.change_player = this._time
-                    // if (target.player + value > target.max_player) return target.player = target.max_player
-                    // return target.player += value
-                    target.player = validPlayer(value)
+                    target.player = validPlayer(+target.player + value)
                     return
                 },
                 change: () => {
-                    // target.time.change_player = this._time
-                    // const set = value => target.player = value
-
-                    // const number = +value
-                    // if (isNaN(number)) return set(0)
-                    // if (number <= 0) return set(0)
-                    // if (number > target.max_player) return set(target.max_player)
-                    // set(number)
                     target.player = validPlayer(+value)
                     return
                 },
                 del: () => {
-                    target.player = validPlayer(-value)
+                    target.player = validPlayer(+target.player - value)
                     return
                 }
             },

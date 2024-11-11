@@ -369,8 +369,7 @@ const refreshList = (sorting, callback) => {
 
 
             const e_right = create('section', {class: 'right'})
-            join(e_right, 
-                print(join(
+            join(e_right,(join(
                     create('label', {for: 'window-change-player'}, showPlayerNumber), {
                     title: create('h3', {}, '当前人数'),
                     number: create('h2', {class: `hall-number ${setColor(player)}`, style: `--percent: ${(player / max_player) * 100}%;`}, player)
