@@ -123,18 +123,59 @@ class Tools {
     
     /**
      * 获取可读的日期字符串
-     * @param {'day_time' | 'date'} [style] 获取的格式
+     * @param {'day_time' | 'date' | 'to_hours' | 'hours'} [style] 获取的格式
      */
     getDate(style) {
         const date = new Date()
+        /** @param {number[]} arr */
+        const pad = (arr) => {
+            arr.forEach((value, index) => {
+                if (typeof(value) === 'string') return
+                arr[index] = value.toString().padStart(2, '0')
+            })
+            return arr.join('')
+        }
+        let time = []
         switch (style) {
             case 'day_time':
-                return `${date.getHours()}:${date.getMinutes()}.${date.getSeconds()}`
+                time = [
+                    date.getHours(),
+                    ':',
+                    date.getMinutes(),
+                    ':',
+                    date.getSeconds()
+                ]
+                break
+            case 'day_minutes':
+                time = [
+                    date.getMinutes(),
+                    '.',
+                    date.getSeconds()
+                ]
+                break
             case 'date':
-                return `${date.getFullYear()}/${date.getMonth()}/${date.getDay()}`
+                time = [
+                    date.getFullYear(),
+                    '/',
+                    date.getMonth(),
+                    '/',
+                    date.getDate()
+                ]
+                break
+            case 'to_hours':
+                time = [
+                    this.getDate('date'),
+                    ' ',
+                    date.getHours(),
+                    ' hours'
+                ]
+                break
+            case 'hours':
+                return date.getHours()
             default:
                 return date.toLocaleString()
         }
+        return pad(time)
     }
 }
 
@@ -220,14 +261,14 @@ class OutputLog {
             // 241110前的写法, 一条日志一行
             // header += `${tool.getDate()} |`
             // 241110后的写法, 一小时打印一次日期
-            const date = tool.getDate('date')
-            const time = tool.getDate('day_time')
-            let hours = new Date().getHours()
+            const date = tool.getDate('to_hours')
+            const time = tool.getDate('day_minutes')
+            let hours = tool.getDate('hours')
             
             // ~(FIX)这种写法有少数情况不会触发函数
             if (OutputLog._next_log_hours !== hours) {
                 OutputLog._next_log_hours = hours
-                console.log(`      ${date} ⤵`)
+                console.log(`\n      ${date} ⤵`)
             }
             header += `${time} |`
         }
@@ -260,6 +301,9 @@ class OutputLog {
     req(req) {
         let cont = `${req.method} ${req.path}`
         this.output(cont, -1)
+    }
+    print(...cont) {
+        console.log(...cont)
     }
 
     /**
@@ -331,6 +375,9 @@ export class HttpApp {
         if (print_req) {
             app.use((req, _, next) => {
                 log.req(req)
+                const cookie = this._getCookie(req.headers.cookie)
+                if (cookie.get('developers', false)) log.det('is developers')
+                
                 next()
             })
         }
@@ -422,6 +469,42 @@ export class HttpApp {
 
         // 打印当前服务器状态
         log.info(`Cache Mode: ${use_cache_file ? 'Yes' : 'No'}`)
+    }
+
+    /**
+     * 获取一个请求的cookie内容
+     * @param {string} cookies 
+     */
+    _getCookie(cookies) {
+        /**字符内容映射表, 若cookie的value与键相同将会被转换为该值 */
+        const mapping = {
+            'true': true,
+            'false': false
+        }
+        const mapping_key = Object.keys(mapping)
+        const cookie_list = cookies.split('; ')
+        let content = {}
+        cookie_list.forEach((cookie) => {
+            const item = cookie.split('=')
+            let value = item[1]
+            let key = item[0]
+            const _case = value.toLowerCase()
+            if (mapping_key.includes(_case)) {
+                // 映射为指定内容
+                value = mapping[_case]
+            }
+            content[key] = value
+        })
+        /**
+         * 获取cookie的某个值
+         * @param {string} key 需要获取的字段名(键)
+         * @param {any} normal 若该值不存在指定一个默认值
+         */
+        content.get = (key, normal = undefined) => {
+            const cont = content[key]
+            return cont === undefined ? normal : cont
+        }
+        return content
     }
 
 
@@ -534,6 +617,7 @@ export class HttpApp {
         // 未匹配到路由 
         expressApp.use((req, res) => {
             // ~(TAG)404 page
+            log.det('not fond')
             res.status(404)
             res.send(this.readHtml('404.html'))
         })

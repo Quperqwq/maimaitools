@@ -3,12 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <REPLACE>
+    <!head>
     <script src="/script/page-dev.js"></script>
     <title> DEV </title>
 </head>
 <body>
+    <!header>
     <!test>
-    <button onclick="useApi('test')"> 测试API </button>
+    <button type="button" onclick="useApi('test')"> 测试API </button>
+    <button type="button" id="is-developers" onclick="setCookie('developers=true')"> 我是开发者 </button>
+    <script>
+        const setCookie = (str) => {
+            const date = new Date()
+            date.setTime(date.getTime() + 604800000)
+            document.cookie = print(str + "; expires=" + date.toUTCString())
+        }
+    </script>
 </body>
 </html>
