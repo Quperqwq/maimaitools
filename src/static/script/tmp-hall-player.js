@@ -160,6 +160,8 @@ const _init = () => {
                         }
                         show_set_hall.checked = false
                         refreshList()
+                    }, () => {
+                        infoBar('新建失败!')
                     })
                 }
             })
@@ -293,6 +295,8 @@ const refreshList = (sorting, callback) => {
                         // (ADD)等待结束
                         console.log(res)
                         refreshList()
+                    }, () => {
+                        infoBar('更新人数失败!')
                     })
                 }
             }
@@ -345,6 +349,8 @@ const refreshList = (sorting, callback) => {
                             console.error('error message:', message)
                         }
                         refreshList()
+                    },() => {
+                        infoBar('更新失败!')
                     })
                 }
             }
@@ -402,6 +408,8 @@ const refreshList = (sorting, callback) => {
             )
 
         })
+    }, () => {
+        infoBar('更新失败!')
     })
 }
 

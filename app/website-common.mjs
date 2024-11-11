@@ -256,8 +256,6 @@ class OutputLog {
         let header = ''
         header += `[${level_obj.name ? level_obj.name : 'unknown'}] `
         if (this.use_date) {
-            // ~(LAST)继续完成日期: 以分钟为间隔打印日期日志
-
             // 241110前的写法, 一条日志一行
             // header += `${tool.getDate()} |`
             // 241110后的写法, 一小时打印一次日期

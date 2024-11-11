@@ -7,8 +7,9 @@
  * @param {string} target 请求目标
  * @param {apiReqBody} req_data 响应体
  * @param {function(apiResBody)} callback 当请求完成时会触发此函数, 并传入响应体
+ * @param {function(any)} errCallback 请求出错时的回调函数
  */
-const useApi = (target, req_data = {}, callback) => {
+const useApi = (target, req_data = {}, callback, errCallback) => {
     req_data.target = target
     const xhr = new XMLHttpRequest()
     xhr.open('POST', '/api', true)
@@ -22,6 +23,9 @@ const useApi = (target, req_data = {}, callback) => {
         } else {
             console.error('use api failed.')
         }
+    }
+    xhr.onerror = (_, error) => {
+        return typeof(errCallback) === 'function' ? errCallback(error) : undefined
     }
 
 

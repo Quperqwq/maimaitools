@@ -189,6 +189,7 @@ ul.state li.games::before {
     max-width: 15em;
     overflow-x: auto;
     /* text-align: center; */
+    padding-right: 1em;
 }
 
 
