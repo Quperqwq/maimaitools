@@ -109,7 +109,7 @@ class GameHall {
      * 更新机厅的信息
      * @param {number} id 机厅ID
      * @param {'append' | 'del' | 'change'} method 更改方式
-     * @typedef {'player' | 'games' | 'pos' | 'comments' | 'max_player' | 'name' | 'nickname'} ChangeType
+     * @typedef {'player' | 'games' | 'pos' | 'comments' | 'max_player' | 'name' | 'nickname' | 'going'} ChangeType
      * @param {ChangeType} type 更改类型
      * @param {string | number | Array |object} value 更新值
      * 
@@ -201,9 +201,23 @@ class GameHall {
             },
             going: {
                 append: () => {
-                    target.going += 1
+                    const target_value = +target.going
+                    if (target_value === undefined) {
+                        target.going = 1
+                        return
+                    }
+                    target.going = validPlayer(target_value + 1)
+                    return
                 },
-                del: () => { target.going -= 1 },
+                del: () => {
+                    target.going = validPlayer(+target.going - 1)
+                    return
+                },
+                change: () => {
+                    target.going = validPlayer(+target.going - 1)
+                    target.player = validPlayer(+target.going + 1)
+                    return
+                }
             }
         }
 

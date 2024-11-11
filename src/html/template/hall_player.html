@@ -13,8 +13,19 @@
         </div>
     </div>
 
-    <div class="trip">
-
+    <div id="card-trip" class="trip">
+        <section class="content">
+            <div class="line">
+                <span id="on-trip-name" class="name"> xx机厅 </span>
+            </div>
+            <div class="line">
+                <span id="on-trip-target" class="pos"> 地点 </span>
+            </div>
+        </section>
+        <section class="footer">
+            <button class="pseudo" id="trip-cancel" type="button"> 不去了 </button>
+            <button class="pseudo" id="trip-finish" type="button"> 已到达 </button>
+        </section>
     </div>
 
     <ul class="row" id="hall-player-list"></ul>
@@ -97,7 +108,7 @@
                 <!-- content -->
                 <div class="line" class="name">
                     <label for="set-hall-name"> 机厅名 </label>
-                    <input id="set-hall-name" type="text" name="hall-name" title="机厅名" placeholder="输入机厅的名字" required >
+                    <input id="set-hall-name" type="text" name="hall-name" title="机厅名" minlength="3" maxlength="16" placeholder="输入机厅的名字" required >
                 </div>
                 <div class="line" class="nickname">
                     <label for="set-hall-nickname"> 机厅别名 </label>
@@ -113,7 +124,7 @@
                 <div class="line" class="pos">
                     <label for="set-hall-pos"> 机厅位置 </label>
                     <p class="tip"> 一般格式为(省)市、区、街道、商场名、机厅名。 </p>
-                    <input id="set-hall-pos" type="text" name="hall-pos" title="机厅位置" required placeholder="输入机厅在哪里">
+                    <input id="set-hall-pos" type="text" name="hall-pos" title="机厅位置" minlength="6" maxlength="32" required placeholder="输入机厅在哪里">
                 </div>
                 <div class="line" class="max_player">
                     <label for="set-hall-max_player"> 最大人数 </label>

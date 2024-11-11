@@ -14,10 +14,19 @@ ul.row li {
 
 .hall-player-main {
     font-size: .8em;
+    overflow: hidden;
 }
 
 .hall-header {
     overflow: hidden;
+    display: flex;
+    position: relative;
+    background-color: #f5f6fd;
+    border-radius: var(--main-radius);
+    padding: 0 1em;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 5;
 }
 
 .hall-player-main .left {
@@ -51,13 +60,105 @@ ul.row li {
 } */
 
 .left.title h2 {
+    color: #2b73ff;
     display: inline-block;
     vertical-align: middle;
+    padding: .6em 0em;
 }
 
 .right.operate {
-    margin-top: .8em;
+    /* margin-top: .6em; */
+    display: flex;
+    height: 100%;
 }
+
+
+.trip {
+    --margin: 1em;
+    --height: 10em;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    height: var(--height);
+    margin: var(--margin);
+    /* margin-left: 3em; */
+    margin-top: calc(var(--height) * -1);
+    padding: .6em;
+    border: .2em solid #dcdcdc;
+    border-radius: .8em;
+    transition: margin .4s ease;
+    z-index: 1;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.trip::after {
+    content: '正在去-测试';
+    display: block;
+    position: absolute;
+    background-color: #e2e2e2;
+    padding: .2em .3em;
+    border-radius: var(--main-radius);
+    color: #363636;
+    left: 1em;
+}
+
+.trip.show {
+    margin-top: var(--margin);
+}
+
+.trip .content {
+    text-align: center;
+}
+
+/* .trip .content .pos::before,
+.trip .content .name::before {
+    color: #aaa;
+    display: block;
+    float: left;
+} */
+
+.trip .content .line {
+    /* display: flex; */
+    padding: .2em .4em;
+    /* justify-content: center; */
+    /* align-items: center; */
+}
+
+.trip .content .pos,
+.trip .content .name {
+    overflow: hidden;
+    display: inline-block;
+    /* padding: .2em .4em; */
+    border-radius: var(--main-radius);
+}
+
+.trip .content .name {
+    font-size: 1.6em;
+    /* background-color: #f6fff5; */
+}
+
+/* .trip .content .name::before {
+    content: '机厅名:';
+} */
+
+.trip .content .pos {
+
+}
+
+.trip .footer {
+    /* flex: 1; */
+}
+
+.trip .footer button:last-child {
+    float: right;
+}
+
+/* .trip .content .pos::before {
+    content: '机厅位置:';
+} */
+
+/* ↓机厅列表 */
 
 
 #hall-player-list {
@@ -184,6 +285,7 @@ ul.state li.games::before {
 }
 
 #hall-player-list .left .name .content {
+    pointer-events: none;
     display: inline-block;
     flex: 1;
     max-width: 15em;

@@ -76,6 +76,13 @@ body {
     display: none;
 }
 
+.text-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    white-space: nowrap;
+}
+
 
 /* 设置字体图标before样式/(TAG)字体图标/ */
 

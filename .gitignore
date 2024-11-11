@@ -1,0 +1,6 @@
+# running
+*.log
+
+
+# data
+app/data/all_hall.json

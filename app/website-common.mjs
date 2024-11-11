@@ -490,7 +490,7 @@ export class HttpApp {
             const cont = content[key]
             return cont === undefined ? normal : cont
         }}
-        if (!cookies) content
+        if (!cookies) return content
         const mapping_key = Object.keys(mapping)
         const cookie_list = cookies.split('; ')
         cookie_list.forEach((cookie) => {

@@ -36,6 +36,10 @@ const doc = {
                 input: getEBI('set-hall-games')
             },
             new_hall: getEBI('window-hall-new')
+        },
+        trip: {
+            finish: getEBI('trip-finish'),
+            cancel: getEBI('trip-cancel')
         }
     },
     text: {
@@ -51,7 +55,14 @@ const doc = {
         player_number: {
             name: getEBI('player-number-name'),
             change_time: getEBI('player-number-change_time') 
+        },
+        trip: {
+            name: getEBI('on-trip-name'),
+            pos: getEBI('on-trip-target'),
         }
+    },
+    card: {
+        trip: getEBI('card-trip')
     },
     list: getEBI('hall-player-list')
 }
@@ -76,7 +87,17 @@ const callbacks = {
      * 当用户打开更改或新建机厅窗口时时会触发此函数
      * @param {{nickname: InputList, games: InputList}} input_list 
      */
-    showSetHall: (input_list) => { }
+    showSetHall: (input_list) => { },
+
+    /**
+     * 当用户trip时点击"已到达"时
+     */
+    onTripFinish: () => {  },
+
+    /**
+     * 当用户trip时点击"不去了"时
+     */
+    onTripCancel: () => {  }
 }
 
 // 初始化页面函数, 它们通常只会执行一次
@@ -151,8 +172,10 @@ const _init = () => {
                 callbacks.submitSetHall = (input, wait) => {
                     wait(true)
                     // 新建机厅
-                    useApi('new_hall', {value: input}, (res_data) => {
+                    useApi('new_hall', {value: input}, (res_data, err) => {
                         wait(false)
+                        if (err) return 
+                        infoBar('新建失败!')
                         const { valid, message } = res_data
                         if (!valid) {
                             infoBar('新建失败!')
@@ -160,8 +183,6 @@ const _init = () => {
                         }
                         show_set_hall.checked = false
                         refreshList()
-                    }, () => {
-                        infoBar('新建失败!')
                     })
                 }
             })
@@ -207,6 +228,17 @@ const _init = () => {
                 }
                 runCommand(callbacks.submitSetHall, form_data, onWait)
             })
+        },
+
+        /**用户trip */
+        trip: () => {
+            const {finish, cancel} = doc.input.trip
+            finish.addEventListener('click', () => {
+                runCommand(callbacks.onTripFinish)
+            })
+            cancel.addEventListener('click', () => {
+                runCommand(callbacks.onTripCancel)
+            })
         }
     }
 
@@ -232,12 +264,14 @@ const refreshList = (sorting, callback) => {
         if (number <= 6) return 'sev'
         return 'many'
     }
-    useApi('get_hall_player', {}, (res_data) => {
-
+    useApi('get_hall_player', {}, (res_data, err) => {
         if (res_data.message) return console.error('refresh fail!', message)
         /**@type {GameHalls} */
         const org_halls = res_data.data
         console.log(res_data)
+        if (typeof(callback) === 'function') callback()
+
+        if (err) return infoBar('更新失败!')
 
         // 初始化
         doc.list.innerHTML = ''
@@ -246,27 +280,91 @@ const refreshList = (sorting, callback) => {
         const halls = org_halls
         
 
+        /**正在前往的机厅 */
+        const go_target = {
+            is_go: false,
+            // name: '',
+            // id: -1,
+            // time: 0,
+            // element: null
+        }
         Object.keys(halls).forEach((key) => {
-            if (callback) callback()
             // 根据对象创建网页元素并绑定相关事件
             const id = +key
             const hall = halls[id]
             const {max_player, player, name, games, nickname, pos} = hall
             const {input} = doc.input.player_number
 
-            /**时间相关内容 */
-            const time = {
-                update: getChangeTime(hall.time.change_player),
-                wait: player ? getTime( player / 2 * 15 * 60000 ) : '0秒',
-                change: getChangeTime(hall.time.change_player)
+            class Time {
+                constructor() {
+                    this.wait = player ? getTime( player / 2 * 15 * 60000 ) : '0秒'
+                }
+                get update() {
+                    return getChangeTime(hall.time.change_player)
+                }
+                get change() {
+                    return getChangeTime(hall.time.change_player)
+                }
             }
+            /**时间相关内容 */
+            const time = new Time()
 
             /**
              * 当点击机厅名时
              * @param {MouseEvent} event 
              */
             const clickHallName = (event) => {
-                // event.target.classList.add('go')
+                if ( go_target.is_go ) return infoBar('请先取消现在的行程') // 有出发的目标将不会被处理
+                infoBar('已确定行程')
+                const target = event.target
+                const req_tmp = {
+                    id: id,
+                    type: 'going',
+                    method: 'append'
+                }
+                useApi('change_hall_data', req_tmp, (res_data) => {
+                    if (!res_data) {
+                        infoBar('预前往失败!')
+                        return
+                    }
+                    /**
+                     * 结束trip
+                     * @param {string} message 结束时给用户的信息
+                     */
+                    const endTrip = (message) => {
+                        infoBar(message)
+                        trip.classList.remove('show')
+                        target.classList.remove('go')
+                        go_target.is_go = false
+                    }
+
+                    // 初始化trip
+                    go_target.is_go = true
+                    const {text: {trip: {name, pos}}, card: {trip}} = doc
+
+                    target.classList.add('go')
+                    trip.classList.add('show')
+                    name.innerText = hall.name
+                    pos.innerText = hall.pos
+
+                    // ~(LAST)正在去缓存到cookie, 并美化卡片
+                    // 取消前往
+                    callbacks.onTripCancel = () => {
+                        req_tmp.method = 'del'
+                        useApi('change_hall_data', req_tmp, () => {
+                            endTrip('那再想想去哪里吧...')
+                        })
+                    }
+                    // 确认到达
+                    callbacks.onTripFinish = () => {
+                        req_tmp.method = 'change'
+                        useApi('change_hall_data', req_tmp, (res_data) => {
+                            if (!res_data.valid) return endTrip('前往失败!')
+                            endTrip('到了哟')
+                            refreshList()
+                        })
+                    }
+                })
             }
 
             // 打开更改玩家人数窗口时
@@ -291,12 +389,11 @@ const refreshList = (sorting, callback) => {
                         type: 'player',
                         method: 'change',
                         value: input.value
-                    }, (res) => {
+                    }, (res, err) => {
+                        if (err) return infoBar('更新人数失败!')
                         // (ADD)等待结束
-                        console.log(res)
+                        // console.log(res)
                         refreshList()
-                    }, () => {
-                        infoBar('更新人数失败!')
                     })
                 }
             }
@@ -340,17 +437,16 @@ const refreshList = (sorting, callback) => {
                         type: 'all',
                         value: input,
                         id
-                    }, (res_data) => {
+                    }, (res_data, err) => {
                         const {valid, message} = res_data
                         wait(false)
+                        if (err) return infoBar('更新失败!')
                         doc.window.show_set_hall.checked = false
                         if (!valid) {
                             infoBar('更新失败!')
                             console.error('error message:', message)
                         }
                         refreshList()
-                    },() => {
-                        infoBar('更新失败!')
                     })
                 }
             }
@@ -407,8 +503,6 @@ const refreshList = (sorting, callback) => {
             )
 
         })
-    }, () => {
-        infoBar('更新失败!')
     })
 }
 
