@@ -475,6 +475,7 @@ export class HttpApp {
      */
     _getCookie(cookies) {
         /**字符内容映射表, 若cookie的value与键相同将会被转换为该值 */
+        if (!cookies) return {}
         const mapping = {
             'true': true,
             'false': false
