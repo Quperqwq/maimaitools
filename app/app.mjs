@@ -215,7 +215,7 @@ class GameHall {
                 },
                 change: () => {
                     target.going = validPlayer(+target.going - 1)
-                    target.player = validPlayer(+target.going + 1)
+                    target.player = validPlayer(+target.player + 1)
                     return
                 }
             }

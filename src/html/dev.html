@@ -11,12 +11,14 @@
     <!header>
     <!test>
     <button type="button" onclick="useApi('test')"> 测试API </button>
-    <button type="button" id="is-developers" onclick="setCookie('developers=true')"> 我是开发者 </button>
+    <button type="button" onclick="changeToDevelopers()"> 我是开发者 </button>
+    <button type="button" onclick="changeToNotDevelopers()"> 我不是开发者 </button>
     <script>
-        const setCookie = (str) => {
-            const date = new Date()
-            date.setTime(date.getTime() + 604800000)
-            document.cookie = print(str + "; expires=" + date.toUTCString())
+        const changeToDevelopers = () => {
+            cookie.set('is-developers', true, 7)
+        }
+        const changeToNotDevelopers = () => {
+            cookie.del('is-developers')
         }
     </script>
 </body>

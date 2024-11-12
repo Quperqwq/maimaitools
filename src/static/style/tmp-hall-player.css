@@ -22,6 +22,7 @@ ul.row li {
     display: flex;
     position: relative;
     background-color: #f5f6fd;
+    /* box-shadow: 0em 0em 2px 0px; */
     border-radius: var(--main-radius);
     padding: 0 1em;
     justify-content: space-between;
@@ -84,7 +85,10 @@ ul.row li {
     /* margin-left: 3em; */
     margin-top: calc(var(--height) * -1);
     padding: .6em;
-    border: .2em solid #dcdcdc;
+    /* border: .2em solid #dcdcdc; */
+    background: #f5f6fd url('/image/go_dlx.webp') no-repeat;
+    background-size: 8em;
+    background-position: left center;
     border-radius: .8em;
     transition: margin .4s ease;
     z-index: 1;
@@ -96,10 +100,13 @@ ul.row li {
     content: '正在去-测试';
     display: block;
     position: absolute;
-    background-color: #e2e2e2;
+    color: #2b73ff;
+    text-shadow: 1px 1px 2px;
+    font-weight: 600;
+    background-color: #e2e2e261;
     padding: .2em .3em;
     border-radius: var(--main-radius);
-    color: #363636;
+    /* color: #363636; */
     left: 1em;
 }
 
@@ -120,7 +127,7 @@ ul.row li {
 
 .trip .content .line {
     /* display: flex; */
-    padding: .2em .4em;
+    /* padding: .2em .4em; */
     /* justify-content: center; */
     /* align-items: center; */
 }
@@ -158,13 +165,31 @@ ul.row li {
     content: '机厅位置:';
 } */
 
-/* ↓机厅列表 */
-
+/* ↓机厅列表-main init */
 
 #hall-player-list {
     list-style: none;
     padding: 0;
+    overflow: hidden;
 }
+
+#hall-player-list li.hall-item {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: 200%;
+    /* scroll-snap-align: start; */
+}
+
+#hall-player-list .main,
+#hall-player-list .other {
+    width: 50%;
+    /* scroll-snap-align: start; */
+}
+
+
+
+/* ↓机厅列表-main | [this] |    | */
 
 #hall-player-list .left {
     width: 75%;
@@ -175,16 +200,25 @@ ul.row li {
     --border-size: .14em;
     font-size: 1em;
     min-width: 25em;
-    overflow: hidden;
-    border: var(--border-size) solid #000;
-    padding: var(--padding);
     margin: 0;
     position: relative;
 }
 
 #hall-player-list li.hall-item {
     margin-bottom: 1em;
+    /* overflow-x: scroll; */
+    /* scroll-snap-type: x mandatory; */
 }
+
+#hall-player-list li.hall-item .main {
+    overflow: hidden;
+    padding: var(--padding);
+    border: var(--border-size) solid #000;
+}
+
+section.main {}
+
+section.main {}
 
 #hall-player-list h2,
 #hall-player-list h3 {
@@ -229,7 +263,7 @@ ul.state li.games::before {
     margin-top: .2em;
 }
 
-#hall-player-list .left .more label {
+#hall-player-list .left .more label, #hall-player-list .left .more button {
     font-size: .9em;
     font-weight: 400;
     color: #444;
@@ -237,11 +271,10 @@ ul.state li.games::before {
     margin: 0;
     padding: .2em .4em;
 }
-#hall-player-list .left .more label:not(:last-child),
-#hall-player-list .left .state li:not(:last-child) {
+#hall-player-list .left .more *:not(:last-child), #hall-player-list .left .state li:not(:last-child) {
     margin-right: .2em;
 }
-#hall-player-list .left .more label::before {
+#hall-player-list .left .more label::before,#hall-player-list .left .more button::before {
     margin-right: .2em;
 }
 
@@ -271,7 +304,7 @@ ul.state li.games::before {
 
 #hall-player-list .left .name::after {
     display: inline-block;
-    font-size: .4em;
+    font-size: 1em;
     padding-left: .4em;
     margin-right: -3.8em;
     transition: all .2s ease;
@@ -285,7 +318,7 @@ ul.state li.games::before {
 }
 
 #hall-player-list .left .name .content {
-    pointer-events: none;
+    /* pointer-events: none; */
     display: inline-block;
     flex: 1;
     max-width: 15em;
@@ -350,6 +383,12 @@ ul.state li.games::before {
 }
 
 
+/* ↓机厅列表-other | ← | [this] | */
+#hall-player-list .other {
+
+}
+
+
 /* 根据人数来确定显示字体颜色 */
 
 .hall-number.no {
@@ -373,6 +412,7 @@ ul.state li.games::before {
 }
 
 
+/* ↓window */
 
 /* 机厅玩家人数设置 */
 
@@ -499,3 +539,56 @@ ul.state li.games::before {
     margin-top: .7em;
 }
 
+/* window- ↓筛选或排序 */
+.modal.window-order section {
+    padding: 0;
+}
+
+.modal.window-order select {
+    width: 6em;
+}
+
+.modal.window-order .pad-right {
+    padding-right: 2em;
+}
+
+.modal.window-order .content {
+    padding: 1em;
+    padding-top: 0;
+}
+
+.window-order .content h2 {
+    padding: 0 .4em;
+    padding-top: 1em;
+    padding-bottom: .4em;
+    font-size: 1.2em;
+}
+
+.window-order .content .item:not(:first-child) {
+    margin-top: 1em;
+    border-top: #c6c6c6 .2em solid;
+}
+
+.window-order .content .sort .cont {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.window-order .content .show .cont {
+    font-size: 1.1em;
+    display: flex;
+    /* margin-top: .4em; */
+    flex-direction: column;
+}
+
+.window-order .content .show .cont .line {
+    display: flex;
+    justify-content: center;
+    margin-top: .2em;
+}
+
+.window-order .content .show .cont .line * {
+    width: 50%;
+    margin-left: .4em;
+}

@@ -100,6 +100,18 @@ const callbacks = {
     onTripCancel: () => {  }
 }
 
+const config = {
+    /** @type {'normal' | 'player' | 'change_time'} 排序方法 */
+    sorting: 'normal',
+    /**正在前往的机厅 */
+    going: {
+        /**是否在途中 */
+        is: false,
+        /**前往的目标机厅ID */
+        target: 0
+    }
+}
+
 // 初始化页面函数, 它们通常只会执行一次
 const _init = () => {
     /**
@@ -123,7 +135,7 @@ const _init = () => {
                 }
                 refresh.disabled = true
                 infoBar('正在刷新...', bar_config)
-                refreshList({}, () => {
+                refreshList(() => {
                     refresh.disabled = false
                     infoBar('刷新完成', bar_config)
                 })
@@ -174,8 +186,7 @@ const _init = () => {
                     // 新建机厅
                     useApi('new_hall', {value: input}, (res_data, err) => {
                         wait(false)
-                        if (err) return 
-                        infoBar('新建失败!')
+                        if (err) return infoBar('新建失败!')
                         const { valid, message } = res_data
                         if (!valid) {
                             infoBar('新建失败!')
@@ -247,12 +258,10 @@ const _init = () => {
 
 /**
  * 更新当前玩家列表
- * @param {object} sorting 排序方式
- * @param {'normal' | 'player' | 'change_time'} sorting.method 排序方法
- * @param {boolean} sorting.is_ascending 正序, 否则将会倒叙排列
  * @param {function} [callback] 刷新完成后调用
+ * @param {boolean} [_init] 是否为初始化
  */
-const refreshList = (sorting, callback) => {
+const refreshList = (callback, _init) => {
     /**
      * 设置机厅人的数量决定人数的字体颜色
      * @param {number} number 机厅人数
@@ -276,18 +285,14 @@ const refreshList = (sorting, callback) => {
         // 初始化
         doc.list.innerHTML = ''
 
-        // 处理来自sorting的排序 org_halls => halls
-        const halls = org_halls
-        
+        // 处理来自config.sorting的排序 org_halls => halls
+        // let halls = {}
+        Object.keys(org_halls).forEach((key) => {
 
-        /**正在前往的机厅 */
-        const go_target = {
-            is_go: false,
-            // name: '',
-            // id: -1,
-            // time: 0,
-            // element: null
-        }
+        })
+        
+        const halls = org_halls
+
         Object.keys(halls).forEach((key) => {
             // 根据对象创建网页元素并绑定相关事件
             const id = +key
@@ -309,61 +314,82 @@ const refreshList = (sorting, callback) => {
             /**时间相关内容 */
             const time = new Time()
 
+
+            // ~创建快捷操作DOM的方式
             /**
-             * 当点击机厅名时
-             * @param {MouseEvent} event 
+             * (DOM)更改trip卡片的内容为此机厅
+             * @param {boolean} is_trip 是否在途中
              */
-            const clickHallName = (event) => {
-                if ( go_target.is_go ) return infoBar('请先取消现在的行程') // 有出发的目标将不会被处理
-                infoBar('已确定行程')
-                const target = event.target
+            const updateTrip = (is_trip = true) => {
+                const {going} = config
+                const {text: {trip: {name, pos}}, card: {trip}} = doc
+                const hall_name = e_hall_name
+                    
                 const req_tmp = {
                     id: id,
                     type: 'going',
-                    method: 'append'
+                    method: ''
                 }
-                useApi('change_hall_data', req_tmp, (res_data) => {
+
+
+                /**
+                 * 结束trip
+                 * @param {string} message 结束时给用户的信息
+                */
+                const endTrip = (message = '') => {
+                    message ? infoBar(message) : null
+                    hall_name.classList.remove('go')
+                    trip.classList.remove('show')
+                    going.is = false
+                    cookie.del('goto_hall')
+                }
+
+                if (!is_trip) endTrip()
+
+                hall_name.classList.add('go')
+                trip.classList.add('show')
+                name.innerText = hall.name
+                pos.innerText = hall.pos
+                going.is = true
+
+                // 取消前往
+                callbacks.onTripCancel = () => {
+                    req_tmp.method = 'del'
+                    useApi('change_hall_data', req_tmp, () => {
+                        endTrip('那再想想去哪里吧...')
+                    })
+                }
+                // 确认到达
+                callbacks.onTripFinish = () => {
+                    req_tmp.method = 'change'
+                    useApi('change_hall_data', req_tmp, (res_data) => {
+                        if (!res_data.valid) return endTrip('前往失败!')
+                        endTrip('到了哟')
+                        refreshList()
+                    })
+                }
+            }
+
+
+            // ~按钮或其他元素绑定的事件
+            /**
+             * 去这个机厅
+             */
+            const goHere = () => {
+                const {going} = config
+                if ( going.is ) return infoBar('请先取消现在的行程') // 有出发的目标将不会被处理
+                useApi('change_hall_data', {
+                    id: id,
+                    type: 'going',
+                    method: 'append'
+                }, (res_data) => {
                     if (!res_data) {
                         infoBar('预前往失败!')
                         return
                     }
-                    /**
-                     * 结束trip
-                     * @param {string} message 结束时给用户的信息
-                     */
-                    const endTrip = (message) => {
-                        infoBar(message)
-                        trip.classList.remove('show')
-                        target.classList.remove('go')
-                        go_target.is_go = false
-                    }
-
-                    // 初始化trip
-                    go_target.is_go = true
-                    const {text: {trip: {name, pos}}, card: {trip}} = doc
-
-                    target.classList.add('go')
-                    trip.classList.add('show')
-                    name.innerText = hall.name
-                    pos.innerText = hall.pos
-
-                    // ~(LAST)正在去缓存到cookie, 并美化卡片
-                    // 取消前往
-                    callbacks.onTripCancel = () => {
-                        req_tmp.method = 'del'
-                        useApi('change_hall_data', req_tmp, () => {
-                            endTrip('那再想想去哪里吧...')
-                        })
-                    }
-                    // 确认到达
-                    callbacks.onTripFinish = () => {
-                        req_tmp.method = 'change'
-                        useApi('change_hall_data', req_tmp, (res_data) => {
-                            if (!res_data.valid) return endTrip('前往失败!')
-                            endTrip('到了哟')
-                            refreshList()
-                        })
-                    }
+                    updateTrip(true)
+                    infoBar('已确定行程')
+                    cookie.set('goto_hall', id, 2)
                 })
             }
 
@@ -452,6 +478,7 @@ const refreshList = (sorting, callback) => {
             }
 
 
+
             /**
              * [`create() -> Element`的简写] 创建一个li元素
              * @param {string} content 元素的内容
@@ -462,49 +489,88 @@ const refreshList = (sorting, callback) => {
             }
 
 
+            // DOM-create ...
 
 
-            const e_right = create('section', {class: 'right'})
-            join(e_right,(join(
-                    create('label', {for: 'window-change-player'}, showPlayerNumber), {
-                    title: create('h3', {}, '当前人数'),
-                    number: create('h2', {class: `hall-number ${setColor(player)}`, style: `--percent: ${(player / max_player) * 100}%;`}, player)
-                }))
+            // DOM-create main<left, right>
+            const e_main = create('section', { class: 'main' })
+
+            // DOM-create right
+            const e_right = create('section', { class: 'right' })
+            join(e_right, (join(
+                create('label', { for: 'window-change-player' }, showPlayerNumber), {
+                title: create('h3', {}, '当前人数'),
+                number: create('h2', { class: `hall-number ${setColor(player)}`, style: `--percent: ${(player / max_player) * 100}%;` }, player)
+            }))
             )
 
-            const e_left = create('section', {class: 'left'})
-            const e_more = create('h3', {class: 'more'})
+            // DOM-create left
+            const e_left = create('section', { class: 'left' })
+            const e_more = create('h3', { class: 'more' })
             join(e_more, {
-                show_comment: create('label', {class: 'pseudo button icon-link', for: 'window-player-comment'}, showComment, '评论'),
-                show_detailed: create('label', {class: 'pseudo button icon-link', for: 'window-hall-detail'}, showDetail, '详情'),
-                show_setting: create('label', {class: 'pseudo button icon-config', for: 'window-hall-set'}, showSet, '设置'),
+                show_comment: create('label', { class: 'pseudo button icon-link none', for: 'window-player-comment' }, showComment, '评论'),
+                show_detailed: create('label', { class: 'pseudo button icon-link', for: 'window-hall-detail' }, showDetail, '详情'),
+                show_setting: create('label', { class: 'pseudo button icon-config', for: 'window-hall-set' }, showSet, '设置'),
+                go_it: create('button', { type: 'button', class: 'pseudo button icon-go' }, goHere, '去这里'),
             })
+            // 创建机厅名的对象引用, 以便更改样式
+            const e_hall_name = create('h3', { class: 'name icon-go right-icon' })
+
             join(e_left, {
                 title: join(
-                    create('h3', {class: 'name icon-go right-icon'}, clickHallName),
-                    create('span', {class: 'content hidden-scrollbar'}, name)
+                    e_hall_name,
+                    create('span', { class: 'content hidden-scrollbar' }, name)
                 ),
                 state: join(
-                    create('ul', {class: 'row state hidden-scrollbar'}), {
-                        tag: createLi('', {class: 'tag none'}),
-                        nickname: nickname.length > 0 ? createLi(
-                            nickname.toString(), {class: 'nickname'}
-                        ) : void 0,
-                        wait_time: createLi(time.wait, {class: 'wait'}),
-                        games: createLi(hall.games.toString(), { class: 'games' })
-                    }
+                    create('ul', { class: 'row state hidden-scrollbar' }), {
+                    tag: createLi('', { class: 'tag none' }),
+                    nickname: nickname.length > 0 ? createLi(
+                        nickname.toString(), { class: 'nickname' }
+                    ) : void 0,
+                    wait_time: createLi(time.wait, { class: 'wait' }),
+                    games: createLi(hall.games.toString(), { class: 'games' })
+                }
                 ),
                 more: e_more
             })
-            
-            
+
+            // DOM-create other
+            const e_other = create('section', { class: 'other' })
+            join(e_other, {
+
+            })
+
+
+            // DOM-join ...
+
+            // DOM-join left&right -> main
+            join(e_main, [
+                e_left,
+                e_right
+            ])
+
+            // DOM-join main& -> li
             doc.list.appendChild(
-                join( createLi('', {class: 'hall-item'}), [e_left, e_right] )
+                join(createLi('', { class: 'hall-item hidden-scrollbar' }), [
+                    e_main,
+                    e_other
+                ]
+                )
             )
+            
+
+            // 是否有去机厅的记录
+            const _go_hall = cookie.get('goto_hall')
+            if (+_go_hall === id) {
+                // 如果有
+                config.going.is = true
+                if (_init) updateTrip(true)
+                e_hall_name.classList.add('go')
+            }
 
         })
     })
 }
 
 _init()
-refreshList()
+refreshList(undefined, true)

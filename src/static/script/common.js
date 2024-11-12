@@ -203,6 +203,175 @@ class InputList {
     }
 }
 
+/**
+ * 网页cookie的内容
+ */
+class Cookie {
+    constructor() {
+        this.content = this._get()
+    }
+    _get() {
+        const cookies = document.cookie
+        /**字符内容映射表, 若cookie的value与键相同将会被转换为该值 */
+        const mapping = {
+            'true': true,
+            'false': false
+        }
+
+        let content = {
+            /**
+             * 获取cookie的某个值
+             * @param {string} key 需要获取的字段名(键)
+             * @param {any} normal 若该值不存在指定一个默认值
+             */
+            get: (key, normal = undefined) => {
+            const cont = content[key]
+            return cont === undefined ? normal : cont
+        }}
+        if (!cookies) return content
+        const mapping_key = Object.keys(mapping)
+        const cookie_list = cookies.split('; ')
+        cookie_list.forEach((cookie) => {
+            const item = cookie.split('=')
+            let value = item[1]
+            let key = item[0]
+            const _case = value.toLowerCase()
+            if (mapping_key.includes(_case)) {
+                // 映射为指定内容
+                value = mapping[_case]
+            }
+            content[key] = value
+        })
+        return content
+    }
+
+    /**
+     * 获取一个cookie的内容
+     * @param {string} key cookie对应的键
+     * @returns {string | undefined}
+     */
+    get(key) {
+        return this.content.get(key)
+    }
+
+    /**
+     * 删除一个cookie内容
+     * @param {string} key 
+     */
+    del(key, path) {
+        this.content[key] = undefined
+        document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path};`
+    }
+
+    /**
+     * 设置一个cookie内容
+     * @param {string} key 
+     * @param {string} value 
+     * @param {number} _expires 设置过期时间(天)
+     * @param {string} path 
+     */
+    set(key, value, _expires = 1, path = '/') {
+        const date = new Date()
+        date.setTime(date.getTime() + (_expires * 86400000))
+        const expires = date.toUTCString()
+
+        document.cookie = `${key}=${encodeURIComponent(value)}; expires=${expires};  path=${path};`
+
+        this.content[key] = value
+    }
+}
+const cookie = new Cookie()
+
+
+/**一个简单的排序算法 */
+class Sorting {
+    /**
+     * 
+     * @param {boolean} reverse 是否为逆序
+     */
+    constructor(reverse = false) {
+        this.is_reverse = reverse
+        /**@type {string[] | number[]}} */
+        this.basis = []
+        /**
+         * basis列表对应值
+         * @type {{ [x: string | number]: any[] }}
+         */
+        this.value = {}
+    }
+
+    /**
+     * 往排序列表添加一个排序值
+     * @param {string | number} new_basis 排序依据
+     * @param {any} new_value 该依据对应的值
+     */
+    addItem(new_basis, new_value) {
+        // 创建引用
+        const values = this.value
+        const basis = this.basis
+        /**原数组basis长度 */
+        const org_basis_len = basis.length
+        const appendValue = () => {
+            // 确保一个basis对应着一个value
+            const item = values[new_basis]
+            if (!item) {
+                values[new_basis] = [new_value]
+                return
+            }
+            item.push(new_value)
+        }
+        appendValue()
+
+        // 在进入这里之前需要确保org_basis_len的值是number
+
+        if (org_basis_len <= 0) {
+            // 确保basis不是空数组
+            return basis.push(new_basis)
+        }
+        if (basis[0] >= new_basis) {
+            // 为最小值
+            return basis.unshift(new_basis)
+        }
+        for (let index = 0; index < org_basis_len; index++) {
+            // 比对列表内所有对象进行排序
+            /**数组内的值 */
+            const arr_basis = basis[index]
+            
+            // console.log(arr_basis, '>', new_basis, +arr_basis > +new_basis);
+            
+            if (+arr_basis > +new_basis) {
+                basis.splice(index, 0, new_basis)
+                break
+            }
+        }
+        if (org_basis_len === basis.length) {
+            // 没有插入说明是最大值
+            // console.log('最大', new_basis);
+            
+            basis.push(new_basis)
+        }
+    }
+
+    /**
+     * 往排序列表添加排序值, 其中对象的键是排序依据, 对象的值是该依据对应的值
+     * @param {{[x: string | number]: any}} obj 
+     */
+    add(obj) {
+        Object.keys(obj).forEach((key) => {
+            const value = obj[key]
+            this.addItem(key, value)
+        })
+    }
+
+    getValues() {
+        const returns = []
+        this.basis.forEach((index) => {
+            returns.push(...this.value[index])
+        })
+        return this.is_reverse ? returns.reverse() : returns
+    }
+}
+
 
 /**
  * 冒出一个消息提示
