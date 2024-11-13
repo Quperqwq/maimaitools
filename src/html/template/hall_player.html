@@ -8,7 +8,7 @@
         <div class="right operate">
             <button type="button" id="refresh-halls" class="pseudo"> 刷新 </button>
             <!-- #(LAST)这里没做好先隐藏 -->
-            <label for="window-order" class="pseudo button"> 排序 </label>
+            <label for="window-filter" class="pseudo button"> 排序 </label>
             <label id="window-hall-new" for="window-hall-set" class="pseudo button"> 添加机厅 </label>
         </div>
     </div>
@@ -56,37 +56,37 @@
     </div>
 
     <!-- #(LAST)等前端到了把排序做好 -->
-    <!-- window-order -->
-    <div class="modal window-order">
-        <input id="window-order" type="checkbox" />
-        <label for="window-order" class="overlay"></label>
-        <form>
+    <!-- window-filter -->
+    <div class="modal window-filter">
+        <input id="window-filter" type="checkbox" />
+        <label for="window-filter" class="overlay"></label>
+        <form id="filter-form">
             <header>
                 <h3> 更改排序方式 </h3>
-                <label for="window-order" class="close">&times;</label>
+                <label for="window-filter" class="close">&times;</label>
             </header>
             <section class="content">
                 <!-- content -->
                 <section class="sort item">
                     <h2> 排序 </h2>
                     <section class="cont">
-                        <section class="pad-right">
-                            <label for="set-order-update_time"> 
-                                <input type="radio" name="set-order-item" value="update_time" id="set-order-update_time">
+                        <section class="pad-right" id="set-filter-order_target">
+                            <label> 
+                                <input type="radio" name="set-filter-item" value="update_time">
                                 <span class="checkable"> 更新时间 </span>
                             </label>
         
-                            <label for="set-order-player">
-                                <input type="radio" name="set-order-item" value="player" id="set-order-player" checked>
+                            <label>
+                                <input type="radio" name="set-filter-item" value="player" checked>
                                 <span class="checkable"> 人数 </span>
                             </label>
                             :
                         </section>
 
                         <label>
-                            <select name="set-order-method" id="" title="排序方式">
-                                <option value=""> 大到小 </option>
-                                <option value=""> 小到大 </option>
+                            <select name="set-filter-method" title="排序方式" id="set-filter-order_method">
+                                <option value="asc"> 大到小 </option>
+                                <option value="desc"> 小到大 </option>
                             </select>
                         </label>
                     </section>
@@ -94,24 +94,24 @@
 
                 <section class="show item">
                     <h2> 仅显示指定机台 </h2>
-                    <section class="cont">
+                    <section class="cont" id="set-filter-game">
                         <div class="line">
-                            <label for="set-order-maimai"> 
-                                <input type="checkbox" name="set-order-show" value="maimai" id="set-order-maimai" checked="true">
+                            <label> 
+                                <input type="checkbox" name="set-filter-game" value="舞萌" checked="true">
                                 <span class="checkable"> 舞萌 </span>
                             </label>
-                            <label for="set-order-chunithm"> 
-                                <input type="checkbox" name="set-order-show" value="CHUNITHM" id="set-order-chunithm" checked="true">
+                            <label> 
+                                <input type="checkbox" name="set-filter-game" value="中二节奏"  checked="true">
                                 <span class="checkable"> 中二节奏 </span>
                             </label>
                         </div>
                         <div class="line">
-                            <label for="set-order-wacca"> 
-                                <input type="checkbox" name="set-order-show" value="wacca" id="set-order-wacca" checked="true">
+                            <label> 
+                                <input type="checkbox" name="set-filter-game" value="华卡" checked="true">
                                 <span class="checkable"> 华卡 </span>
                             </label>
-                            <label for="set-order-wlf"> 
-                                <input type="checkbox" name="set-order-show" value="wlf" id="set-order-wlf" checked="true">
+                            <label > 
+                                <input type="checkbox" name="set-filter-game" value="舞立方"  checked="true">
                                 <span class="checkable"> 舞立方 </span>
                             </label>
                         </div>
@@ -119,8 +119,8 @@
                 </section>
             </section>
             <footer>
-                <button type="button" id="submit-player-number"> 确定 </button>
-                <label for="window-order" class="button dangerous"> 取消 </label>
+                <button type="submit" id="submit-filter"> 确定 </button>
+                <label for="window-filter" class="button dangerous"> 取消 </label>
             </footer>
         </form>
     </div>
@@ -223,6 +223,9 @@
                     上次更新时间是<strong id="detail-hall-time-update">0分钟</strong>前。
                 </p>
                 <hr>
+                <p>
+                    机厅ID: <span id="detail-hall-id"></span>
+                </p>
                 <p>
                     机厅别名: <span id="detail-hall-nickname"></span>
                 </p>

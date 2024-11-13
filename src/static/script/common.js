@@ -45,7 +45,7 @@ const _this = {}
  * (DOM)(document.createElement)创建一个元素
  * @param {string} tag_name 传入标签名
  * @param {Object.<string, string>} tag_attrib 标签的属性
- * @param {string | number | function(MouseEvent)} cont_or_func 标签内容, 或点击事件的回调函数
+ * @param {string | number | function(MouseEvent, element)} cont_or_func 标签内容, 或点击事件的回调函数
  * @param {number | string} [bool_or_str] 指定为true将tag_content(时间戳)的值转换为可读的字符串样式; `cont_or_func`如果是function, 此值指定为字符串会将标签内容指定为此值
  */
 const create = (tag_name, tag_attrib = {}, cont_or_func = '', bool_or_str = false) => {
@@ -70,7 +70,7 @@ const create = (tag_name, tag_attrib = {}, cont_or_func = '', bool_or_str = fals
             break
         case 'function':
             element.addEventListener('click', (event) => {
-                cont_or_func(event)
+                cont_or_func(event, element)
             })
             if (typeof bool_or_str === 'string') {
                 element.innerHTML = bool_or_str
@@ -291,6 +291,8 @@ class Sorting {
      */
     constructor(reverse = false) {
         this.is_reverse = reverse
+        // console.log('is_reverse: ', this.is_reverse);
+        
         /**@type {string[] | number[]}} */
         this.basis = []
         /**
@@ -327,6 +329,10 @@ class Sorting {
         if (org_basis_len <= 0) {
             // 确保basis不是空数组
             return basis.push(new_basis)
+        }
+        if (basis.includes(new_basis)) {
+            // 如果存在这个值则不进行下一步排序
+            return
         }
         if (basis[0] >= new_basis) {
             // 为最小值
@@ -365,9 +371,14 @@ class Sorting {
 
     getValues() {
         const returns = []
-        this.basis.forEach((index) => {
+        
+        // console.log('value is:', this.value, ';basis is:', this.basis, '\nnow running function:');
+        
+        this.basis.forEach((index, sub) => {
+            // console.log('index of:', index, ';value of:', ...this.value[index])
             returns.push(...this.value[index])
         })
+        
         return this.is_reverse ? returns.reverse() : returns
     }
 }

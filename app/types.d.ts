@@ -44,6 +44,8 @@ export interface GameHalls {
 export interface GameHallItem {
     /**游戏厅名 */
     name: string
+    /**游戏厅ID */
+    id: number | undefined
     /**游戏厅别名 */
     nickname: string[]
     /**游戏厅含有的游戏 */
