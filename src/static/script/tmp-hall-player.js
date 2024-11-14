@@ -69,12 +69,27 @@ const doc = {
         trip: {
             name: getEBI('on-trip-name'),
             pos: getEBI('on-trip-target'),
+        },
+        time: {
+            last_update: getEBI('last-refresh-time'),
         }
     },
     card: {
         trip: getEBI('card-trip')
     },
     list: getEBI('hall-player-list')
+}
+
+/**全局对象 */
+const global = {
+    /**计时器相关 */
+    timer: {
+        last_refresh: null
+    },
+    /**时间相关 */
+    time: {
+        refresh: null
+    }
 }
 
 const callbacks = {
@@ -318,6 +333,20 @@ const _init = () => {
                 filter.checked = false
                 refreshList()
             })
+        },
+
+        /**时间显示相关 */
+        timer: () => {
+            const {last_update} = doc.text.time
+            const changeRefresh = (cont) => {
+                last_update.innerText = cont
+            }
+            // 上次刷新时间
+            global.timer.last_refresh = setInterval(() => {
+                const {refresh: refresh_time} = global.time
+                if (!refresh_time) return changeRefresh('-')
+                changeRefresh(getElapsedTime(refresh_time))
+            }, 1000)
         }
     }
 
@@ -341,8 +370,16 @@ const refreshList = (callback, _init) => {
         if (number <= 6) return 'sev'
         return 'many'
     }
+
+    global.time.refresh = timeIs()
+    infoBar('刷新中...', {keep: true})
+    // main
     useApi('get_hall_player', {}, (res_data, err) => {
-        if (res_data.message) return console.error('refresh fail!', message)
+        if (res_data.message) {
+            infoBar('刷新失败!')
+            return console.error('refresh fail!', message)
+        }
+        infoBar('刷新完成')
         /**@type {GameHalls} */
         const org_halls = res_data.data
         console.log(res_data)
@@ -370,10 +407,10 @@ const refreshList = (callback, _init) => {
                         this.wait = player ? getTime( player / 2 * 15 * 60000 ) : '0秒'
                     }
                     get update() {
-                        return getChangeTime(hall.time.change_player)
+                        return getElapsedTime(hall.time.change_player)
                     }
                     get change() {
-                        return getChangeTime(hall.time.change_player)
+                        return getElapsedTime(hall.time.change_player)
                     }
                 }
                 /**时间相关内容 */

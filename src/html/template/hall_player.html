@@ -7,7 +7,6 @@
         </div>
         <div class="right operate">
             <button type="button" id="refresh-halls" class="pseudo"> 刷新 </button>
-            <!-- #(LAST)这里没做好先隐藏 -->
             <label for="window-filter" class="pseudo button"> 排序 </label>
             <label id="window-hall-new" for="window-hall-set" class="pseudo button"> 添加机厅 </label>
         </div>
@@ -26,6 +25,10 @@
             <button class="pseudo" id="trip-cancel" type="button"> 不去了 </button>
             <button class="pseudo" id="trip-finish" type="button"> 已到达 </button>
         </section>
+    </div>
+
+    <div class="time">
+        <span class="last-refresh" id=""><strong id="last-refresh-time">--秒</strong>前刷新</span>
     </div>
 
     <ul class="row" id="hall-player-list"></ul>
@@ -55,7 +58,6 @@
         </article>
     </div>
 
-    <!-- #(LAST)等前端到了把排序做好 -->
     <!-- window-filter -->
     <div class="modal window-filter">
         <input id="window-filter" type="checkbox" />

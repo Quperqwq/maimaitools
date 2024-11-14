@@ -1,18 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!head>
-    <title> maimai tools </title>
+    <title> maimai tools - 机厅排卡 </title>
     <style>
             .banner {
-                background: url('/image/banner/banner_1.webp') center/cover no-repeat;
                 border-radius: 0 0 2em 2em;
                 height: 14em;
-                width: 100%;
-                overflow: hidden;
             }
 
             .space {
@@ -78,7 +75,24 @@
 
 <body>
     <!header>
-    <section class="banner">  </section>
+    <section class="banner tabs three">
+        <input class="tab-item" type='radio' name='banner' title="背景图片" checked>
+        <input class="tab-item" type='radio' name='banner' title="背景图片">
+        <input class="tab-item" type='radio' name='banner' title="背景图片">
+        <div class="row">
+          <section>
+            <img src="image/banner/banner_1.webp" alt="背景图">
+          </section>
+      
+          <section>
+            <img src="image/banner/banner_2.webp" alt="背景图">
+          </section>
+      
+          <section>
+            <img src="image/banner/banner_4.webp" alt="背景图">
+          </section>
+        </div>
+    </section>
     <section class="intro space card-item">
             <h2> 欢迎！ </h2>
             <!-- 这里后续可以加一个滚动图 -->
@@ -113,10 +127,24 @@
 
     <footer class="main">
         <div id="version" class="version"> 
-            <!-- White(Run) or Black(Dev) -->
             White-1113_3
         </div>
     </footer>
+
+
+    <script>
+        const tab_item = document.querySelectorAll('input.tab-item')
+        let now_tab = 0
+
+        const switchItem = () => {
+            now_tab++
+            if (tab_item.length <= now_tab) now_tab = 0 
+            const element = tab_item[now_tab]
+            element.checked = true
+        }
+
+        setInterval(switchItem, 8000)
+    </script>
 </body>
 
 </html>

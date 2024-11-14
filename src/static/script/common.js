@@ -1,3 +1,5 @@
+const version = 'White-1114_2'
+
 /**@typedef {import('../../../app/types').apiResBody} apiResBody */
 /**@typedef {import('../../../app/types').apiReqBody} apiReqBody */
 
@@ -34,7 +36,8 @@ const useApi = (target, req_data = {}, callback) => {
 }
 
 /**仅在此脚本之内使用的全局变量 */
-const _this = {}
+const _global = {
+}
 
 
 
@@ -389,20 +392,25 @@ class Sorting {
  * @param {string} message 弹出消息内容
  * @param {object} setting 样式设置
  * @param {number} setting.show_time 样式设置
+ * @param {boolean} setting.keep 保持提示信息不消失
  */
 const infoBar = (message = '', setting = {
-    'show_time': 2000
+    'show_time': 2000,
+    'keep': false
 }) => {
-    // #(FIX)这里需要一个全局变量来拿取固定数据
-    const info_bar = getEBI('info-bar')
-    const { show_time } = setting
-    const { timeout_info_bar } = _this
+    const { show_time, keep } = setting
+    let { timeout_info_bar, e_info_bar } = _global
+    if (!(e_info_bar instanceof Element)) {
+        _global.e_info_bar = getEBI('info-bar')
+        return infoBar(message, setting)
+    }
     if (timeout_info_bar) clearTimeout(timeout_info_bar)
-    
-    info_bar.querySelector('.content').innerText = message
-    info_bar.classList.add('show')
-    _this.timeout_info_bar = setTimeout(() => {
-        info_bar.classList.remove('show')
+
+    e_info_bar.querySelector('.content').innerText = message
+    e_info_bar.classList.add('show')
+    if (keep) return
+    _global.timeout_info_bar = setTimeout(() => {
+        e_info_bar.classList.remove('show')
     }, show_time)
 }
 
@@ -453,10 +461,17 @@ const getTime = (time) => {
 }
 
 /**
+ * 获取当前时间戳
+ */
+const timeIs = () => {
+    return new Date().getTime()
+}
+
+/**
  * 获取一个时间戳是现在的多少时间前(可读字符串样式)
  * @param {number} time 过去的某个时间戳
  */
-const getChangeTime = (time) => {
+const getElapsedTime = (time) => {
     return getTime(new Date().getTime() - time)
 }
 
@@ -478,3 +493,7 @@ const print = (any) => {
     return any
 }
 
+document.addEventListener('load', () => {
+    const e_version = getEBI('version')
+    if (e_version) e_version.innerText = version
+})

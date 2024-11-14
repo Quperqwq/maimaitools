@@ -83,6 +83,7 @@ ul.row li {
     overflow: hidden;
     height: var(--height);
     margin: var(--margin);
+    margin-bottom: .4em;
     /* margin-left: 3em; */
     margin-top: calc(var(--height) * -1);
     padding: .6em;
@@ -143,6 +144,7 @@ ul.row li {
     display: inline-block;
     padding: .2em .4em;
     text-overflow: ellipsis;
+    color: #444;
     background-color: var(--main-bgc);
     border-radius: var(--main-radius);
     transition: all 0.2s ease;
@@ -153,6 +155,7 @@ ul.row li {
 .trip .content .name:hover {
     height: 5em;
     white-space: break-spaces;
+    color: #000;
     opacity: .8;
     z-index: 2;
 }
@@ -180,6 +183,26 @@ ul.row li {
 /* .trip .content .pos::before {
     content: '机厅位置:';
 } */
+
+/* ↓time */
+.time {
+    text-align: center;
+    margin-bottom: .4em;
+    font-size: .8em;
+}
+
+.time p {
+    margin: 0;
+}
+
+.time .last-refresh {
+    display: inline-block;
+    background-color: #fafdff;
+    color: #484a52;
+    padding: .4em .6em;
+    border-radius: var(--main-radius);
+}
+
 
 /* ↓机厅列表-main init */
 
