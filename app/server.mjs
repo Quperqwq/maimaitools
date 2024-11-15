@@ -13,6 +13,8 @@ const httpd = new HttpApp({
 
 httpd.page('/', 'home.html')
 
+httpd.page('/hall', 'hall.html')
+
 httpd.page('/dev', 'dev.html')
 
 httpd.page('/score', 'score.html')

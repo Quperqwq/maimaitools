@@ -1,0 +1,132 @@
+/* / > home.html */
+
+ul, li {
+    padding: 0;
+    margin: 0;
+}
+li {
+    list-style: none;
+}
+
+.banner {
+    border-radius: 0 0 2em 2em;
+    height: 14em;
+}
+
+.space {
+    margin: 0 2em;
+}
+
+.min-space {
+    margin: 0 .5em;
+}
+
+.card-item {
+    /* border-bottom: #eee solid .2em; */
+    margin-top: .4em;
+    background-color: #fff;
+    /* border-radius: 1em; */
+    /* box-shadow: 1em 1em; */
+}
+
+.card-item h2 {
+    text-indent: 1em;
+}
+
+.card-item h2, .card-item 
+li h3 a {
+    /* text-decoration: underline; */
+    --icon-color: #949494;
+    color: #00b1c5;
+}
+
+/* .intro {
+    margin-top: 3em;
+} */
+
+
+.intro p {
+    text-indent: 2em;
+}
+
+.placard .placard-content {
+    font-size: .8em;
+}
+
+.placard ol {
+    margin-top: 0;
+}
+
+/* ↓app(page) list */
+
+.app-list li:not(:first-child) {
+    margin-top: 1.4em;
+}
+
+.app-list li {
+    display: block;
+    position: relative;
+    max-height: 1.8em;
+    border-left: .2em solid #66ccff;
+    padding-left: .4em;
+    /* border-radius: .4em; */
+    overflow: hidden;
+    transition: .6s ease all;
+}
+
+.app-list li:hover {
+    max-height: 20em;
+}
+
+.app-list li h3 {
+    text-indent: 0;
+    padding: 0;
+    position: relative;
+}
+
+.app-list li h3::after {
+    content: '轻触以展开';
+    display: block;
+    float: right;
+    font-size: .4em;
+    font-weight: 400;
+    color: #666;
+}
+
+.app-list li .cont {
+    margin-top: .4em;
+    padding: .6em .4em;
+    /* border-left: #666 .2em solid; */
+    background-color: #f0fcff;
+    border-radius: var(--main-radius);
+}
+
+.app-list li .cont p {
+    color: #2c2c2c;
+    margin: 0;
+    text-indent: 1em;
+}
+
+.app-list li .cont p:not(:first-child) {
+    margin-top: .2em;
+}
+
+
+
+/* ↓ footer */
+
+footer.main {
+    font-size: .6em;
+    padding: .2em .4em;
+    margin: 0 .2em;
+    background: url('/image/bottom_dlx.webp') center bottom no-repeat;
+    background-size: 12em;
+    padding-bottom: 2em;
+}
+
+footer.main .version {
+    text-align: right;
+}
+footer.main .version::before {
+    content: '版本号:';
+}

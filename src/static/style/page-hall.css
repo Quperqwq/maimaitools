@@ -1,6 +1,14 @@
-:root {
-    --main-radius: .4em;
+/* /hall > hall_player.html */
+
+.space {
+    margin: 0 .4em;
 }
+
+main.space {
+    margin-top: 1em;
+}
+
+
 
 ul.row {
     margin: 0;
@@ -299,6 +307,7 @@ ul.state li.games::before {
 }
 
 #hall-player-list .left .more {
+    --icon-color: #000;
     margin-top: .2em;
 }
 
@@ -310,11 +319,18 @@ ul.state li.games::before {
     margin: 0;
     padding: .2em .4em;
 }
+
 #hall-player-list .left .more *:not(:last-child), #hall-player-list .left .state li:not(:last-child) {
     margin-right: .2em;
 }
-#hall-player-list .left .more label::before,#hall-player-list .left .more button::before {
+
+#hall-player-list .left .more label::before,
+#hall-player-list .left .more button::before {
     margin-right: .2em;
+}
+
+#hall-player-list .left .more .fav::before {
+    margin-right: 0;
 }
 
 #hall-player-list .left h3::before {
@@ -358,12 +374,12 @@ ul.state li.games::before {
 
 #hall-player-list .left .name .content {
     /* pointer-events: none; */
-    display: inline-block;
+    display: block;
     flex: 1;
     max-width: 15em;
     overflow-x: auto;
     /* text-align: center; */
-    padding-right: 1em;
+    padding-right: 3em;
 }
 
 

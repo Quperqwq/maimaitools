@@ -407,7 +407,7 @@ const refreshList = (callback, _init) => {
                         this.wait = player ? getTime( player / 2 * 15 * 60000 ) : '0秒'
                     }
                     get update() {
-                        return getElapsedTime(hall.time.change_player)
+                        return getElapsedTime(hall.time.change)
                     }
                     get change() {
                         return getElapsedTime(hall.time.change_player)
@@ -498,7 +498,7 @@ const refreshList = (callback, _init) => {
                         }
                         updateTrip(true)
                         infoBar('已确定行程')
-                        cookie.set('goto_hall', id, 2)
+                        cookie.set('goto_hall', id)
                     })
                 }
 
@@ -587,6 +587,17 @@ const refreshList = (callback, _init) => {
                     }
                 }
 
+                // 当点击收藏机厅时
+                /**
+                 * @param {Element} element 
+                 */
+                const favHall = (_, element) => {
+                    cookie.set('fav', )
+                    if (e_root.classList.contains('fav')) {
+                        
+                    }
+                }
+
 
 
                 /**
@@ -617,10 +628,16 @@ const refreshList = (callback, _init) => {
                 // DOM-create left
                 const e_left = create('section', { class: 'left' })
                 const e_more = create('h3', { class: 'more' })
-                join(e_more, {
+                join(e_more, { // (TAG)机厅卡片控件
+                    // 收藏
+                    fav: create('button', { type: 'button',class: 'pseudo button icon-star_empty fav', title: '收藏'}, favHall),
+                    // 评论
                     show_comment: create('label', { class: 'pseudo button icon-link none', for: 'window-player-comment' }, showComment, '评论'),
+                    // 详情
                     show_detailed: create('label', { class: 'pseudo button icon-link', for: 'window-hall-detail' }, showDetail, '详情'),
+                    // 设置
                     show_setting: create('label', { class: 'pseudo button icon-config', for: 'window-hall-set' }, showSet, '设置'),
+                    // 去这里
                     go_it: create('button', { type: 'button', class: 'pseudo button icon-go' }, goHall, '去这里'),
                 })
                 // 创建机厅名的对象引用, 以便更改样式
@@ -660,7 +677,7 @@ const refreshList = (callback, _init) => {
                 ])
 
                 // DOM-join main& -> li
-                doc.list.appendChild(
+                const e_root = doc.list.appendChild(
                     join(createLi('', { class: 'hall-item hidden-scrollbar' }), [
                         e_main,
                         e_other

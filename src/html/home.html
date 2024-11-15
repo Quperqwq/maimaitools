@@ -5,72 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!head>
-    <title> maimai tools - 机厅排卡 </title>
-    <style>
-            .banner {
-                border-radius: 0 0 2em 2em;
-                height: 14em;
-            }
-
-            .space {
-                margin: 0 2em;
-            }
-
-            .min-space {
-                margin: 0 .5em;
-            }
-
-            .card-item {
-                /* border-bottom: #eee solid .2em; */
-                margin-top: .4em;
-                background-color: #fff;
-                /* border-radius: 1em; */
-                /* box-shadow: 1em 1em; */
-            }
-
-            .card-item h2 {
-                /* text-decoration: underline; */
-                text-indent: 1em;
-                color: #00b1c5;
-            }
-
-            /* .intro {
-                margin-top: 3em;
-            } */
-
-
-            .intro p {
-                text-indent: 2em;
-            }
-
-            .placard .placard-content {
-                font-size: .8em;
-            }
-
-            .placard ol {
-                margin-top: 0;
-            }
-
-            #game-hall.hall {
-                padding-bottom: 5em;
-            }
-
-            footer.main {
-                font-size: .6em;
-                padding: .2em .4em;
-                margin: 0 .2em;
-                background: url('/image/bottom_dlx.webp') center bottom no-repeat;
-                background-size: 12em;
-                padding-bottom: 2em;
-            }
-
-            footer.main .version {
-                text-align: right;
-            }
-            footer.main .version::before {
-                content: '版本号:';
-            }
-    </style>
+    <link rel="stylesheet" href="/style/page-home.css">
+    <title> 欢迎! </title>
 </head>
 
 <body>
@@ -100,9 +36,6 @@
             <p>
                 maimai tools是一个具有机厅人数上报功能的网站，主要用于帮助玩家们快速了解目前机厅排队情况，并结合自身实际安排，适当处理出勤时间。
             </p>
-            <p>
-                目前可用的功能有：在线人数编辑，查看预计等待时间等。 
-            </p>
             
             <p>
                 未来在条件允许的前提下，我们可能会推出更多功能。如果你有任何想法或愿意主提供的建议，可联系或在留言区发送留言。
@@ -121,18 +54,38 @@
         <hr>
     </section>
 
-    <section class="hall min-space" id="game-hall">
-        <!hall_player>
+    <section class="app-list space card-item">
+        <ul class="right-icon-items min-icon-items">
+            <li>
+                <h3><a href="/hall" class="icon-link">机厅管理</a></h3>
+                    <section class="cont">
+                        <p> 可进行在线人数编辑，查看预计等待时间等。 </p>
+                        <p> 由众多玩家提供数据支持，仅供参考使用，具体情况请以实际为准。 </p>
+                    </section>
+            </li>
+            <li>
+                <h3><a href="/score" class="icon-link">查分</a></h3>
+                <section class="cont">
+                    <p> 尚在开发。 </p>
+                </section>
+            </li>
+            <li>
+                <h3><a href="/about" class="icon-link">关于...</a></h3>
+                <section class="cont">
+                    <p> 关于我们开发这个网站的一些故事和关于作者的信息。 </p>
+                </section>
+            </li>
+        </ul>
     </section>
 
+
     <footer class="main">
-        <div id="version" class="version"> 
-            White-1113_3
-        </div>
+        <div id="version" class="version"></div>
     </footer>
 
 
     <script>
+        // banner image tab
         const tab_item = document.querySelectorAll('input.tab-item')
         let now_tab = 0
 
@@ -143,7 +96,7 @@
             element.checked = true
         }
 
-        setInterval(switchItem, 8000)
+        setInterval(switchItem, 4000)
     </script>
 </body>
 

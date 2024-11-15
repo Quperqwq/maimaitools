@@ -10,6 +10,10 @@
     font-display: block;
 }
 
+:root {
+    --main-radius: .4em;
+}
+
 /* 隐藏上下箭头 */
 input[type=number] {
     -moz-appearance: textfield; /* Firefox */
@@ -91,10 +95,12 @@ section {
 
 /* 设置字体图标before样式/(TAG)字体图标/ */
 
-[class*="icon-"]:not(.right-icon)::before,
-[class*="icon-"].right-icon::after {
+.left-icon-items [class*="icon-"]:not(.right-icon)::before,
+[class*="icon-"].right-icon::after,
+.right-icon-items [class*="icon-"]::after
+{
     content: var(--content);
-    --icon-color: #000;
+    /* --icon-color: #000; */
     display: inline;
     font-family: 'icomoon';
     display: inline-block;
@@ -102,14 +108,25 @@ section {
     color: var(--icon-color);
 }
 
-[class*="icon-"].right-icon::before {
+/* [class*="icon-"].right-icon::before,
+.right-icon-items [class*="icon-"]::before, */
+.no_margin-icon-items [class*="icon-"]::before,
+.no_margin-icon-items [class*="icon-"]::after
+ {
     margin: 0;
 }
 
 [class*="icon-"].min-icon::before,
-[class*="icon-"].right-icon.min-icon::after {
+.min-icon-items [class*="icon-"]::before,
+[class*="icon-"].right-icon.min-icon::after,
+.right-icon-items.min-icon-items [class*="icon-"]::after {
     font-size: .8em;
 }
+
+/*
+    使用 .right(left)-icon-items .icon-xxx 来使用图标;
+    或使用 .icon-xxx 的 --content 属性来获取图标字体内容
+*/
 
 .icon-refresh {
     --content: '\e984';
@@ -133,6 +150,42 @@ section {
 
 .icon-go {
     --content: '\ea3b';
+}
+
+.icon-left {
+    --content: '\ea40';
+}
+
+.icon-home {
+    --content: '\e901';
+}
+
+.icon-game {
+    --content: '\e916';
+}
+
+.icon-search {
+    --content: '\e986';
+}
+
+.icon-news {
+    --content: '\e906';
+}
+
+.icon-info {
+    --content: '\ea0c';
+}
+
+.icon-star_empty {
+    --content: '\e9d7';
+}
+
+.icon-star_half {
+    --content: '\e9d8';
+}
+
+.icon-star_full {
+    --content: '\e9d9';
 }
 
 @media (max-width: 60em) {

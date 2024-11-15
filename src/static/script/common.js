@@ -1,8 +1,12 @@
-const version = 'White-1114_2'
+const version = 'Black-1115_1'
 
 /**@typedef {import('../../../app/types').apiResBody} apiResBody */
 /**@typedef {import('../../../app/types').apiReqBody} apiReqBody */
 
+/**仅在此脚本之内使用的全局变量 */
+const _global = {
+    title: 'maimaitools'
+}
 
 /**
  * 请求一个API
@@ -33,10 +37,6 @@ const useApi = (target, req_data = {}, callback) => {
 
 
     xhr.send(req_body)
-}
-
-/**仅在此脚本之内使用的全局变量 */
-const _global = {
 }
 
 
@@ -119,7 +119,7 @@ const join = (root_element, child_elements) => {
  */
 const getEBI = (id_name) => {
     const element = document.getElementById(id_name)
-    if (!element) console.error('script get element fail! id name is ', id_name)
+    if (!element) console.warn('script get element fail! id name is ', id_name)
     return element
 }
 
@@ -226,10 +226,11 @@ class Cookie {
              * 获取cookie的某个值
              * @param {string} key 需要获取的字段名(键)
              * @param {any} normal 若该值不存在指定一个默认值
+             * @returns {string | null}
              */
-            get: (key, normal = undefined) => {
+            get: (key, normal = null) => {
             const cont = content[key]
-            return cont === undefined ? normal : cont
+            return cont === null ? normal : cont
         }}
         if (!cookies) return content
         const mapping_key = Object.keys(mapping)
@@ -254,7 +255,7 @@ class Cookie {
      * @returns {string | undefined}
      */
     get(key) {
-        return this.content.get(key)
+        return this.content.get(key, null)
     }
 
     /**
@@ -267,20 +268,87 @@ class Cookie {
     }
 
     /**
-     * 设置一个cookie内容
+     * 设置一个Cookie内容
      * @param {string} key 
-     * @param {string} value 
-     * @param {number} _expires 设置过期时间(天)
-     * @param {string} path 
+     * @param {string | function(string | undefined): string} value 
+     * @param {object} param2
+     * @param {number} param2.expires 设置过期时间(天)
+     * @param {string} param2.path 设置Cookie路径
+     * @param {boolean} param2._is_org 设置为原始值不进行URL编码
      */
-    set(key, value, _expires = 1, path = '/') {
+    set(key, value = '', {expires = 365, path = '/', _is_org} = {}) {
         const date = new Date()
-        date.setTime(date.getTime() + (_expires * 86400000))
-        const expires = date.toUTCString()
+        date.setTime(date.getTime() + (expires * 86400000))
+        const expires_time = date.toUTCString()
 
-        document.cookie = `${key}=${encodeURIComponent(value)}; expires=${expires};  path=${path};`
+        let new_value = value
 
-        this.content[key] = value
+        if (typeof (value) === 'function') {
+            new_value = value(this.get(key))
+        }
+
+        // // 如果是新值
+        // if (!this.get(key)) {
+
+        // }
+
+        document.cookie = `${key}=${_is_org ? new_value : encodeURIComponent(new_value)}; expires=${expires_time}; path=${path};`
+
+        this.content[key] = new_value
+    }
+
+    /**
+     * 获取对应Cookie内容的`Array`形式
+     * @param {string} key 
+     * @param {boolean} _is_org 按照原始值获取(未解码的)
+     */
+    getArrayData(key, _is_org = false) {
+        // (i)这里以后可以做性能优化
+        const cont = this.get(key)
+        if (!cont) return []
+        
+        const value = cont.split(',')
+        
+        return _is_org ? value : value.map((value) => {
+            return decodeURIComponent(value)
+        })
+    }
+
+    /**
+     * 更改对应Cookie`Array`内容的值
+     * @param {string} key 
+     * @param {function(string[]):string[]} method 更改数组的方法, 将传入键对应的Array形式
+     */
+    changeArrayData(key, method, _is_org = false) {
+        const cont = this.getArrayData(key, _is_org)
+        this.set(key, method(cont).join(','), {'_is_org': true})
+    }
+
+    /**
+     * 添加一个Cookie的内容的项目(将Cookie内容自动转换为Array对象)
+     * @param {string} key 
+     * @param {string[]} value
+     */
+    addItem(key, ...value) {
+        this.changeArrayData(key, (cont) => {
+            cont.push(...(value.map((item) => {
+                return encodeURIComponent(item)
+            })))
+            console.log(cont);
+            
+            return cont
+        }, true)
+    }
+
+    /**
+     * 删除一个Cookie的内容的项目
+     * @param {string} key 
+     * @param {string} value
+     */
+    delItem(key, value) {
+        this.changeArrayData(key, (cont) => {
+            return cont.filter(item => item !== value)
+        })
     }
 }
 const cookie = new Cookie()
@@ -393,16 +461,18 @@ class Sorting {
  * @param {object} setting 样式设置
  * @param {number} setting.show_time 样式设置
  * @param {boolean} setting.keep 保持提示信息不消失
+ * @param {number} _iterations *表示该函数迭代了多少次, 一般不会使用*
  */
 const infoBar = (message = '', setting = {
     'show_time': 2000,
     'keep': false
-}) => {
+}, _iterations = 0) => {
     const { show_time, keep } = setting
     let { timeout_info_bar, e_info_bar } = _global
     if (!(e_info_bar instanceof Element)) {
         _global.e_info_bar = getEBI('info-bar')
-        return infoBar(message, setting)
+        if (_iterations > 20) throw new Error('info bar Element not fond') // 如果迭代次数大于这个数字将抛出错误
+        return infoBar(message, setting, _iterations + 1)
     }
     if (timeout_info_bar) clearTimeout(timeout_info_bar)
 
@@ -493,7 +563,11 @@ const print = (any) => {
     return any
 }
 
-document.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
+    // title
+    document.title = `${_global.title} - ${document.title}`
+
+    // version
     const e_version = getEBI('version')
     if (e_version) e_version.innerText = version
 })
