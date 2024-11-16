@@ -30,17 +30,8 @@
         </div>
     </section>
     <section class="intro space card-item">
-            <h2> 欢迎！ </h2>
-            <!-- 这里后续可以加一个滚动图 -->
-                
-            <p>
-                maimai tools是一个具有机厅人数上报功能的网站，主要用于帮助玩家们快速了解目前机厅排队情况，并结合自身实际安排，适当处理出勤时间。
-            </p>
-            
-            <p>
-                未来在条件允许的前提下，我们可能会推出更多功能。如果你有任何想法或愿意主提供的建议，可联系或在留言区发送留言。
-            </p>
-            <hr class="slide">
+        <!-- <h2> 欢迎！ </h2> -->
+        <hr class="slide">
     </section>
 
     <section class="placard space card-item none">
@@ -56,21 +47,21 @@
 
     <section class="app-list space card-item">
         <ul class="right-icon-items min-icon-items">
-            <li>
+            <li tabindex="2">
                 <h3><a href="/hall" class="icon-link">机厅管理</a></h3>
                     <section class="cont">
                         <p> 可进行在线人数编辑，查看预计等待时间等。 </p>
                         <p> 由众多玩家提供数据支持，仅供参考使用，具体情况请以实际为准。 </p>
                     </section>
             </li>
-            <li>
+            <li tabindex="2">
                 <h3><a href="/score" class="icon-link">查分</a></h3>
                 <section class="cont">
                     <p> 尚在开发。 </p>
                 </section>
             </li>
-            <li>
-                <h3><a href="/about" class="icon-link">关于...</a></h3>
+            <li tabindex="2">
+                <h3><a href="/about" class="icon-link">关于我们</a></h3>
                 <section class="cont">
                     <p> 关于我们开发这个网站的一些故事和关于作者的信息。 </p>
                 </section>
@@ -84,19 +75,64 @@
     </footer>
 
 
+    <!-- window-info -->
+
+    <div class="modal info">
+        <input id="window-info" type="checkbox" />
+        <label for="window-info" class="overlay"></label>
+        <article>
+            <header>
+                <h3> 欢迎！ </h3>
+                <label for="window-info" class="close">&times;</label>
+            </header>
+            <section class="content">
+                <!-- content -->
+
+                <p>
+                    maimai tools是一个具有机厅人数上报功能的网站，主要用于帮助玩家们快速了解目前机厅排队情况，并结合自身实际安排，适当处理出勤时间。
+                </p>
+                    
+                <p>
+                    未来在条件允许的前提下，我们可能会推出更多功能。如果你有任何想法或愿意主提供的建议，可联系或在留言区发送留言。
+                </p>
+
+            </section>
+            <footer>
+                <label class="pseudo button" for="window-info"> 知道了 </label>
+                <button id="window-info-dis" type="button" class="pseudo  button"> 不再提示 </button>
+            </footer>
+        </article>
+    </div>
+
     <script>
-        // banner image tab
-        const tab_item = document.querySelectorAll('input.tab-item')
-        let now_tab = 0
 
-        const switchItem = () => {
-            now_tab++
-            if (tab_item.length <= now_tab) now_tab = 0 
-            const element = tab_item[now_tab]
-            element.checked = true
-        }
+// banner image tab
+const tab_item = document.querySelectorAll('input.tab-item')
+let now_tab = 0
 
-        setInterval(switchItem, 4000)
+const switchItem = () => {
+    now_tab++
+    if (tab_item.length <= now_tab) now_tab = 0
+    const element = tab_item[now_tab]
+    element.checked = true
+}
+
+setInterval(switchItem, 4000)
+
+// info window
+const e_info = getEBI('window-info')
+const e_dis_info = getEBI('window-info-dis')
+
+
+const dis_info = cookie.get('dis_info')
+
+e_dis_info.addEventListener('click', () => {
+    cookie.set('dis_info', 'true')
+    e_info.checked = false
+})
+
+if (!dis_info) e_info.checked = true
+    
     </script>
 </body>
 

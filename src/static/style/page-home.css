@@ -45,8 +45,17 @@ li h3 a {
 } */
 
 
-.intro p {
+/* .intro p { */
+.info h3 {
+    color: #00b1c5;
+}
+
+.info p {
     text-indent: 2em;
+}
+
+.info footer button {
+    float: right;
 }
 
 .placard .placard-content {
@@ -58,6 +67,9 @@ li h3 a {
 }
 
 /* ↓app(page) list */
+.app-list {
+    margin-bottom: 8em;
+}
 
 .app-list li:not(:first-child) {
     margin-top: 1.4em;
@@ -74,7 +86,7 @@ li h3 a {
     transition: .6s ease all;
 }
 
-.app-list li:hover {
+.app-list li:focus {
     max-height: 20em;
 }
 
@@ -95,9 +107,10 @@ li h3 a {
 
 .app-list li .cont {
     margin-top: .4em;
+    font-size: .8em;
     padding: .6em .4em;
     /* border-left: #666 .2em solid; */
-    background-color: #f0fcff;
+    background-color: #fcfeff;
     border-radius: var(--main-radius);
 }
 
@@ -119,7 +132,7 @@ footer.main {
     font-size: .6em;
     padding: .2em .4em;
     margin: 0 .2em;
-    background: url('/image/bottom_dlx.webp') center bottom no-repeat;
+    /* background: url('/image/bottom_dlx.webp') center bottom no-repeat; */
     background-size: 12em;
     padding-bottom: 2em;
 }

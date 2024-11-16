@@ -15,10 +15,10 @@
     <button type="button" onclick="changeToNotDevelopers()"> 我不是开发者 </button>
     <script>
         const changeToDevelopers = () => {
-            cookie.set('is-developers', true, 7)
+            cookie.set('developers', true)
         }
         const changeToNotDevelopers = () => {
-            cookie.del('is-developers')
+            cookie.del('developers')
         }
     </script>
 </body>

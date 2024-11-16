@@ -255,14 +255,17 @@ class Cookie {
      * @returns {string | undefined}
      */
     get(key) {
-        return this.content.get(key, null)
+        const value = this.content.get(key, null)
+        console.log('cookie value: ', key, ':', value)
+        
+        return value
     }
 
     /**
      * 删除一个cookie内容
      * @param {string} key 
      */
-    del(key, path) {
+    del(key, path = '/') {
         this.content[key] = undefined
         document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path};`
     }
@@ -321,7 +324,11 @@ class Cookie {
      */
     changeArrayData(key, method, _is_org = false) {
         const cont = this.getArrayData(key, _is_org)
-        this.set(key, method(cont).join(','), {'_is_org': true})
+        const value = method(cont).join(',')
+        this.set(key, value, {'_is_org': true})
+        this.content[key] = value
+        console.log(value);
+        
     }
 
     /**
@@ -334,8 +341,6 @@ class Cookie {
             cont.push(...(value.map((item) => {
                 return encodeURIComponent(item)
             })))
-            console.log(cont);
-            
             return cont
         }, true)
     }
@@ -347,7 +352,7 @@ class Cookie {
      */
     delItem(key, value) {
         this.changeArrayData(key, (cont) => {
-            return cont.filter(item => item !== value)
+            return cont.filter(item => item !== `${value}`)
         })
     }
 }
@@ -561,7 +566,14 @@ const valid = (value, normal) => {
 const print = (any) => {
     console.log(any)
     return any
+} 
+
+
+const __init = () => {
+    
 }
+
+__init()
 
 document.addEventListener('DOMContentLoaded', () => {
     // title

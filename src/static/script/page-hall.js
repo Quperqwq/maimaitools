@@ -156,7 +156,9 @@ const config = {
         is: false,
         /**前往的目标机厅ID */
         target: 0
-    }
+    },
+    /**用户收藏的机厅 @type {string[]} */
+    fav: []
 }
 
 // 初始化页面函数, 它们通常只会执行一次
@@ -347,6 +349,11 @@ const _init = () => {
                 if (!refresh_time) return changeRefresh('-')
                 changeRefresh(getElapsedTime(refresh_time))
             }, 1000)
+        },
+
+        /**用户收藏的机厅 */
+        fav: () => {
+            config.fav = cookie.getArrayData('fav')
         }
     }
 
@@ -401,6 +408,10 @@ const refreshList = (callback, _init) => {
                 const id = typeof(hall.id) === 'number' ? hall.id : +key
                 const {max_player, player, name, games, nickname, pos} = hall
                 const {input} = doc.input.player_number
+                const {fav: fav_hall} = config
+
+                /**用户是否收藏了此机厅 */
+                let is_fav = fav_hall.includes(`${id}`)
 
                 class Time {
                     constructor() {
@@ -475,7 +486,6 @@ const refreshList = (callback, _init) => {
                         })
                     }
                 }
-
 
                 // ~按钮或其他元素绑定的事件
                 /**
@@ -592,10 +602,16 @@ const refreshList = (callback, _init) => {
                  * @param {Element} element 
                  */
                 const favHall = (_, element) => {
-                    cookie.set('fav', )
-                    if (e_root.classList.contains('fav')) {
-                        
+                    if (is_fav) {
+                        element.classList.replace( 'icon-star_full','icon-star_empty')
+                        element.classList.add('not')
+                        cookie.delItem('fav', id)
+                    } else {
+                        element.classList.replace('icon-star_empty', 'icon-star_full')
+                        element.classList.remove('not')
+                        cookie.addItem('fav', id)
                     }
+                    is_fav = !is_fav
                 }
 
 
@@ -630,7 +646,11 @@ const refreshList = (callback, _init) => {
                 const e_more = create('h3', { class: 'more' })
                 join(e_more, { // (TAG)机厅卡片控件
                     // 收藏
-                    fav: create('button', { type: 'button',class: 'pseudo button icon-star_empty fav', title: '收藏'}, favHall),
+                    fav: create('button', {
+                        type: 'button',
+                        class: 'pseudo button fav ' + (is_fav ? 'icon-star_full' : 'icon-star_empty not'),
+                        title: '收藏'
+                    }, favHall),
                     // 评论
                     show_comment: create('label', { class: 'pseudo button icon-link none', for: 'window-player-comment' }, showComment, '评论'),
                     // 详情
