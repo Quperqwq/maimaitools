@@ -1,4 +1,4 @@
-const version = 'Black-1115_1'
+const version = 'Black-1117_1'
 
 /**@typedef {import('../../../app/types').apiResBody} apiResBody */
 /**@typedef {import('../../../app/types').apiReqBody} apiReqBody */
@@ -114,13 +114,49 @@ const join = (root_element, child_elements) => {
 }
 
 /**
- * getElementById
+ * (DOM)getElementById
  * @param {string} id_name
  */
 const getEBI = (id_name) => {
     const element = document.getElementById(id_name)
     if (!element) console.warn('script get element fail! id name is ', id_name)
     return element
+}
+
+/**
+ * 获取一个Element数组的所有值
+ * @param {HTMLInputElement[]} element_list 
+ * @returns {string[]}
+ */
+const getElementsValue = (element_list) => {
+    return element_list.map(input => input.value)
+}
+
+/**
+ * 获取一个Element数组被选中的Element的值
+ * @param {HTMLInputElement[]} element_list 
+ * @returns {string[]}
+ */
+const getCheckedElement = (element_list) => {
+    const output = []
+    element_list.forEach((element) => {
+        if (!element.checked) return
+        output.push(element.value)
+    })
+    return output
+}
+
+/**
+ * (DOM)querySelectorAll
+ * @param {string} query CSS查询参数
+ * @param {string} [id_name] 父元素id, 若未指定将默认从document内查询
+ */
+const getQSA = (query, id_name, __debug) => {
+    const target = id_name ? getEBI(id_name) : document
+    if (__debug) console.log('select target:', target)
+    
+    if (!target) return []
+    return target.querySelectorAll(query)
 }
 
 /** 
@@ -256,7 +292,7 @@ class Cookie {
      */
     get(key) {
         const value = this.content.get(key, null)
-        console.log('cookie value: ', key, ':', value)
+        // console.log('cookie value: ', key, ':', value)
         
         return value
     }
@@ -272,12 +308,13 @@ class Cookie {
 
     /**
      * 设置一个Cookie内容
+     * @typedef {Object} CookieConfig
+     * @property {number} expires 设置过期时间(天)
+     * @property {string} path 设置Cookie路径
+     * @property {boolean} _is_org 设置为原始值不进行URL编码
      * @param {string} key 
      * @param {string | function(string | undefined): string} value 
-     * @param {object} param2
-     * @param {number} param2.expires 设置过期时间(天)
-     * @param {string} param2.path 设置Cookie路径
-     * @param {boolean} param2._is_org 设置为原始值不进行URL编码
+     * @param {CookieConfig} param2
      */
     set(key, value = '', {expires = 365, path = '/', _is_org} = {}) {
         const date = new Date()
@@ -298,6 +335,28 @@ class Cookie {
         document.cookie = `${key}=${_is_org ? new_value : encodeURIComponent(new_value)}; expires=${expires_time}; path=${path};`
 
         this.content[key] = new_value
+    }
+
+    /**
+     * 设置一个Cookie的内容的项目(将Cookie内容自动转换为对象)
+     * @param {string} key 
+     * @param {Object.<string, any>} value 
+     * @param {CookieConfig} [config] 
+     */
+    setObj(key, value = {}, config = {}) {
+        this.set(key, JSON.stringify(value), config)
+    }
+
+    /**
+     * 获取一个Cookie内容对象(必须为Object编码后的内容)
+     * @param {string} key 
+     */
+    getObj(key) {
+        try {
+            return JSON.parse(decodeURIComponent(this.get(key)))
+        } catch (error) {
+            return {}
+        }
     }
 
     /**
@@ -342,6 +401,19 @@ class Cookie {
                 return encodeURIComponent(item)
             })))
             return cont
+        }, true)
+    }
+
+    /**
+     * 更改一个Cookie的内容的项目(将Cookie内容自动转换为Array对象)
+     * @param {string} key 
+     * @param {string[]} value
+     */
+    setItem(key, ...value) {
+        this.changeArrayData(key, () => {
+            return value.map((item) => {
+                return encodeURIComponent(item)
+            })
         }, true)
     }
 

@@ -84,6 +84,7 @@ class GameHall {
             'name': valid(name, 'string', '无效机厅名'),
             'nickname': valid(nickname, 'array', []),
             'pos': valid(pos, 'string', '无效位置'),
+            'map_id': -1,
             'player': 0,
             'time': {
                 'new': this._time,
@@ -125,6 +126,20 @@ class GameHall {
         const appendArrayItem = (arr) => {
             if (arr.includes(value)) return
             arr.push(value)
+        }
+
+        /**
+         * 确保一个值有效
+         * @param {any} value 需要确认的值
+         * @param {string} value_type 该值应该的类型
+         * @param {any} normal 若不是此类型指定为默认值
+         */
+        const valid = (value, value_type, normal) => {
+            const type = value_type.toLowerCase()
+            if (typeof(value) === type) return value
+            if (type === 'array') return Array.isArray(value) ? value : normal
+
+            return normal
         }
 
         /**
@@ -218,14 +233,28 @@ class GameHall {
                     target.player = validPlayer(+target.player + 1)
                     return
                 }
-            }
+            },
+            // 更改营业时间
+            open_hours: {
+                'change': () => {
+                    const {open_hours} = target
+                    if (!Array.isArray(value)) return 'invalid_type'
+                    if (!value.length < 2) return 'format_error'
+                    // const open = valid(value[0], 'number', open_hours.open)
+                    // const close = valid(value[1], 'number', open_hours.close)
+                    open_hours.open = value[0]
+                    open_hours.close = value[1]
+                }
+            },
+            map_id: {}
         }
 
         const exe_type = execute[type]
         if (!exe_type) return 'type_not_found'
         const exe = exe_type[method]
         if (!exe) return 'invalid_method'
-        exe()
+        const output = exe()
+        if (output) return output
 
         target.time.change = time
         this._updateHall(id, target)
@@ -244,7 +273,7 @@ class GameHall {
         const change = (key_name, value) => {
             target[key_name] = value ? value : target[key_name]
         }
-        const {games, name, max_player, nickname, pos, open_hours} = new_data
+        const {games, name, max_player, nickname, pos, open_hours, map_id} = new_data
         
         // #(FIX) 人性化?优化?
         change('games', games)
@@ -253,6 +282,7 @@ class GameHall {
         change('nickname', nickname)
         change('pos', pos)
         change('open_hours', open_hours)
+        change('map_id', map_id)
         target.time.change = this._time
         // console.log(target);
         

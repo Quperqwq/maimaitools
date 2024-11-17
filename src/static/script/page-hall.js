@@ -45,9 +45,14 @@ const doc = {
         filter: {
             form: getEBI('filter-form'),
             submit: getEBI('submit-filter'),
-            game: getEBI('set-filter-game'),
+            more: getQSA('[name="set-filter-more"]', 'set-filter-more'),
+            game: getQSA('[name="set-filter-game"]', 'set-filter-game'),
             order: {
-                target: getEBI('set-filter-order_target'),method: getEBI('set-filter-order_method'),
+                // target: getEBI('set-filter-order_target'),method: getEBI('set-filter-order_method'),
+                target: getQSA(
+                    '[name="set-filter-order"]',
+                    'set-filter-order_target'
+                ),method: getEBI('set-filter-order_method'),
             }
         }
     },
@@ -139,8 +144,13 @@ const callbacks = {
 const config = {
     /** 过滤或排序方法 */
     filter: {
-        /** 过滤机台 @type {string[]} */
-        show: [],
+        /**过滤 */
+        show: {
+            /** 过滤机台 @type {string[]} */
+            game: [],
+            /** 仅显示收藏 */
+            fav: false
+        },
         /** 排序 */
         order: {
             /** 排序依据 @type {'player' | 'update_time' | 'create_time'}  */
@@ -308,24 +318,34 @@ const _init = () => {
         /**选择过滤方式 */
         filter: () => {
             const {input: {filter: {form}}, window: {filter}} = doc
+            const {game: es_game, more: es_more, order: {target: es_target, method: e_method}} = doc.input.filter
 
+            // 更改config对象下次刷新时进行排序
             const changeConfig = () => {
-                const {game, order: {target, method}} = doc.input.filter
-
-                const checked_target = target.querySelector('[name="set-filter-item"]:checked').value
-                const checked_method = method.value
-
-                const checked_games = [...game.querySelectorAll('[name="set-filter-game"]:checked')].map(input => input.value)  // 获取选择需要显示的游戏
+                const checked_target = getCheckedElement(es_target)[0]
                 
+                const checked_method = e_method.value
+
+                const checked_games = getCheckedElement(es_game) // 获取选择需要显示的游戏
+                const checked_more = getCheckedElement(es_more)
+
                 config.filter = {
                     'order': {
                         'target': checked_target,
                         'method': checked_method
                     },
-                    'show': checked_games,
+                    'show': {
+                        'game': checked_games,
+                        'fav': checked_more.includes('show-fav')
+                    },
                     'init': true
                 }
 
+                if (checked_more.includes('save-filter')) { // 需要记住筛选条件
+                    cookie.setObj('filter', config.filter)
+                } else { // 无需
+                    cookie.del('filter')
+                }
             }
 
             // 提交时
@@ -335,6 +355,34 @@ const _init = () => {
                 filter.checked = false
                 refreshList()
             })
+            const init = () => {
+                /**
+                 * 重新载入保存的input内容
+                 * @param {string[] | string} cont 
+                 * @param {HTMLInputElement[]} input_elements 
+                 * @param {string} config_key 
+                 */
+                const reloadStat = (cont, input_elements) => {
+                    const _cont = Array.isArray(cont) ? cont : [cont]
+                    input_elements.forEach((element) => {
+                        element.checked = _cont.includes(element.value)
+                    })
+                    // filter.init = true
+                }
+
+                config.filter
+                const cache = cookie.getObj('filter')
+                if (Object.keys(cache).length > 0) {
+                    // 重置按钮之前的状态
+                    reloadStat(cache.show.game, es_game)
+                    reloadStat([cache.fav, ], es_more)
+                    reloadStat(cache.order.target, es_target)
+                    reloadStat(cache.order.method, [e_method])
+                }
+
+            }
+            init()
+
         },
 
         /**时间显示相关 */
@@ -403,6 +451,8 @@ const refreshList = (callback, _init) => {
          */
         const main = (halls) => {
             Object.keys(halls).forEach((key) => {
+                // ~(lats)绑定音游地图, 添加营业时间
+
                 // 根据对象创建网页元素并绑定相关事件
                 const hall = halls[+key]
                 const id = typeof(hall.id) === 'number' ? hall.id : +key
@@ -725,7 +775,7 @@ const refreshList = (callback, _init) => {
          */
         const runFilter = () => {
             // 处理来自config.sorting的排序 org_halls => halls
-            const {filter} = config
+            const {filter, fav: fav_hall} = config
             if (!filter.init) return main(org_halls) // 如果filter的配置没有初始化则使不进行处理使用原始值
 
             /**
@@ -778,19 +828,24 @@ const refreshList = (callback, _init) => {
 
                 // Start) 从这里开始
 
-                const {show, order: {target}} = filter
+                const {show: {game: show_games, fav: show_fav}, order: {target}} = filter
 
                 const id = +key
                 const hall = org_halls[id]
 
                 // 过滤条件 (是否包含指定游戏)
-                if (!have(hall.games, show)) return
+                if (!have(hall.games, show_games)) return
+
+                // 过滤条件 (仅显示收藏)
+                if (show_fav) {
+                    if (!fav_hall.includes(`${id}`)) return
+                }
 
                 // 排序条件
                 sortingMethod()
             })
             // console.log(sorting.basis);
-            console.log('value of:', sorting.value);
+            console.log('value of:', sorting.value)
             
             const output = sorting.getValues()
             output.forEach((item, index) => {
@@ -798,7 +853,7 @@ const refreshList = (callback, _init) => {
                 hall.id = item[0]
                 halls[index] = hall
             })
-            console.log(halls); 
+            // console.log(halls); 
             main(halls)
         }
         runFilter()

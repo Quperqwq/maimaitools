@@ -50,6 +50,8 @@ export interface GameHallItem {
     nickname: string[]
     /**游戏厅含有的游戏 */
     games: string[]
+    /**音游地图对应的机厅ID */
+    map_id: number
     /**游戏厅位置 */
     pos: string | void
     /**玩家上限 */

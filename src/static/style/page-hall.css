@@ -651,13 +651,19 @@ ul.state li.games::before {
     flex-direction: column;
 }
 
-.window-filter .content .show .cont .line {
+.window-filter .content .item .cont .line {
     display: flex;
-    justify-content: center;
     margin-top: .2em;
+    justify-content: flex-start;
 }
 
-.window-filter .content .show .cont .line * {
+.window-filter .content .item .cont .line label {
     width: 50%;
     margin-left: .4em;
+}
+
+.window-filter .content .item .cont .line .info {
+    color: #666;
+    width: 50%;
+    font-style: italic;
 }

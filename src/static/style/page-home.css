@@ -69,6 +69,7 @@ li h3 a {
 /* ↓app(page) list */
 .app-list {
     margin-bottom: 8em;
+    margin-top: 5em;
 }
 
 .app-list li:not(:first-child) {
