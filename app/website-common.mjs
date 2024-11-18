@@ -328,7 +328,7 @@ export class HttpApp {
      * @param {string} param0.html_path 网页文件存放路径
      * @param {boolean} param0.print_req 打印访问日志
      * @param {boolean} param0.use_cache_file 使用缓存文件以提高性能
-     * @param {string} param0.common_html_head 在HTML头部(使用`<REPLACE>`标记的待替换内容)公用的标签
+     * @/param {string} param0.common_html_head 在HTML头部(使用`<REPLACE>`标记的待替换内容)公用的标签
      */
     constructor({
         host = '0.0.0.0',

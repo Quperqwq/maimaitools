@@ -1,4 +1,4 @@
-const version = 'Black-1117_1'
+const version = 'Gray-1118'
 
 /**@typedef {import('../../../app/types').apiResBody} apiResBody */
 /**@typedef {import('../../../app/types').apiReqBody} apiReqBody */
@@ -605,6 +605,31 @@ const getTime = (time) => {
 
     return _toTime(Math.round(time / 1000))
 
+}
+
+/**
+ * 获取两个对象不重复(或重复)的值, 将会返回重复字段的内容(确保两个对象的键一致, 将会比对值)
+ * @param {object} org_obj 原始值
+ * @param {object} new_obj 新值
+ * @param {boolean} _get_rep 获取重复内容的值
+ * @returns {object}
+ * @example 
+ * getObjRepCont({
+ * 'key1': 'old_value', 'key2': 'old_value'
+ * }, {
+ * 'key1': 'old_value', 'key2': 'new_value'
+ * }) // {'key2', 'new_value'}
+ */
+const getObjRepCont = (org_obj, new_obj, _get_rep = false) => {
+    const output = {}
+    Object.keys(org_obj).forEach((key) => {
+        const org_value = org_obj[key]
+        const new_value = new_obj[key]
+        if (new_value === void 0) return
+        if ((_get_rep && new_value === org_value) || (!_get_rep && new_value !== org_value)) return
+        output[key] = new_value
+    })
+    return output
 }
 
 /**

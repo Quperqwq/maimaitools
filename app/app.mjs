@@ -111,9 +111,9 @@ class GameHall {
      * @param {number} id 机厅ID
      * @param {'append' | 'del' | 'change'} method 更改方式
      * @typedef {'player' | 'games' | 'pos' | 'comments' | 'max_player' | 'name' | 'nickname' | 'going'} ChangeType
-     * @param {ChangeType} type 更改类型
+     * @param {ChangeType} type 更改类型, 其值为GameHallItem键的值
      * @param {string | number | Array |object} value 更新值
-     * 
+     * @returns {string}
      */
     change(id, method, type, value) {
         const target = this._getHall(id)

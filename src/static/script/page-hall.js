@@ -238,6 +238,21 @@ const _init = () => {
                 games: new InputList(games.element, games.input)
             }
 
+            /**
+             * 获取表单的内容
+             * @returns {GameHallItem}
+             */
+            const getFormData = () => {
+                const {name, pos, player} = doc.input.hall_set
+                return {
+                    'games': list.games.value,
+                    'max_player': valid(player.value, 10),
+                    'name': valid (name.value, '未指定'),
+                    'nickname': list.nickname.value,
+                    'pos': pos.value
+                }
+            }
+
             // 添加(新建)机厅
             new_hall.addEventListener('click', () => {
                 callbacks.submitSetHall = (input, wait) => {
@@ -262,7 +277,7 @@ const _init = () => {
                 if (!event.target.checked) return
                 form.reset()
                 
-                runCommand(callbacks.showSetHall, list)
+                runCommand(callbacks.showSetHall, list, getFormData())
                 callbacks.showSetHall = void 0
             })
 
@@ -276,15 +291,7 @@ const _init = () => {
             // 提交时, 将表单内容作为参数传递给处理函数
             form.addEventListener('submit', (event) => {
                 event.preventDefault()
-                const {name, pos, player} = doc.input.hall_set
-                /**@type {GameHallItem} */
-                const form_data = {
-                    'games': list.games.value,
-                    'max_player': valid(player.value, 10),
-                    'name': valid (name.value, '未指定'),
-                    'nickname': list.nickname.value,
-                    'pos': pos.value
-                }
+                const form_data = getFormData()
                 // 将等待函数用作参数传递给处理函数
                 const onWait = (is_wait) => {
                     const { submit } = doc.input.hall_set
@@ -370,12 +377,12 @@ const _init = () => {
                     // filter.init = true
                 }
 
-                config.filter
                 const cache = cookie.getObj('filter')
+                config.filter = cache
                 if (Object.keys(cache).length > 0) {
                     // 重置按钮之前的状态
                     reloadStat(cache.show.game, es_game)
-                    reloadStat([cache.fav, ], es_more)
+                    reloadStat([cache.fav ? '' : 'show-fav'], es_more)
                     reloadStat(cache.order.target, es_target)
                     reloadStat(cache.order.method, [e_method])
                 }
@@ -609,14 +616,16 @@ const refreshList = (callback, _init) => {
                     }
                 }
 
-                // 当打开显示评论窗口时
+                // window)当打开显示评论窗口时
                 const showComment = (event) => {
 
                 }
 
+                /**原机厅数据 @type {GameHallItem | {}} */
+                let org_data = {}
                 // 当打开显示设置机厅窗口时
                 const showSet = () => {
-                    // 打开窗体
+                    // 打开窗体时
                     /**@param {boolean} is_wait */
                     callbacks.showSetHall = (input) => {
                         input.games.setValue(games)
@@ -625,8 +634,11 @@ const refreshList = (callback, _init) => {
                         name.value = hall.name
                         pos.value = hall.pos
                         player.value = hall.max_player
+                        // ~(last)
                     }
-                    // 提交内容
+
+                    // 提交内容时
+                    // 1118前的写法
                     callbacks.submitSetHall = (input, wait) => {
                         wait(true)
                         useApi('change_hall_data', {
@@ -645,6 +657,32 @@ const refreshList = (callback, _init) => {
                             refreshList()
                         })
                     }
+
+                    // 1118之后的写法
+                    // callbacks.submitSetHall = (input, wait) => {
+                    //     console.log(org_data);
+                        
+                    //     wait(true)
+                    //     const change_value = []
+                    //     const values = getObjRepCont(org_data, input)
+                    //     Object.keys(values).forEach((target) => {
+                    //         const value = values[target]
+                    //         change_value.push({
+                    //             target,
+                    //             value,
+                    //             method: 'change'
+                    //         })
+                    //     })
+                        
+                    //     useApi('change_hall_data', {
+                    //         value: change_value,
+                    //         id
+                    //     }, (res_data, err) => {
+                    //         wait(false)
+                    //         if (!res_data) infoBar('出错了')
+                    //         console.error('req fail:', err)
+                    //     })
+                    // }
                 }
 
                 // 当点击收藏机厅时
