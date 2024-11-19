@@ -169,12 +169,15 @@
                 </header>
                 <section class="content">
                     <!-- content -->
-                    <div class="line" class="name">
-                        <label for="set-hall-name"> 机厅名 </label>
+                    <div class="index">
+                        <h4> 基本信息 </h4>
+                    </div>
+                    <div class="line name">
+                        <label class="title" for="set-hall-name"> 机厅名 </label>
                         <input id="set-hall-name" type="text" name="hall-name" title="机厅名" minlength="3" maxlength="16" placeholder="输入机厅的名字" required >
                     </div>
-                    <div class="line" class="nickname">
-                        <label for="set-hall-nickname"> 机厅别名 </label>
+                    <div class="line nickname">
+                        <label class="title" for="set-hall-nickname"> 机厅别名 </label>
                         <p class="tip"> 输入完成后，点击其他位置以增加。若需输入更多内容，请重复此操作。 </p>
                         <section class="input-list">
                             <ul class="row" id="set-hall-nickname-list">
@@ -184,17 +187,13 @@
                             <input id="set-hall-nickname" type="text" name="hall-nickname" title="机厅别名" maxlength="8" placeholder="添加...">
                         </section>
                     </div>
-                    <div class="line" class="pos">
-                        <label for="set-hall-pos"> 机厅位置 </label>
+                    <div class="line pos">
+                        <label class="title" for="set-hall-pos"> 机厅位置 </label>
                         <p class="tip"> 一般格式为(省)市、区、街道、商场名、机厅名。 </p>
                         <textarea id="set-hall-pos" type="text" name="hall-pos" title="机厅位置" minlength="6" maxlength="32" required placeholder="输入机厅在哪里"></textarea>
                     </div>
-                    <div class="line" class="max_player">
-                        <label for="set-hall-max_player"> 最大人数 </label>
-                        <input id="set-hall-max_player" type="number" max="50" min="0" name="hall-max_player" value="10" title="最大人数" placeholder="总得有个上限吧?!">
-                    </div>
-                    <div class="line" class="games">
-                        <label for="set-hall-games"> 游戏项目 </label>
+                    <div class="line games">
+                        <label class="title" for="set-hall-games"> 游戏项目 </label>
                 
                         <section class="input-list">
                             <ul class="row" id="set-hall-games-list">
@@ -210,6 +209,29 @@
                             </datalist>
                         </section>
                     </div>
+
+                    <div class="index">
+                        <h4> 详细设置 </h4>
+                    </div>
+                    <div class="line max_player">
+                        <label class="title" for="set-hall-max_player"> 最大人数 </label>
+                        <input id="set-hall-max_player" type="number" max="50" min="0" name="hall-max_player" value="10" title="最大人数" placeholder="总得有个上限吧?!">
+                    </div>
+                    <!-- ~(last) -->
+                    <div class="line open-hours">
+                        <label class="title" for="set-hall-open_hours"> 营业时间 </label>
+                        <div class="cont flex two">
+                            <section class="open-time">
+                                 <label for=""> 开店时间 </label><input type="time" name="" id="">
+                                </section>
+                            <section class="close-time">
+                                <label for=""> 闭店时间 </label><input type="time" name="" id="">
+                            </section>
+                        </div>
+                    </div>
+                    <div class="line map-id">
+                        <label class="title" for="set-hall-open_hours"> 音游地图ID </label>
+                        <input type="number" name="" id="">
                 </section>
                 <footer>
                     <button type="submit" id="submit-hall-set"> 就这样 </button>

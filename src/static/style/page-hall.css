@@ -516,6 +516,19 @@ ul.state li.games::before {
     color: #000;
 }
 
+.window-hall-set .index {
+    text-align: center;
+    margin-bottom: .6em;
+}
+
+.window-hall-set .index h4 {
+    display: inline-block;
+    padding: .2em .4em;
+    background-color: #23b0ff;
+    color: #fff;
+    border-radius: var(--main-radius);
+}
+
 .window-hall-set .line {
     --font-color: #454545;
     color: var(--font-color);
@@ -525,7 +538,7 @@ ul.state li.games::before {
     padding: 0.4em .8em;
 }
 
-.window-hall-set .line label {
+.window-hall-set .line label.title {
     display: inline-block;
     font-weight: 500;
     padding: .2em .4em;
@@ -555,6 +568,10 @@ ul.state li.games::before {
 .window-hall-set .line textarea {
     resize: none;
     background-color: transparent;
+}
+
+.window-hall-set .line.open-hours .cont * {
+    padding-top: 0;
 }
 
 
@@ -604,8 +621,8 @@ ul.state li.games::before {
     border-bottom: .2px solid #000;
 }
 
-.window-hall-set .line:not(:nth-child(1)) {
-    margin-top: .7em;
+.window-hall-set .line {
+    margin-bottom: .7em;
 }
 
 /* window- ↓筛选或排序 */

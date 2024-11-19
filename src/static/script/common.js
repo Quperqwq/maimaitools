@@ -1,4 +1,4 @@
-const version = 'Gray-1118'
+const version = 'Red-1119'
 
 /**@typedef {import('../../../app/types').apiResBody} apiResBody */
 /**@typedef {import('../../../app/types').apiReqBody} apiReqBody */
@@ -24,7 +24,7 @@ const useApi = (target, req_data = {}, callback) => {
     xhr.onload = () => {
         if (xhr.status === 200) {
             const res_data = JSON.parse(xhr.responseText)
-            if (typeof (callback) === 'function') callback(res_data)
+            if (typeof (callback) === 'function') callback(res_data, res_data.message)
         } else {
             console.error('use api failed.')
         }
@@ -32,7 +32,7 @@ const useApi = (target, req_data = {}, callback) => {
     xhr.onerror = () => {
         console.error('Request', xhr.status)
         
-        return typeof(callback) === 'function' ? callback({}, true) : undefined
+        return typeof(callback) === 'function' ? callback({}, 'req_fail') : void 0
     }
 
 
@@ -622,11 +622,41 @@ const getTime = (time) => {
  */
 const getObjRepCont = (org_obj, new_obj, _get_rep = false) => {
     const output = {}
+    /**
+     * 尝试将字符串转换为number， 否则将是原值
+     * @param {any} num 
+     */
+    const toNumber = (num) => {
+        const new_num = +num
+        return Number.isNaN(new_num) ? num : new_num
+    }
+    /**
+     * 判断两个值是否相等
+     * @param {any} org 
+     * @param {any} rel 
+     */
+    const isEqual = (org, rel) => {
+        switch (typeof(org)) {
+            case 'string':
+                return toNumber(org) === toNumber(rel)
+            case 'object':
+                return JSON.stringify(org) === JSON.stringify(rel)
+            default:
+                return org === rel
+        }
+    }
     Object.keys(org_obj).forEach((key) => {
         const org_value = org_obj[key]
         const new_value = new_obj[key]
+
+        // ~(last)
         if (new_value === void 0) return
-        if ((_get_rep && new_value === org_value) || (!_get_rep && new_value !== org_value)) return
+        if (_get_rep) {
+            if (!isEqual(org_value, new_value)) return
+            
+        } else {
+            if (isEqual(org_value, new_value)) return
+        }
         output[key] = new_value
     })
     return output

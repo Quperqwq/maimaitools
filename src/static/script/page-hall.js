@@ -1,4 +1,4 @@
-/**hall_player.html关联的JS文件 */
+/**hall.html关联的JS文件 */
 /**@typedef {import('../../../app/types').GameHallMain} GameHallMain */
 /**@typedef {import('../../../app/types').GameHalls} GameHalls */
 /**@typedef {import('../../../app/types').GameHallItem} GameHallItem */
@@ -295,15 +295,20 @@ const _init = () => {
                 // 将等待函数用作参数传递给处理函数
                 const onWait = (is_wait) => {
                     const { submit } = doc.input.hall_set
+                    const { show_set_hall } = doc.window
                     if (is_wait) {
                         submit.innerText = '稍等'
                         submit.disabled = true
                     } else {
                         submit.innerText = '就这样'
                         submit.disabled = false
+                        show_set_hall.checked = false
                     }
                 }
                 runCommand(callbacks.submitSetHall, form_data, onWait)
+                refreshList(void 0, {
+                    'show_info': false
+                })
             })
         },
 
@@ -418,9 +423,14 @@ const _init = () => {
 /**
  * 更新当前机厅列表
  * @param {function} [callback] 刷新完成后调用
- * @param {boolean} [_init] 是否为初始化
+ * @param {object} param1
+ * @param {boolean} param1._init 为初始化(将会按照第一次操作执行)
+ * @param {boolean} param1.show_info 显示刷新状态的`info_bar`字样
  */
-const refreshList = (callback, _init) => {
+const refreshList = (callback, {
+    _init = false,
+    show_info = true
+} = {}) => {
     /**
      * 设置机厅人的数量决定人数的字体颜色
      * @param {number} number 机厅人数
@@ -433,21 +443,28 @@ const refreshList = (callback, _init) => {
         return 'many'
     }
 
+    /**
+     * infoBar引用
+     */
+    const showInfo = (message = '', setting = {}) => {
+        if (show_info) infoBar(message, setting)
+    }
+
     global.time.refresh = timeIs()
-    infoBar('刷新中...', {keep: true})
+    showInfo('刷新中...', {keep: true})
     // main
     useApi('get_hall_player', {}, (res_data, err) => {
         if (res_data.message) {
-            infoBar('刷新失败!')
+            showInfo('刷新失败!')
             return console.error('refresh fail!', message)
         }
-        infoBar('刷新完成')
+        showInfo('刷新完成')
         /**@type {GameHalls} */
         const org_halls = res_data.data
         console.log(res_data)
         if (typeof(callback) === 'function') callback()
 
-        if (err) return infoBar('更新失败!')
+        if (err) return showInfo('更新失败!')
 
         // step.1) 初始化内容
         doc.list.innerHTML = ''
@@ -621,8 +638,6 @@ const refreshList = (callback, _init) => {
 
                 }
 
-                /**原机厅数据 @type {GameHallItem | {}} */
-                let org_data = {}
                 // 当打开显示设置机厅窗口时
                 const showSet = () => {
                     // 打开窗体时
@@ -634,55 +649,56 @@ const refreshList = (callback, _init) => {
                         name.value = hall.name
                         pos.value = hall.pos
                         player.value = hall.max_player
-                        // ~(last)
                     }
 
                     // 提交内容时
                     // 1118前的写法
-                    callbacks.submitSetHall = (input, wait) => {
-                        wait(true)
-                        useApi('change_hall_data', {
-                            type: 'all',
-                            value: input,
-                            id
-                        }, (res_data, err) => {
-                            const {valid, message} = res_data
-                            wait(false)
-                            if (err) return infoBar('更新失败!')
-                            doc.window.show_set_hall.checked = false
-                            if (!valid) {
-                                infoBar('更新失败!')
-                                console.error('error message:', message)
-                            }
-                            refreshList()
-                        })
-                    }
-
-                    // 1118之后的写法
                     // callbacks.submitSetHall = (input, wait) => {
-                    //     console.log(org_data);
-                        
                     //     wait(true)
-                    //     const change_value = []
-                    //     const values = getObjRepCont(org_data, input)
-                    //     Object.keys(values).forEach((target) => {
-                    //         const value = values[target]
-                    //         change_value.push({
-                    //             target,
-                    //             value,
-                    //             method: 'change'
-                    //         })
-                    //     })
-                        
                     //     useApi('change_hall_data', {
-                    //         value: change_value,
+                    //         type: 'all',
+                    //         value: input,
                     //         id
                     //     }, (res_data, err) => {
+                    //         const {valid, message} = res_data
                     //         wait(false)
-                    //         if (!res_data) infoBar('出错了')
-                    //         console.error('req fail:', err)
+                    //         if (err) return infoBar('更新失败!')
+                    //         if (!valid) {
+                    //             infoBar('更新失败!')
+                    //             console.error('error message:', message)
+                    //         }
+                    //         refreshList()
                     //     })
                     // }
+
+                    // 1118之后的写法
+                    callbacks.submitSetHall = (input, wait) => {
+                        wait(true)
+                        const change_value = []
+                        const values = getObjRepCont(hall, input)
+                        Object.keys(values).forEach((type) => {
+                            const value = values[type]
+                            change_value.push({
+                                type,
+                                value,
+                                method: 'change'
+                            })
+                        })
+
+                        if (change_value.length <= 0) return wait(false) // 在没有更改值的情况下不进行请求
+                        // console.log(change_value);
+                        
+                        useApi('change_hall_data', {
+                            value: change_value,
+                            id
+                        }, (res_data, err) => {
+                            wait(false)
+                            if (err) {
+                                console.error('req fail:', err)
+                                return infoBar('更新时出现错误')
+                            }
+                        })
+                    }
                 }
 
                 // 当点击收藏机厅时

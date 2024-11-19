@@ -13,6 +13,8 @@ const httpd = new HttpApp({
 
 httpd.page('/', 'home.html')
 
+httpd.page('/new', 'new-home.html')
+
 httpd.page('/hall', 'hall.html')
 
 httpd.page('/dev', 'dev.html')
@@ -48,8 +50,8 @@ httpd.api('change_hall_data', (req, _, end) => {
         return end(output.length > 0 ? output : void 0)
     }
 
-    // fork.2) 操作所有内容(因安全原因应被以后弃用)
-    if (type === 'all') return end(hall.update(id, value))
+    // // fork.2) 操作所有内容(因安全原因应被弃用)
+    // if (type === 'all') return end(hall.update(id, value))
 
     // default) 只操作一个值
     return end(hall.change(id, method, type, value))

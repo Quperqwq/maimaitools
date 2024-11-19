@@ -536,7 +536,7 @@ export class HttpApp {
                 
             content = this.readHtml(html_name)
             if (!content) {
-                return res.status(500).send('Server Error!').end()
+                return res.status(500).send('Server Error! File Not Found.').end()
             }
             
             res.send(content).end()
