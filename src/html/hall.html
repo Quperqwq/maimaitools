@@ -159,11 +159,11 @@
     
     
         <!-- window-hall-set -->
-        <div class="modal window-hall-set">
+        <div class="modal sticky window-hall-set">
             <input id="window-hall-set" type="checkbox" />
             <section for="window-hall-set" class="overlay"></section>
             <form id="set-hall-form">
-                <header>
+                <header class="sticky">
                     <h3> 修改或添加 </h3>
                     <label for="window-hall-set" class="close">&times;</label>
                 </header>
@@ -217,21 +217,31 @@
                         <label class="title" for="set-hall-max_player"> 最大人数 </label>
                         <input id="set-hall-max_player" type="number" max="50" min="0" name="hall-max_player" value="10" title="最大人数" placeholder="总得有个上限吧?!">
                     </div>
-                    <!-- ~(last) -->
-                    <div class="line open-hours">
+                    <div class="line open-hours new">
                         <label class="title" for="set-hall-open_hours"> 营业时间 </label>
-                        <div class="cont flex two">
-                            <section class="open-time">
-                                 <label for=""> 开店时间 </label><input type="time" name="" id="">
-                                </section>
-                            <section class="close-time">
-                                <label for=""> 闭店时间 </label><input type="time" name="" id="">
-                            </section>
+                        <p class="tip">
+                            在非营业时间的时候会自动将人数设定为不可用状态。
+                        </p>
+                        <div class="cont flex two" id="set-hall-open_hours">
+                            <label class="open-time">
+                                <span>开店时间</span>
+                                <input type="time" name="open">
+                            </label>
+                            <label class="close-time">
+                                <span>闭店时间</span>
+                                <input type="time" name="close">
+                            </label>
                         </div>
                     </div>
-                    <div class="line map-id">
-                        <label class="title" for="set-hall-open_hours"> 音游地图ID </label>
-                        <input type="number" name="" id="">
+                    <div class="line map-id new">
+                        <label class="title" for="set-hall-map-id">
+                            音游地图ID
+                        </label>
+                        <p class="tip">
+                            填写来自<a href="https://map.bemanicn.com/" title="跳转至音游地图" target="_blank" rel="noopener">音游地图</a>的机厅ID或该机厅在音游地图的链接。
+                        </p>
+                        <input type="text" id="set-hall-map-id" placeholder="输入链接或ID">
+                    </div>
                 </section>
                 <footer>
                     <button type="submit" id="submit-hall-set"> 就这样 </button>

@@ -1,4 +1,5 @@
 import data from './data.mjs'
+import { log } from './website-common.mjs'
 
 /**@typedef {import('./types').GameHallMain} GameHallMain */
 /**@typedef {import('./types').GameHallItem} GameHallItem */
@@ -238,12 +239,14 @@ class GameHall {
             open_hours: {
                 'change': () => {
                     const {open_hours} = target
-                    if (!Array.isArray(value)) return 'invalid_type'
-                    if (!value.length < 2) return 'format_error'
-                    // const open = valid(value[0], 'number', open_hours.open)
-                    // const close = valid(value[1], 'number', open_hours.close)
-                    open_hours.open = value[0]
-                    open_hours.close = value[1]
+                    if (!open_hours) open_hours = {}
+                    const { open = 0, close = 1440 } = value
+                    // if (!Array.isArray(value)) return 'invalid_type'
+                    // if (!value.length < 2) return 'format_error'
+                    open_hours.open = open
+                    open_hours.close = close
+                    
+                    console.log(open_hours);
                 }
             },
             map_id: {}
@@ -253,6 +256,7 @@ class GameHall {
         if (!exe_type) return 'type_not_found'
         const exe = exe_type[method]
         if (!exe) return 'invalid_method'
+        log.debug('(change hall data) ' + method + ' ' + type + ', value of: ' + value)
         const output = exe()
         if (output) return output
 

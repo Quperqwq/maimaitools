@@ -285,13 +285,13 @@ class OutputLog {
 
     }
 
-    error(cont = '') {
-        this.output(cont, 3)
+    error(...cont) {
+        this.output(cont.join(' '), 3)
         return new Error(cont)
     }
-    warn(cont = '') { this.output(cont, 2) }
-    info(cont = '') { this.output(cont, 1) }
-    debug(cont = '') { this.output(cont, 0) }
+    warn(...cont) { this.output(cont.join(' '), 2) }
+    info(...cont) { this.output(cont.join(' '), 1) }
+    debug(...cont) { this.output(cont.join(' '), 0) }
     /**
      * 在控制台打印一个请求信息
      * @param {Request} req 

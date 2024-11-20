@@ -159,6 +159,15 @@ const getQSA = (query, id_name, __debug) => {
     return target.querySelectorAll(query)
 }
 
+/**
+ * (DOM)querySelector
+ * @param {string} query 
+ * @param {string} id_name 
+ */
+const getQS = (query, id_name) => {
+    return getQSA(query, id_name)[0]
+}
+
 /** 
 * (DOM)获取对象内所有ID对应在DOM内的元素
 * @param {Object.<string, Object | string>} obj 需要获取元素的对象
@@ -605,6 +614,26 @@ const getTime = (time) => {
 
     return _toTime(Math.round(time / 1000))
 
+}
+
+/**
+ * 获取一天的某个时间(0~1440)
+ * @param {number | string} time 
+ */
+const toDayTime = (time) => {
+    if (time < 0) time = 0
+    if (time > 1400) time = 1440
+    const num_time = +time
+    if (Number.isNaN(num_time)) {
+        // string的时间格式
+        const str_time = time.split(':')
+        return (+str_time[0] * 60) + +str_time[1]
+    }
+    // number的时间格式
+    const hours = Math.floor(time / 60)
+    
+    const minutes = time - (hours * 60)
+    return `${hours}:${minutes}`
 }
 
 /**

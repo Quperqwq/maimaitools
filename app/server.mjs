@@ -10,6 +10,7 @@ const httpd = new HttpApp({
     'host': config.server_host
 })
 
+// rout
 
 httpd.page('/', 'home.html')
 
@@ -23,6 +24,8 @@ httpd.page('/score', 'score.html')
 
 httpd.page('/about', 'about.html')
 
+
+httpd.page('/robots.txt', 'User-agent: *\nAllow: /\nAllow: /hall\nDisallow: /')
 
 // API...
 

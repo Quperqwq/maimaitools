@@ -76,7 +76,7 @@ export interface GameHallItem {
         /**上一个评论ID */
         last_id: number
     }
-    /**营业时间 */
+    /**营业时间, 有效格式为一个`0~1440`的数字 */
     open_hours: {
         /**开店时间 */
         open: number

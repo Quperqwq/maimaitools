@@ -36,6 +36,11 @@ const doc = {
                 /**input Element */,
                 input: getEBI('set-hall-games')
             },
+            open_hours: {
+                open: getQS('[name="open"]', 'set-hall-open_hours'),
+                close: getQS('[name="close"]', 'set-hall-open_hours')
+            },
+            map_id: getEBI('set-hall-map-id'),
             new_hall: getEBI('window-hall-new')
         },
         trip: {
@@ -243,14 +248,25 @@ const _init = () => {
              * @returns {GameHallItem}
              */
             const getFormData = () => {
-                const {name, pos, player} = doc.input.hall_set
-                return {
+                const {name, pos, player, open_hours: {open, close}, map_id: _map_id} = doc.input.hall_set
+                let map_id = _map_id.value
+                try {
+                    const url = new URL(_map_id.value)
+                    map_id = url.pathname.split('/').pop()
+                } catch (error) { }
+                map_id = valid(map_id, void 0)
+                return print({
                     'games': list.games.value,
                     'max_player': valid(player.value, 10),
-                    'name': valid (name.value, '未指定'),
+                    'name': valid(name.value, '未指定'),
                     'nickname': list.nickname.value,
-                    'pos': pos.value
-                }
+                    'pos': pos.value,
+                    'open_hours': {
+                        'close': toDayTime(close.value),
+                        'open': toDayTime(open.value)
+                    },
+                    map_id
+                })
             }
 
             // 添加(新建)机厅
@@ -280,6 +296,11 @@ const _init = () => {
                 runCommand(callbacks.showSetHall, list, getFormData())
                 callbacks.showSetHall = void 0
             })
+
+            // 音游地图ID(失去焦点 => 转换为ID)
+            // map_id.addEventListener('blur', () => {
+
+            // })
 
             // 重置表单
             form.addEventListener('reset', () => {
@@ -511,7 +532,7 @@ const refreshList = (callback, {
                     const {going} = config
                     const {text: {trip: {name, pos}}, card: {trip}} = doc
                     const hall_name = e_hall_name
-                        
+                    
                     const req_tmp = {
                         id: id,
                         type: 'going',
@@ -641,14 +662,19 @@ const refreshList = (callback, {
                 // 当打开显示设置机厅窗口时
                 const showSet = () => {
                     // 打开窗体时
-                    /**@param {boolean} is_wait */
                     callbacks.showSetHall = (input) => {
                         input.games.setValue(games)
                         input.nickname.setValue(nickname)
-                        const {name, pos, player} = doc.input.hall_set
+                        const {name, pos, player, open_hours: {open, close}} = doc.input.hall_set
                         name.value = hall.name
                         pos.value = hall.pos
                         player.value = hall.max_player
+                        // ~(last)意外值
+                        // if (hall.open_hours) {
+                        //     console.log(hall.open_hours)
+                        //     open.value = toDayTime(hall.open_hours.open)
+                        //     close.value = toDayTime(hall.open_hours.close)
+                        // }
                     }
 
                     // 提交内容时
@@ -684,6 +710,8 @@ const refreshList = (callback, {
                                 method: 'change'
                             })
                         })
+                        // console.log(change_value);
+                        
 
                         if (change_value.length <= 0) return wait(false) // 在没有更改值的情况下不进行请求
                         // console.log(change_value);
@@ -697,6 +725,7 @@ const refreshList = (callback, {
                                 console.error('req fail:', err)
                                 return infoBar('更新时出现错误')
                             }
+                            infoBar('修改成功')
                         })
                     }
                 }
@@ -814,6 +843,7 @@ const refreshList = (callback, {
                 const _go_hall = cookie.get('goto_hall')
                 if (+_go_hall === id) {
                     // 如果有
+                    
                     config.going.is = true
                     if (_init) updateTrip(true)
                     e_hall_name.classList.add('go')
@@ -915,4 +945,4 @@ const refreshList = (callback, {
 }
 
 _init()
-refreshList(void 0, true)
+refreshList(void 0, {'_init': true})

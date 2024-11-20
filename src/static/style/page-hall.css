@@ -509,7 +509,8 @@ ul.state li.games::before {
     /* text-decoration: underline; */
 }
 
-/* 机厅设置 */
+/* ↓window-机厅设置 */
+
 
 .window-hall-set input, .window-hall-set textarea {
     background-color: transparent;
@@ -524,18 +525,30 @@ ul.state li.games::before {
 .window-hall-set .index h4 {
     display: inline-block;
     padding: .2em .4em;
-    background-color: #23b0ff;
+    font-weight: 700;
+    background-color: #32b5ff;
     color: #fff;
     border-radius: var(--main-radius);
 }
 
 .window-hall-set .line {
     --font-color: #454545;
-    color: var(--font-color);
     display: block;
-    background-color: #f8f9ff;
-    border-radius: var(--main-radius);
+    position: relative;
     padding: 0.4em .8em;
+    border-radius: var(--main-radius);
+    background-color: #f8f9ff;
+    color: var(--font-color);
+}
+
+.window-hall-set .line.new::after {
+    content: 'NEW';
+    display: block;
+    position: absolute;
+    right: .4em;
+    top: 0;
+    color: green;
+    font-style: italic;
 }
 
 .window-hall-set .line label.title {
