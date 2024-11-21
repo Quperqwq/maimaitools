@@ -7,6 +7,30 @@ import { log } from './website-common.mjs'
 
 /**游戏厅 */
 class GameHall {
+    // 使用初始化值, 便于以后增加字段
+    /** 游戏厅数据结构初始内容 @type {GameHallItem} */
+    _hall_init = {
+        'comments': {'last_id': 0},
+        'games': [],
+        'going': 0,
+        'id': 0,
+        'map_id': 0,
+        'max_player': 10,
+        'name': '',
+        'nickname': [],
+        'open_hours': {
+            'close': 0,
+            'open': 0
+        },
+        'player': 0,
+        'pos': '',
+        'time': {
+            'change': -1,
+            'change_player': -1,
+            'new': -1
+        }
+    }
+
     constructor() {
         const org_data = this.all_hall
         if (Object.keys(this.all_hall) <= 0) {
@@ -48,7 +72,13 @@ class GameHall {
      * @returns {GameHallItem | undefined}
      */
     _getHall(id) {
-        return this.all_hall.halls[id]
+        const target = this.all_hall.halls[id]
+        if (!target) return
+        return {
+            ...this._hall_init,
+            id,
+            ...target
+        }
     }
 
     /**
@@ -80,24 +110,16 @@ class GameHall {
         // init ~(TAG)在这里创建新的机厅数据
         /**@type {GameHallItem} */
         const hall_data = {
+            ...this._hall_init,
             'games': valid(games, 'array', []),
             'max_player': valid(max_player, 'number', 10),
             'name': valid(name, 'string', '无效机厅名'),
             'nickname': valid(nickname, 'array', []),
             'pos': valid(pos, 'string', '无效位置'),
-            'map_id': -1,
-            'player': 0,
             'time': {
                 'new': this._time,
                 'change': this._time,
                 'change_player': this._time
-            },
-            'comments': {
-                'last_id': 0
-            },
-            'open_hours': {
-                'close': 0,
-                'open': 0
             }
         }
         const org_data = this.all_hall
@@ -157,9 +179,18 @@ class GameHall {
             return target_number
         }
 
+        /**
+         * 检查一个数字是否有效
+         * @param {number | string} num 
+         * @returns {number | null}
+         */
+        const validNumber = (num) => {
+            const _num = +num
+            return isNaN(_num) ? null : _num
+        }
 
         /**
-         * @type {{[x: string]: {append: function, del: function, change: function}}}
+         * 修改字段值的方法 @type {{[x: string]: {append: function, del: function, change: function}}}
          */
         const execute = {
             player: {
@@ -205,7 +236,12 @@ class GameHall {
                 }
             },
             max_player: {
-                change: () => { target.max_player = +value }
+                change: () => {
+                    const _value = validNumber(value)
+                    if (_value === null) return 'invalid_value'
+
+                    target.max_player = _value
+                }
             },
             name: {
                 change: () => { target.name = value }
@@ -241,15 +277,24 @@ class GameHall {
                     const {open_hours} = target
                     if (!open_hours) open_hours = {}
                     const { open = 0, close = 1440 } = value
-                    // if (!Array.isArray(value)) return 'invalid_type'
-                    // if (!value.length < 2) return 'format_error'
-                    open_hours.open = open
-                    open_hours.close = close
                     
-                    console.log(open_hours);
+                    if ((open < 0 || close > 1440) // 非合法范围
+                        || // 非合法数字
+                    (isNaN(+open) || isNaN(+close))) return 'invalid_value'
+
+                    open_hours.open = +open
+                    open_hours.close = +close
                 }
             },
-            map_id: {}
+            // map id
+            map_id: {
+                'change': () => {
+                    const _value = validNumber(value)
+                    if (_value === null) return 'invalid_value'
+                    // ~(last)
+                    target.map_id = _value
+                }
+            }
         }
 
         const exe_type = execute[type]
@@ -265,34 +310,35 @@ class GameHall {
         return ''
     }
 
-    /**
-     * 更新机厅数据
-     * @param {number} id 机厅ID
-     * @param {GameHallItem} new_data 更新数据
-     */
-    update(id, new_data) {
-        if (!new_data) return 'param_not_fond'
-        const target = this._getHall(id)
-        if (!target) return 'game_hall_not_found'
-        const change = (key_name, value) => {
-            target[key_name] = value ? value : target[key_name]
-        }
-        const {games, name, max_player, nickname, pos, open_hours, map_id} = new_data
+    // 由于安全原因这个方法被弃用 (20241121)
+    // /**
+    //  * 更新机厅数据
+    //  * @param {number} id 机厅ID
+    //  * @param {GameHallItem} new_data 更新数据
+    //  */
+    // update(id, new_data) {
+    //     if (!new_data) return 'param_not_fond'
+    //     const target = this._getHall(id)
+    //     if (!target) return 'game_hall_not_found'
+    //     const change = (key_name, value) => {
+    //         target[key_name] = value ? value : target[key_name]
+    //     }
+    //     const {games, name, max_player, nickname, pos, open_hours, map_id} = new_data
         
-        // #(FIX) 人性化?优化?
-        change('games', games)
-        change('max_player', max_player)
-        change('name', name)
-        change('nickname', nickname)
-        change('pos', pos)
-        change('open_hours', open_hours)
-        change('map_id', map_id)
-        target.time.change = this._time
-        // console.log(target);
+    //     // #(FIX) 人性化?优化?
+    //     change('games', games)
+    //     change('max_player', max_player)
+    //     change('name', name)
+    //     change('nickname', nickname)
+    //     change('pos', pos)
+    //     change('open_hours', open_hours)
+    //     change('map_id', map_id)
+    //     target.time.change = this._time
+    //     // console.log(target);
         
 
-        this._updateHall(id, target)
-    }
+    //     this._updateHall(id, target)
+    // }
 
     /**
      * 添加一个正在前往机厅的玩家

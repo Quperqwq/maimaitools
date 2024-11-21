@@ -198,6 +198,10 @@ section {
     --content: '\e9d9';
 }
 
+.icon-copy {
+    --content: '\e925';
+}
+
 @media (max-width: 60em) {
 
     /* 手机版大小媒体响应 */

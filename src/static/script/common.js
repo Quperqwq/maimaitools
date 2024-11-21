@@ -1,4 +1,4 @@
-const version = 'Red-1119'
+const version = 'SkyBlue'
 
 /**@typedef {import('../../../app/types').apiResBody} apiResBody */
 /**@typedef {import('../../../app/types').apiReqBody} apiReqBody */
@@ -6,6 +6,17 @@ const version = 'Red-1119'
 /**仅在此脚本之内使用的全局变量 */
 const _global = {
     title: 'maimaitools'
+}
+
+/** 用于此APP的全局设置 */
+const setting = {
+    /** 获取URL */
+    url: {
+        /** 获取`全国音游地图`URL */
+        'music_map': (id) => {
+            return `https://map.bemanicn.com/shop/${id}`
+        }
+    }
 }
 
 /**
@@ -617,12 +628,21 @@ const getTime = (time) => {
 }
 
 /**
+ * 获取一天所处的时间段`0~1440`
+ */
+const getDayTime = () => {
+    const date = new Date()
+    return (date.getHours() * 60) + date.getMinutes()
+}
+
+/**
  * 获取一天的某个时间(0~1440)
  * @param {number | string} time 
  */
 const toDayTime = (time) => {
     if (time < 0) time = 0
     if (time > 1400) time = 1440
+    if (time === '') time = '0:0'
     const num_time = +time
     if (Number.isNaN(num_time)) {
         // string的时间格式
@@ -633,7 +653,8 @@ const toDayTime = (time) => {
     const hours = Math.floor(time / 60)
     
     const minutes = time - (hours * 60)
-    return `${hours}:${minutes}`
+    const padZero = (num) => String(num).padStart(2, '0')
+    return `${padZero(hours)}:${padZero(minutes)}`
 }
 
 /**
@@ -670,19 +691,20 @@ const getObjRepCont = (org_obj, new_obj, _get_rep = false) => {
                 return toNumber(org) === toNumber(rel)
             case 'object':
                 return JSON.stringify(org) === JSON.stringify(rel)
+            case 'number':
+                return org === toNumber(rel)
             default:
                 return org === rel
         }
     }
     Object.keys(org_obj).forEach((key) => {
-        const org_value = org_obj[key]
-        const new_value = new_obj[key]
+        const org_value = toNumber(org_obj[key])
+        const new_value = toNumber(new_obj[key])
 
-        // ~(last)
         if (new_value === void 0) return
         if (_get_rep) {
-            if (!isEqual(org_value, new_value)) return
             
+            if (!isEqual(org_value, new_value)) return
         } else {
             if (isEqual(org_value, new_value)) return
         }

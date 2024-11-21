@@ -407,7 +407,7 @@ ul.state li.games::before {
 }
 
 #hall-player-list .right {
-    /* height: 4em; */
+    height: 6.5em;
     padding-left: var(--padding);
     border-left: var(--border-size) solid #bbb;
 }
@@ -509,7 +509,7 @@ ul.state li.games::before {
     /* text-decoration: underline; */
 }
 
-/* ↓window-机厅设置 */
+/* window-↓机厅设置 */
 
 
 .window-hall-set input, .window-hall-set textarea {
@@ -696,4 +696,35 @@ ul.state li.games::before {
     color: #666;
     width: 50%;
     font-style: italic;
+}
+
+/* window - 机厅详情 */
+
+.window-hall-detail article .content {
+    padding-bottom: .4em;
+}
+
+.window-hall-detail .content p.item .title {
+    display: inline-block;
+    /* width: 5em; */
+    padding: .2em .4em;
+    margin-right: .2em;
+    font-weight: 600;
+    color: #2f69ff;
+    background-color: #efebfc;
+    border-radius: var(--main-radius);
+}
+
+/* .window-hall-detail .content p.item .cont::hover {
+
+} */
+
+.window-hall-detail .content p.link {
+    text-align: center;
+}
+
+.window-hall-detail .content p.link a.ban {
+    /* 链接禁用状态 */
+    pointer-events: none;
+    filter: brightness(.6);
 }

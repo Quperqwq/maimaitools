@@ -270,7 +270,7 @@
         </div>
         
         <!-- window-hall-detail -->
-        <div class="modal">
+        <div class="modal window-hall-detail">
             <input id="window-hall-detail" type="checkbox" />
             <label for="window-hall-detail" class="overlay"></label>
             <article>
@@ -278,7 +278,7 @@
                     <h3> 详情 </h3>
                     <label for="window-hall-detail" class="close">&times;</label>
                 </header>
-                <section class="content hall-detail">
+                <section class="content left-icon-items no_margin-icon-items">
                     <!-- content -->
                     <p>
                         <strong id="detail-hall-name">--</strong>当前游玩人数<strong id="detail-hall-player">0</strong>人, 预计需要排队<strong id="detail-hall-time-wait">0分钟</strong>。
@@ -287,22 +287,27 @@
                         上次更新时间是<strong id="detail-hall-time-update">0分钟</strong>前。
                     </p>
                     <hr>
-                    <p>
-                        机厅ID: <span id="detail-hall-id"></span>
+                    <p class="item">
+                        <span class="title">机厅ID:</span><span class="cont" id="detail-hall-id"></span>
                     </p>
-                    <p>
-                        机厅别名: <span id="detail-hall-nickname"></span>
+                    <p class="item">
+                        <span class="title">机厅别名:</span>
+                        <span id="detail-hall-nickname" class="cont"></span>
                     </p>
-                    <p>
-                        机厅位置: <span id="detail-hall-pos"></span>
+                    <p class="item">
+                        <span class="title">机厅位置:</span><span id="detail-hall-pos" class="cont"></span>
                     </p>
-                    <p>
-                        最大容纳: <span id="detail-hall-max"></span>人
+                    <p class="item">
+                        <span class="title">最大容纳:</span><span id="detail-hall-max" class="cont"></span>人
+                    </p>
+                    <hr>
+                    <p class="link">
+                        <a id="detail-hall-link-map" class="pseudo button icon-link" href="#" target="_blank"> 音游地图 </a> 
                     </p>
                 </section>
-                <footer>
-                    <label for="window-hall-detail" class="button right"> 好 </label>
-                </footer>
+                <!-- <footer>
+                    <label for="window-hall-detail" class="button right"> 知道了 </label>
+                </footer> -->
             </article>
         </div>
     

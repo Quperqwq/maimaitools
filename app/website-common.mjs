@@ -5,7 +5,7 @@ import Path from 'path'
 
 /**@typedef {import('./types').apiReqBody} apiReqBody  */
 
-/**@typedef {import('./types').apiReqBody} apiResBody */
+/**@typedef {import('./types').apiResBody} apiResBody */
 
 
 /**
@@ -316,7 +316,7 @@ class OutputLog {
  * 构建一个HTTP服务
  */
 export class HttpApp {
-    /**@typedef { function(apiReqBody, apiResBody, function(string): void): void } apiProcCallback api处理函数*/
+    /**@typedef { function(apiReqBody, apiResBody, function(string | object): void): void } apiProcCallback api处理函数*/
     /**
      * 
      * @param {Object} param0 

@@ -25,7 +25,9 @@ httpd.page('/score', 'score.html')
 httpd.page('/about', 'about.html')
 
 
-httpd.page('/robots.txt', 'User-agent: *\nAllow: /\nAllow: /hall\nDisallow: /')
+httpd.get('/robots.txt', (req, res) => {
+    res.send('User-agent: * \nAllow: / \nAllow: /hall \nDisallow: /').end()
+})
 
 // API...
 
@@ -37,20 +39,27 @@ httpd.api('get_hall_player', (_, res, end) => {
     res.data = hall.all_hall.halls
     end()
 })
-httpd.api('change_hall_data', (req, _, end) => {
+httpd.api('change_hall_data', (req, res, end) => {
     const {id, type, method = '', value = {}} = req
     
 
     // fork.1) 需要操作多个值, 在这个情况下将忽略直接传递的`method`和`type`
     if (Array.isArray(value)) {
-        const output = []
+        let _err = false
+        const output = {}
         value.forEach((target) => {
             const {type, value, method} = target
             const result = hall.change(id, method, type, value)
-            if (result) output.push(result) 
+            if (!result) return
+            // 设置值有误
+            output[type] = result
+            _err = true
         })
-
-        return end(output.length > 0 ? output : void 0)
+        if (_err) {
+            res.data = output
+            return end('have_error')
+        }
+        return end()
     }
 
     // // fork.2) 操作所有内容(因安全原因应被弃用)

@@ -70,7 +70,10 @@ const doc = {
             nickname: getEBI('detail-hall-nickname'),
             pos: getEBI('detail-hall-pos'),
             max: getEBI('detail-hall-max'),
-            id: getEBI('detail-hall-id')
+            id: getEBI('detail-hall-id'),
+            link: {
+                map: getEBI('detail-hall-link-map')
+            }
         },
         player_number: {
             name: getEBI('player-number-name'),
@@ -251,11 +254,18 @@ const _init = () => {
                 const {name, pos, player, open_hours: {open, close}, map_id: _map_id} = doc.input.hall_set
                 let map_id = _map_id.value
                 try {
-                    const url = new URL(_map_id.value)
-                    map_id = url.pathname.split('/').pop()
+                    const url = new URL(map_id)
+                    if (url.hostname === 'map.bemanicn.com') { // 是音游地图域名将会取尾
+                        map_id = url.pathname.split('/').pop()
+                    } else { // 不是音游地图域名
+                        map_id = void 0
+                    }
+                    
                 } catch (error) { }
-                map_id = valid(map_id, void 0)
-                return print({
+                map_id = map_id || +_map_id.value || void 0
+                console.log(map_id)
+                
+                return {
                     'games': list.games.value,
                     'max_player': valid(player.value, 10),
                     'name': valid(name.value, '未指定'),
@@ -266,7 +276,7 @@ const _init = () => {
                         'open': toDayTime(open.value)
                     },
                     map_id
-                })
+                }
             }
 
             // 添加(新建)机厅
@@ -326,7 +336,7 @@ const _init = () => {
                         show_set_hall.checked = false
                     }
                 }
-                runCommand(callbacks.submitSetHall, form_data, onWait)
+                /* 在这里调用 */runCommand(callbacks.submitSetHall, form_data, onWait)
                 refreshList(void 0, {
                     'show_info': false
                 })
@@ -400,7 +410,6 @@ const _init = () => {
                     input_elements.forEach((element) => {
                         element.checked = _cont.includes(element.value)
                     })
-                    // filter.init = true
                 }
 
                 const cache = cookie.getObj('filter')
@@ -408,7 +417,7 @@ const _init = () => {
                 if (Object.keys(cache).length > 0) {
                     // 重置按钮之前的状态
                     reloadStat(cache.show.game, es_game)
-                    reloadStat([cache.fav ? '' : 'show-fav'], es_more)
+                    // reloadStat([cache.fav ? '' : 'show-fav'], es_more)
                     reloadStat(cache.order.target, es_target)
                     reloadStat(cache.order.method, [e_method])
                 }
@@ -496,7 +505,6 @@ const refreshList = (callback, {
          */
         const main = (halls) => {
             Object.keys(halls).forEach((key) => {
-                // ~(lats)绑定音游地图, 添加营业时间
 
                 // 根据对象创建网页元素并绑定相关事件
                 const hall = halls[+key]
@@ -641,7 +649,11 @@ const refreshList = (callback, {
                 // 当打开显示详情窗口时
                 const showDetail = () => {
                     callbacks.showDetail = (elements) => {
-                        const {name: e_name, player: e_player, time_update: e_time_update, time_wait: e_time_wait, nickname: e_nickname, pos: e_pos, max: e_max, id: e_id} = elements
+                        // 创建引用
+                        const {name: e_name, player: e_player, time_update: e_time_update, time_wait: e_time_wait, nickname: e_nickname, pos: e_pos, max: e_max, id: e_id, link: {map: e_link_map}} = elements
+                        const {map_id} = hall
+
+                        // >文字
                         e_name.innerText = name
                         e_player.innerText = player
                         e_time_update.innerText = time.update
@@ -651,6 +663,14 @@ const refreshList = (callback, {
                         e_pos.innerText = valid(pos, '未指定')
                         e_max.innerText = max_player
                         e_id.innerText = id
+
+                        // >链接
+                        if (map_id) {
+                            e_link_map.href = setting.url.music_map(map_id)
+                            e_link_map.classList.remove('ban')
+                        } else {
+                            e_link_map.classList.add('ban')
+                        }
                     }
                 }
 
@@ -665,42 +685,26 @@ const refreshList = (callback, {
                     callbacks.showSetHall = (input) => {
                         input.games.setValue(games)
                         input.nickname.setValue(nickname)
-                        const {name, pos, player, open_hours: {open, close}} = doc.input.hall_set
+                        const {name, pos, player, open_hours: {open, close}, map_id} = doc.input.hall_set
                         name.value = hall.name
                         pos.value = hall.pos
                         player.value = hall.max_player
-                        // ~(last)意外值
-                        // if (hall.open_hours) {
-                        //     console.log(hall.open_hours)
-                        //     open.value = toDayTime(hall.open_hours.open)
-                        //     close.value = toDayTime(hall.open_hours.close)
-                        // }
+                        map_id.value = hall.map_id
+                        
+                        // 营业时间字段
+                        if (hall.open_hours) {
+                            console.log(hall.open_hours)
+                            open.value = toDayTime(hall.open_hours.open)
+                            close.value = toDayTime(hall.open_hours.close)
+                        }
                     }
 
-                    // 提交内容时
-                    // 1118前的写法
-                    // callbacks.submitSetHall = (input, wait) => {
-                    //     wait(true)
-                    //     useApi('change_hall_data', {
-                    //         type: 'all',
-                    //         value: input,
-                    //         id
-                    //     }, (res_data, err) => {
-                    //         const {valid, message} = res_data
-                    //         wait(false)
-                    //         if (err) return infoBar('更新失败!')
-                    //         if (!valid) {
-                    //             infoBar('更新失败!')
-                    //             console.error('error message:', message)
-                    //         }
-                    //         refreshList()
-                    //     })
-                    // }
-
-                    // 1118之后的写法
-                    callbacks.submitSetHall = (input, wait) => {
+                    /* 在这里请求 */callbacks.submitSetHall = (input, wait) => {
+                        // 提交更改时
                         wait(true)
                         const change_value = []
+                        
+                        // 获取改的字段内容
                         const values = getObjRepCont(hall, input)
                         Object.keys(values).forEach((type) => {
                             const value = values[type]
@@ -710,11 +714,9 @@ const refreshList = (callback, {
                                 method: 'change'
                             })
                         })
-                        // console.log(change_value);
-                        
+                        console.debug('change: ', change_value)
 
                         if (change_value.length <= 0) return wait(false) // 在没有更改值的情况下不进行请求
-                        // console.log(change_value);
                         
                         useApi('change_hall_data', {
                             value: change_value,
@@ -722,7 +724,7 @@ const refreshList = (callback, {
                         }, (res_data, err) => {
                             wait(false)
                             if (err) {
-                                console.error('req fail:', err)
+                                console.error('req fail:', res_data.data)
                                 return infoBar('更新时出现错误')
                             }
                             infoBar('修改成功')
@@ -766,6 +768,13 @@ const refreshList = (callback, {
                 const e_main = create('section', { class: 'main' })
 
                 // DOM-create right
+                //    ...   |  >当前人数<
+                const now_time = getDayTime()
+                if (hall.open_hours.close < now_time || hall.open_hours.close > now_time) {
+                    // ~(lats)添加营业时间
+
+                }
+
                 const e_right = create('section', { class: 'right' })
                 join(e_right, (join(
                     create('label', { for: 'window-change-player' }, showPlayerNumber), {
