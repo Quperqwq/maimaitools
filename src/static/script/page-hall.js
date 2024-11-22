@@ -71,6 +71,7 @@ const doc = {
             pos: getEBI('detail-hall-pos'),
             max: getEBI('detail-hall-max'),
             id: getEBI('detail-hall-id'),
+            open_hours: getEBI('detail-hall-open_hours'),
             link: {
                 map: getEBI('detail-hall-link-map')
             }
@@ -483,7 +484,7 @@ const refreshList = (callback, {
     global.time.refresh = timeIs()
     showInfo('刷新中...', {keep: true})
     // main
-    useApi('get_hall_player', {}, (res_data, err) => {
+    useApi('get_hall_data', {}, (res_data, err) => {
         if (res_data.message) {
             showInfo('刷新失败!')
             return console.error('refresh fail!', message)
@@ -491,7 +492,7 @@ const refreshList = (callback, {
         showInfo('刷新完成')
         /**@type {GameHalls} */
         const org_halls = res_data.data
-        console.log(res_data)
+        console.log('hall data:', res_data.data)
         if (typeof(callback) === 'function') callback()
 
         if (err) return showInfo('更新失败!')
@@ -513,6 +514,14 @@ const refreshList = (callback, {
                 const {input} = doc.input.player_number
                 const {fav: fav_hall} = config
 
+                /**营业时间段的`string`样式 */
+                const str_open_hours = {
+                    open: toDayTime(hall.open_hours.open),
+                    close: toDayTime(hall.open_hours.close),
+                }
+                /**营业时间段期间的`string`样式 */
+                const open_hours_period = str_open_hours.open + ' - ' + str_open_hours.close
+
                 /**用户是否收藏了此机厅 */
                 let is_fav = fav_hall.includes(`${id}`)
 
@@ -529,6 +538,21 @@ const refreshList = (callback, {
                 }
                 /**时间相关内容 */
                 const time = new Time()
+
+                // 快捷方式
+                /**
+                 * 是否在营业时间内
+                 */
+                const inOpenHours = () => {
+                    if (hall.open_hours.open !== null) {
+                        const {open, close} = hall.open_hours
+                        const now_time = getDayTime()
+                        if (close > now_time && open < now_time) {
+                            return true
+                        }
+                    }
+                    return false
+                }
 
 
                 // ~创建快捷操作DOM的方式
@@ -650,7 +674,7 @@ const refreshList = (callback, {
                 const showDetail = () => {
                     callbacks.showDetail = (elements) => {
                         // 创建引用
-                        const {name: e_name, player: e_player, time_update: e_time_update, time_wait: e_time_wait, nickname: e_nickname, pos: e_pos, max: e_max, id: e_id, link: {map: e_link_map}} = elements
+                        const {name: e_name, player: e_player, time_update: e_time_update, time_wait: e_time_wait, nickname: e_nickname, pos: e_pos, max: e_max, id: e_id, open_hours: e_open_hours, link: {map: e_link_map}} = elements
                         const {map_id} = hall
 
                         // >文字
@@ -663,6 +687,7 @@ const refreshList = (callback, {
                         e_pos.innerText = valid(pos, '未指定')
                         e_max.innerText = max_player
                         e_id.innerText = id
+                        e_open_hours.innerText = open_hours_period
 
                         // >链接
                         if (map_id) {
@@ -768,18 +793,39 @@ const refreshList = (callback, {
                 const e_main = create('section', { class: 'main' })
 
                 // DOM-create right
-                //    ...   |  >当前人数<
-                const now_time = getDayTime()
-                if (hall.open_hours.close < now_time || hall.open_hours.close > now_time) {
-                    // ~(lats)添加营业时间
-
+                
+                // ________________________
+                //    ...      | >当前人数<
+                //             |     x
+                // ____________|___________
+                const e_right_title = create('h3', {}, '当前人数')
+                // ________________________
+                //    ...      |  当前人数 
+                //             |    >x<
+                // ____________|___________
+                const e_right_number = create('h2', {
+                    // class: `hall-number ${setColor(player)}`,
+                    class: `hall-number`,
+                    style: `--percent: ${(player / max_player) * 100}%;` // 机厅人数百分比
+                }, player)
+                                
+                // 判断是否在营业范围
+                if (print(inOpenHours())) {
+                    // 营业中
+                    e_right_number.classList.add(setColor(player))
+                    e_right_number.innerText = player
+                } else {
+                    // 休息中
+                    e_right_title.innerText = '正在休息'
+                    e_right_number.classList.add('una')
+                    e_right_number.innerText = '-'
                 }
 
                 const e_right = create('section', { class: 'right' })
                 join(e_right, (join(
                     create('label', { for: 'window-change-player' }, showPlayerNumber), {
-                    title: create('h3', {}, '当前人数'),
-                    number: create('h2', { class: `hall-number ${setColor(player)}`, style: `--percent: ${(player / max_player) * 100}%;` }, player)
+                    title: e_right_title,
+                    number: e_right_number
                 }))
                 )
 

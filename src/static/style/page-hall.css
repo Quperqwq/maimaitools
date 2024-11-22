@@ -726,5 +726,5 @@ ul.state li.games::before {
 .window-hall-detail .content p.link a.ban {
     /* 链接禁用状态 */
     pointer-events: none;
-    filter: brightness(.6);
+    background-color: var(--ban-color);
 }

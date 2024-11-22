@@ -14,13 +14,13 @@ class GameHall {
         'games': [],
         'going': 0,
         'id': 0,
-        'map_id': 0,
+        'map_id': null,
         'max_player': 10,
         'name': '',
         'nickname': [],
         'open_hours': {
-            'close': 0,
-            'open': 0
+            'close': null,
+            'open': null
         },
         'player': 0,
         'pos': '',
@@ -32,8 +32,8 @@ class GameHall {
     }
 
     constructor() {
-        const org_data = this.all_hall
-        if (Object.keys(this.all_hall) <= 0) {
+        const org_data = this._data
+        if (Object.keys(this._data) <= 0) {
             // init | 在这里初始化数据值
             org_data.last_number = 10000
             org_data.halls = {}
@@ -41,8 +41,41 @@ class GameHall {
         }
     }
 
-    /**@returns {GameHallMain} */
+    /**
+     * 获取所有机厅字段的内容
+     * @returns {Object<number, GameHallItem>}
+     */
     get all_hall() {
+        const hall_data = this._data
+        const {halls} = hall_data
+        const result = {}
+        // 格式化机厅内容, 以确保数据可用性
+        Object.keys(halls).forEach((id) => {
+            result[id] = {
+                ...this._hall_init,
+                ...halls[+id],
+                id
+            }
+
+        })
+        return result
+    }
+
+    /**@returns {GameHallMain} */
+    get _data() {
+        // // 在返回之前需要格式化
+        // /** @type {GameHallMain} */
+        // const hall_data = data.get('all_hall')
+        // const {halls} = hall_data
+        // Object.keys(halls).forEach((id) => {
+        //     const item = halls[+id]
+        //     halls[+id] = {
+        //         ...this._hall_init,
+        //         ...item
+        //     }
+        // })
+
+        // 241122之前的写法
         return data.get('all_hall')
     }
 
@@ -61,7 +94,7 @@ class GameHall {
      * @param {GameHallItem} new_data 
      */
     _updateHall(id, new_data) {
-        const org_data = this.all_hall
+        const org_data = this._data
         org_data.halls[id] = new_data
         this._updateData(org_data)
     }
@@ -72,7 +105,7 @@ class GameHall {
      * @returns {GameHallItem | undefined}
      */
     _getHall(id) {
-        const target = this.all_hall.halls[id]
+        const target = this._data.halls[id]
         if (!target) return
         return {
             ...this._hall_init,
@@ -122,7 +155,7 @@ class GameHall {
                 'change_player': this._time
             }
         }
-        const org_data = this.all_hall
+        const org_data = this._data
         org_data.last_number += 1
         org_data.halls[org_data.last_number] = hall_data
         this._updateData(org_data)
@@ -301,7 +334,7 @@ class GameHall {
         if (!exe_type) return 'type_not_found'
         const exe = exe_type[method]
         if (!exe) return 'invalid_method'
-        log.debug('(change hall data) ' + method + ' ' + type + ', value of: ' + value)
+        log.debug('(change hall data)', method, type, ',value of:', value)
         const output = exe()
         if (output) return output
 

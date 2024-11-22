@@ -640,6 +640,7 @@ const getDayTime = () => {
  * @param {number | string} time 
  */
 const toDayTime = (time) => {
+    if (time === null || time === void 0) return null
     if (time < 0) time = 0
     if (time > 1400) time = 1440
     if (time === '') time = '0:0'

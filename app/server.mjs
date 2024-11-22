@@ -35,8 +35,8 @@ httpd.api('test', (req, res, end) => {
     end()
 })
 
-httpd.api('get_hall_player', (_, res, end) => {
-    res.data = hall.all_hall.halls
+httpd.api('get_hall_data', (_, res, end) => {
+    res.data = hall.all_hall
     end()
 })
 httpd.api('change_hall_data', (req, res, end) => {

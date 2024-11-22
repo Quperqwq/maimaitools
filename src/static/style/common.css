@@ -12,6 +12,7 @@
 
 :root {
     --main-radius: .4em;
+    --ban-color: #eee;
 }
 
 /* 隐藏上下箭头 */
