@@ -5,7 +5,26 @@ const version = 'SkyBlue'
 
 /**仅在此脚本之内使用的全局变量 */
 const _global = {
-    title: 'maimaitools'
+    title: 'maimaitools',
+    /**@type {Object.<string, Element>} */
+    element: {},
+    /**
+     * 尝试获取DOM的一个元素
+     * @param {string} id_name 
+     */
+    getElement: (id_name, _iterations = 0) => {
+        const {getElement: thisFunc, element: local_element} = _global
+        const local_target = local_element[id_name]
+        
+        if (local_target instanceof Element) return local_target // 如果之前获取过直接返回缓存的DOM对象
+
+        const element = getEBI(id_name)
+        if (element === null) return thisFunc(id_name, _iterations + 1) // 如果元素不存在则迭代获取
+
+        _global.element[id_name] = element
+        if (_iterations > 20) throw new Error('info bar Element not fond') // 如果迭代次数大于这个数字将抛出错误
+        return element
+    }
 }
 
 /** 用于此APP的全局设置 */
@@ -16,7 +35,9 @@ const setting = {
         'music_map': (id) => {
             return `https://map.bemanicn.com/shop/${id}`
         }
-    }
+    },
+    /**用户使用的浏览器类型 @type {string} */
+    browser_type: ''
 }
 
 /**
@@ -565,12 +586,13 @@ const infoBar = (message = '', setting = {
     'keep': false
 }, _iterations = 0) => {
     const { show_time, keep } = setting
-    let { timeout_info_bar, e_info_bar } = _global
-    if (!(e_info_bar instanceof Element)) {
-        _global.e_info_bar = getEBI('info-bar')
-        if (_iterations > 20) throw new Error('info bar Element not fond') // 如果迭代次数大于这个数字将抛出错误
-        return infoBar(message, setting, _iterations + 1)
-    }
+    let { timeout_info_bar } = _global
+    // if (!(e_info_bar instanceof Element)) {
+    //     _global.e_info_bar = getEBI('info-bar')
+    //     if (_iterations > 20) throw new Error('info bar Element not fond') // 如果迭代次数大于这个数字将抛出错误
+    //     return infoBar(message, setting, _iterations + 1)
+    // }
+    const e_info_bar = _global.getElement('info-bar')
     if (timeout_info_bar) clearTimeout(timeout_info_bar)
 
     e_info_bar.querySelector('.content').innerText = message
@@ -579,6 +601,23 @@ const infoBar = (message = '', setting = {
     _global.timeout_info_bar = setTimeout(() => {
         e_info_bar.classList.remove('show')
     }, show_time)
+}
+
+/**
+ * 显示一个等待框, 在等待时用户不可对界面交互
+ * @param {boolean} is_wait 
+ * @param {string} message 
+ */
+const waitBar = (is_wait = true, message = '') => {
+    // ~(last)可以把等待框做成舞萌主题"与服务器通讯中"的样式
+    const e_wait_bar = _global.getElement('wait-bar')
+
+    if (message) e_wait_bar.querySelector('.content').innerText = message
+    if (is_wait) {
+        e_wait_bar.classList.add('show')
+    } else {
+        e_wait_bar.classList.remove('show')
+    }
 }
 
 
@@ -749,9 +788,26 @@ const print = (any) => {
 
 
 const __init = () => {
-    
-}
+    const getBrowserType = () => {
+        // (i)以下代码由AI编写
+        const userAgent = navigator.userAgent
 
+        // 检测浏览器类型
+        if (userAgent.indexOf("Chrome") > -1) {
+            return "chrome"
+        } else if (userAgent.indexOf("Firefox") > -1) {
+            return "firefox"
+        } else if (userAgent.indexOf("Safari") > -1) {
+            return "safari"
+        } else if (userAgent.indexOf("Edge") > -1) {
+            return "edge"
+        } else if (userAgent.indexOf("MSIE") > -1 || userAgent.indexOf("Trident") > -1) {
+            return "ie"
+        }
+    }
+    // 设置浏览器类型以便差异化实现特性
+    setting.browser_type = getBrowserType()
+}
 __init()
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -761,4 +817,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // version
     const e_version = getEBI('version')
     if (e_version) e_version.innerText = version
+
+    // class set
+    if (setting.browser_type === 'safari') { // 对于safari浏览器样式上进行差异化设置
+        document.body.classList.add('safari')
+    }
 })

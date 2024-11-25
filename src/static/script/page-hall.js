@@ -50,8 +50,12 @@ const doc = {
         filter: {
             form: getEBI('filter-form'),
             submit: getEBI('submit-filter'),
+            /**更多选项 */
             more: getQSA('[name="set-filter-more"]', 'set-filter-more'),
+            /**过滤游戏 */
             game: getQSA('[name="set-filter-game"]', 'set-filter-game'),
+            /**显示字段 */
+            show: getQSA('[name="set-filter-show"]', 'set-filter-show'),
             order: {
                 // target: getEBI('set-filter-order_target'),method: getEBI('set-filter-order_method'),
                 target: getQSA(
@@ -462,6 +466,8 @@ const refreshList = (callback, {
     _init = false,
     show_info = true
 } = {}) => {
+    waitBar(true)
+
     /**
      * 设置机厅人的数量决定人数的字体颜色
      * @param {number} number 机厅人数
@@ -485,6 +491,7 @@ const refreshList = (callback, {
     showInfo('刷新中...', {keep: true})
     // main
     useApi('get_hall_data', {}, (res_data, err) => {
+        waitBar(false)
         if (res_data.message) {
             showInfo('刷新失败!')
             return console.error('refresh fail!', message)
@@ -810,7 +817,7 @@ const refreshList = (callback, {
                 }, player)
                                 
                 // 判断是否在营业范围
-                if (print(inOpenHours())) {
+                if (inOpenHours()) {
                     // 营业中
                     e_right_number.classList.add(setColor(player))
                     e_right_number.innerText = player

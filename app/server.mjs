@@ -14,7 +14,7 @@ const httpd = new HttpApp({
 
 httpd.page('/', 'home.html')
 
-httpd.page('/new', 'new-home.html')
+// httpd.page('/new', 'new-home.html')
 
 httpd.page('/hall', 'hall.html')
 

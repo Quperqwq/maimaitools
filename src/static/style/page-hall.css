@@ -727,4 +727,5 @@ ul.state li.games::before {
     /* 链接禁用状态 */
     pointer-events: none;
     background-color: var(--ban-color);
+    opacity: .5;
 }

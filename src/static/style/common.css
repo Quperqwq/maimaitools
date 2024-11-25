@@ -26,12 +26,15 @@ section {
     position: relative;
 }
 
+/* hr */
+
 hr.slide::before, hr::after, hr.slide {
     height: 1em;
     background-size: 1em;
     background-position: center center;
 }
 hr.slide {
+    --content: '';
     width: 100%;
     border: none;
     position: relative;
@@ -43,10 +46,10 @@ hr.slide {
 }
 
 hr.slide::before, hr.slide::after {
-    content: '';
+    content: var(--content);
     display: block;
     position: absolute;
-    width: calc(50% - .5em);
+    width: calc(50% - 0.5em);
     background-size: .8em;
     background-repeat: repeat-x;
     z-index: 0;
@@ -62,6 +65,13 @@ hr.slide::after {
     background-image: url('/image/slide_left.webp');
     right: 0;
     background-position: left center;
+}
+
+/* hr - 对于safari浏览器使用其他实现方式 */
+body.safari hr.slide {
+    --content: none;
+    background-image: url('/image/slide_hr.webp');
+    background-size: 60%;
 }
 
 

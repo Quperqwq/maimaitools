@@ -1,3 +1,60 @@
+<!-- common-area(header): start -->
+
+<!-- wait-bar -->
+<section id="wait-bar" class="wait-bar modal">
+    <style>
+        .wait-bar {
+            transition: opacity .4s ease-out;
+            opacity: 0;
+            z-index: 10000;
+        }
+
+        .wait-bar.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* .wait-bar .overlay {
+            transition: z-index 0s;
+        } */
+
+
+        .wait-bar .center-box {
+            --height: 6em;
+            position: fixed;
+            display: flex;
+            top: calc(50% - (var(--height) / 2));
+            width: 100%;
+            height: var(--height);
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .wait-bar:not(.show) .overlay {
+            max-height: 0;
+        }
+
+        .wait-bar .content {
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            /* background-color: #00000080;
+            padding: 0 .4em; */
+            font-weight: 800;
+            font-size: 2em;
+            border-radius: var(--main-radius);
+        }
+    </style>
+    <div class="overlay">
+        <div class="center-box">
+            <p class="content"> 请稍候 </p>
+        </div>
+    </div>
+</section>
+
+<!-- info-bar -->
 <section id="info-bar" class="info-bar">
     <style>
         .info-bar {
@@ -28,9 +85,10 @@
             font-weight: 600;
         }
     </style>
-    <p class="content"> ... </p>
+    <p class="content"> NO-CONTENT </p>
 </section>
 
+<!-- nav-bar -->
 <nav class="nav-bar">
     <style>
         body::before {
@@ -66,3 +124,5 @@
 
     </div>
 </nav>
+
+<!-- common-area(header): end -->
