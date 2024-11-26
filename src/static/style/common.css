@@ -15,6 +15,22 @@
     --ban-color: #eee;
 }
 
+body {
+    margin: 0 auto;
+    max-width: 38em;
+    min-width: 22em;
+}
+
+section {
+    padding: 0;
+    margin: 0;
+}
+
+section {
+    position: relative;
+}
+
+
 /* 隐藏上下箭头 */
 input[type=number] {
     -moz-appearance: textfield; /* Firefox */
@@ -22,9 +38,7 @@ input[type=number] {
     appearance: none;  /* 其他现代浏览器 */
 }
 
-section {
-    position: relative;
-}
+
 
 /* hr */
 
@@ -40,7 +54,6 @@ hr.slide {
     position: relative;
     background-image: url('/image/slide_main.webp');
     background-repeat: no-repeat;
-    background-color:transparent;
     background-size: 1.2em;
     z-index: 2;
 }
@@ -75,6 +88,138 @@ body.safari hr.slide {
 }
 
 
+
+/* footer */
+
+/* footer - version */
+
+footer.main .version {
+    --font-color: #0074d9;
+    margin-right: .4em;
+    font-size: .8em;
+    text-align: right;
+    opacity: .8;
+}
+
+footer.main .version .cont {
+    display: inline-block;
+    border-radius: var(--main-radius);
+    background-color: #f9feff;
+    padding: .4em .6em;
+}
+
+footer.main .version .cont #version {
+    padding: .2em .4em;
+    margin-left: .4em;
+    border-radius: var(--main-radius);
+    font-weight: bold;
+    text-shadow: 0px 0px 3px var(--font-color);
+    background-color: #fff;
+    color: var(--font-color);
+}
+
+footer.main .version .cont::before {
+    content: '版本号:';
+    color: #0083ff;
+}
+
+/* footer - background */
+
+footer.background {
+    --size: 40em;
+    min-height: 8em;
+    margin: 0;
+    background-image: url('/image/footer/BUDDiES.webp');
+    background-size: var(--size);
+    background-repeat: repeat-x;
+    background-position: 0 center;
+    animation: footer-scroll 30s linear infinite;
+}
+
+@keyframes footer-scroll {
+    0% {
+        background-position-x: 0%;
+    }
+    100% {
+        background-position-x: calc(var(--size) * 2 * -1);
+    }
+}
+
+footer.background.FESTiVAL {
+    background-image: url('/image/footer/FESTiVAL.webp');
+}
+
+footer.background.PRiSM {
+    background-image: url('/image/footer/PRiSM.webp');
+}
+
+footer.background.BUDDiES {
+    background-image: url('/image/footer/BUDDiES.webp');
+}
+
+
+
+/* modal */
+
+.modal .overlay~* {
+    box-shadow: 0 0 1em #fff;
+}
+
+/* modal.decoration - header(char) */
+.modal.decoration header {
+    --content: none;
+    --decoration-src: url('/image/char/FB0BE9B23104DED46BB5441534AFA3CA.webp');
+    --top: -4.1em;
+    position: relative;
+}
+
+.modal.modal.decoration>input:checked~* header {
+    --content: '';
+}
+
+.modal.decoration>input:checked~.overlay~* {
+    overflow: visible;
+    transition: max-height 0s, transform .3s;
+}
+
+.modal.decoration .content {
+    overflow-y: scroll;
+    max-height: 60vh;
+    border-radius: var(--main-radius);
+}
+
+.modal.decoration footer {
+    position: relative;
+    /* overflow: hidden; */
+    box-shadow: 0px -.4em 0.5em #ffffffe0;
+}
+
+.modal.decoration header::after {
+    --decoration-size: 2;
+    content: var(--content);
+    position: absolute;
+    pointer-events: none;
+    right: 0;
+    top: calc(var(--top) * var(--decoration-size));
+    height: calc(6em * var(--decoration-size));
+    width: calc(4em * var(--decoration-size));
+    z-index: 32;
+    background-image: var(--decoration-src);
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+.modal.decoration.char-1 header {
+    --decoration-src: url('/image/char/FB0BE9B23104DED46BB5441534AFA3CA.webp');
+}
+
+.modal.decoration.char-2 header {
+    --decoration-src: url('/image/char/A0F4311275B44342502F59E7647378F5.webp');
+    --top: -4.07em;
+}
+
+/* modal.sticky - header */
+
 .modal.sticky .overlay+* header {
     position: sticky;
     top: 0;
@@ -83,21 +228,28 @@ body.safari hr.slide {
     z-index: 5;
 }
 
-
-body {
-    margin: 0 auto;
-    max-width: 38em;
-    min-width: 22em;
-}
-
-section {
-    padding: 0;
-    margin: 0;
-}
-
+/* modal - footer */
 .modal footer {
     overflow: hidden;
 }
+
+/* common style */
+
+/* common style - shadow */
+[class*="shadow"] {
+    --shadow-color: #fff;
+    box-shadow: 0 0 .4em var(--shadow-color);
+}
+
+.shadow-black { --shadow-color: #000; }
+.shadow-white { --shadow-color: #fff; }
+.shadow-yellow { --shadow-color: #ff0; }
+.shadow-blue { --shadow-color: #08f; }
+.shadow-red { --shadow-color: #f20; }
+
+
+
+/* other */
 
 .hidden-scrollbar {
     scrollbar-width: none;
@@ -112,6 +264,12 @@ section {
     text-wrap: nowrap;
     white-space: nowrap;
 }
+
+
+
+
+
+/* icon */
 
 
 /* 设置字体图标before样式/(TAG)字体图标/ */

@@ -1,4 +1,4 @@
-const version = 'SkyBlue'
+const version = 'SkyBlue-GoodFriend'
 
 /**@typedef {import('../../../app/types').apiResBody} apiResBody */
 /**@typedef {import('../../../app/types').apiReqBody} apiReqBody */

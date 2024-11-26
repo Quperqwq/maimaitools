@@ -162,7 +162,9 @@ const config = {
             /** 过滤机台 @type {string[]} */
             game: [],
             /** 仅显示收藏 */
-            fav: false
+            fav: false,
+            /**显示字段 @type {string[]} */
+            fields: []
         },
         /** 排序 */
         order: {
@@ -206,7 +208,7 @@ const _init = () => {
                     'show_time': 1000
                 }
                 refresh.disabled = true
-                infoBar('正在刷新...', bar_config)
+                // infoBar('正在刷新...', bar_config)
                 refreshList(() => {
                     refresh.disabled = false
                     infoBar('刷新完成', bar_config)
@@ -268,7 +270,7 @@ const _init = () => {
                     
                 } catch (error) { }
                 map_id = map_id || +_map_id.value || void 0
-                console.log(map_id)
+                // console.log(map_id)
                 
                 return {
                     'games': list.games.value,
@@ -351,14 +353,24 @@ const _init = () => {
         /**用户trip卡片 */
         tripCard: () => {
             const {finish, cancel} = doc.input.trip
+            /**
+             * 是否在等待
+             * @param {boolean} _is_wait 
+             * @param {Element} element 
+             */
+            const wait = (_is_wait, element) => {
+                const is_wait = _is_wait ? true : false
+                waitBar(is_wait)
+                element.disabled = is_wait
+            }
             finish.addEventListener('click', () => {
-                runCommand(callbacks.onTripFinish, (is_disabled) => {
-                    finish.disabled = is_disabled ? true : false
+                runCommand(callbacks.onTripFinish, (is_wait) => {
+                    wait(is_wait, finish)
                 })
             })
             cancel.addEventListener('click', () => {
-                runCommand(callbacks.onTripCancel, (is_disabled) => {
-                    cancel.disabled = is_disabled ? true : false
+                runCommand(callbacks.onTripCancel, (is_wait) => {
+                    wait(is_wait, cancel)
                 })
             })
         },
@@ -366,7 +378,7 @@ const _init = () => {
         /**选择过滤方式 */
         filter: () => {
             const {input: {filter: {form}}, window: {filter}} = doc
-            const {game: es_game, more: es_more, order: {target: es_target, method: e_method}} = doc.input.filter
+            const {game: es_game, show: es_show, more: es_more, order: {target: es_target, method: e_method}} = doc.input.filter
 
             // 更改config对象下次刷新时进行排序
             const changeConfig = () => {
@@ -375,6 +387,7 @@ const _init = () => {
                 const checked_method = e_method.value
 
                 const checked_games = getCheckedElement(es_game) // 获取选择需要显示的游戏
+                const checked_show = getCheckedElement(es_show) // 获取选择需要显示的字段
                 const checked_more = getCheckedElement(es_more)
 
                 config.filter = {
@@ -384,6 +397,7 @@ const _init = () => {
                     },
                     'show': {
                         'game': checked_games,
+                        'fields': checked_show,
                         'fav': checked_more.includes('show-fav')
                     },
                     'init': true
@@ -411,18 +425,26 @@ const _init = () => {
                  * @param {string} config_key 
                  */
                 const reloadStat = (cont, input_elements) => {
+                    console.log(cont, input_elements);
+                    
                     const _cont = Array.isArray(cont) ? cont : [cont]
                     input_elements.forEach((element) => {
                         element.checked = _cont.includes(element.value)
                     })
                 }
 
-                const cache = cookie.getObj('filter')
+                let cache = config.filter
+                cache = {
+                    ...cookie.getObj('filter')
+                }
                 config.filter = cache
+
                 if (Object.keys(cache).length > 0) {
                     // 重置按钮之前的状态
                     reloadStat(cache.show.game, es_game)
+                    reloadStat(cache.show.fields, es_show)
                     // reloadStat([cache.fav ? '' : 'show-fav'], es_more)
+                    
                     reloadStat(cache.order.target, es_target)
                     reloadStat(cache.order.method, [e_method])
                 }
@@ -488,7 +510,7 @@ const refreshList = (callback, {
     }
 
     global.time.refresh = timeIs()
-    showInfo('刷新中...', {keep: true})
+    // showInfo('刷新中...', {keep: true})
     // main
     useApi('get_hall_data', {}, (res_data, err) => {
         waitBar(false)
@@ -561,6 +583,8 @@ const refreshList = (callback, {
                     return false
                 }
 
+                const is_open = inOpenHours()
+
 
                 // ~创建快捷操作DOM的方式
                 /**
@@ -629,13 +653,19 @@ const refreshList = (callback, {
                 const goHall = (_, e_button) => {
                     const {going} = config
                     if ( going.is ) return infoBar('请先取消现在的行程') // 有出发的目标将不会被处理
-                    e_button.disabled = true
+                    /**  @param {boolean} is_wait */
+                    const wait = (_is_wait) => {
+                        const is_wait = _is_wait ? true : false
+                        e_button.disabled = is_wait
+                        waitBar(is_wait)
+                    }
+                    wait(true)
                     useApi('change_hall_data', {
                         id: id,
                         type: 'going',
                         method: 'append'
                     }, (res_data) => {
-                        e_button.disabled = false
+                        wait(false)
                         if (!res_data) {
                             infoBar('预前往失败!')
                             return
@@ -817,7 +847,7 @@ const refreshList = (callback, {
                 }, player)
                                 
                 // 判断是否在营业范围
-                if (inOpenHours()) {
+                if (is_open) {
                     // 营业中
                     e_right_number.classList.add(setColor(player))
                     e_right_number.innerText = player
@@ -830,12 +860,16 @@ const refreshList = (callback, {
 
                 const e_right = create('section', { class: 'right' })
                 join(e_right, (join(
-                    create('label', { for: 'window-change-player' }, showPlayerNumber), {
+                    // 不在营业时间内将无法显示更改人数窗口
+                    is_open ? create('label', { for: 'window-change-player' }, showPlayerNumber) : create('div'), {
                     title: e_right_title,
                     number: e_right_number
                 }))
                 )
-
+                // ________________________
+                //             |   ...
+                //     >   <   |    
+                // ____________|___________
                 // DOM-create left
                 const e_left = create('section', { class: 'left' })
                 const e_more = create('h3', { class: 'more' })
@@ -853,7 +887,7 @@ const refreshList = (callback, {
                     // 设置
                     show_setting: create('label', { class: 'pseudo button icon-config', for: 'window-hall-set' }, showSet, '设置'),
                     // 去这里
-                    go_it: create('button', { type: 'button', class: 'pseudo button icon-go' }, goHall, '去这里'),
+                    go_it: is_open ? create('button', { type: 'button', class: 'pseudo button icon-go' }, goHall, '去这里') : void 0,
                 })
                 // 创建机厅名的对象引用, 以便更改样式
                 const e_hall_name = create('h3', { class: 'name icon-go right-icon' })
@@ -863,13 +897,17 @@ const refreshList = (callback, {
                         e_hall_name,
                         create('span', { class: 'content hidden-scrollbar' }, name)
                     ),
+                    // 机厅状态
                     state: join(
                         create('ul', { class: 'row state hidden-scrollbar' }), {
-                        tag: createLi('', { class: 'tag none' }),
+                        // tag: createLi('', { class: 'tag none' }),
+                        // 别称
                         nickname: nickname.length > 0 ? createLi(
                             nickname.toString(), { class: 'nickname' }
                         ) : void 0,
-                        wait_time: createLi(time.wait, { class: 'wait' }),
+                        // 预计等待
+                        wait_time: is_open ? createLi(time.wait, { class: 'wait' }) : void 0,
+                        // 游戏项目
                         games: createLi(hall.games.toString(), { class: 'games' })
                     }
                     ),
@@ -974,7 +1012,7 @@ const refreshList = (callback, {
 
                 // Start) 从这里开始
 
-                const {show: {game: show_games, fav: show_fav}, order: {target}} = filter
+                const {show: {game: show_games, fav: show_fav, fields: show_fields}, order: {target}} = filter
 
                 const id = +key
                 const hall = org_halls[id]
@@ -987,12 +1025,16 @@ const refreshList = (callback, {
                     if (!fav_hall.includes(`${id}`)) return
                 }
 
+                // 过滤条件 (显示字段)
+                doc.list.dataset.show = show_fields.join(' ')
+
                 // 排序条件
                 sortingMethod()
             })
             // console.log(sorting.basis);
-            console.log('value of:', sorting.value)
+            console.debug('value of:', sorting.value)
             
+            // 将排序后的数据格式化
             const output = sorting.getValues()
             output.forEach((item, index) => {
                 const hall = item[1]

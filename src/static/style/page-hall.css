@@ -82,6 +82,10 @@ ul.row li {
     height: 100%;
 }
 
+.right.operate :not(:last-child) {
+    margin-right: .4em;
+}
+
 
 .trip {
     --margin: 1em;
@@ -217,6 +221,7 @@ ul.row li {
 #hall-player-list {
     list-style: none;
     padding: 0;
+    padding-bottom: 10em;
     overflow: hidden;
 }
 
@@ -263,10 +268,6 @@ ul.row li {
     border: var(--border-size) solid #000;
 }
 
-section.main {}
-
-section.main {}
-
 #hall-player-list h2,
 #hall-player-list h3 {
     padding: 0;
@@ -277,6 +278,7 @@ section.main {}
     overflow: hidden;
     overflow-x: scroll;
     margin-top: .2em;
+    padding: .2em 0;
     border-radius: var(--main-radius);
     height: 1.9em;
     color: #00a4ff;
@@ -299,12 +301,25 @@ ul.state li.games::before {
     content: '';
 }
 
-#hall-player-list .left ul.state li:not(.none) {
-    display: inline-block;
+ul.state li:not(.none) {
+    /* display: inline-block; */
     padding: .2em .4em;
     border-radius: .4em;
     background-color: #fafafa;
 }
+
+#hall-player-list ul.state li {
+    display: none;
+}
+
+/* 仅显示指定字段 */
+#hall-player-list[data-show*='wait'] ul.state li.wait,
+#hall-player-list[data-show*='nickname'] ul.state li.nickname,
+#hall-player-list[data-show*='games'] ul.state li.games
+ {
+    display: inline-block;
+}
+
 
 #hall-player-list .left .more {
     --icon-color: #000;

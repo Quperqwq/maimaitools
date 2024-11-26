@@ -570,6 +570,14 @@ export class HttpApp {
     readHtml(filename, is_template = false) {
         const {path_html, path_template} = this
 
+        /**
+         * 生成一个可用于表示DOM的注释内容元素以用于标记
+         * @param {string} cont 注释内容
+         */
+        const makeNote = (...cont) => {
+            return `<!-- [render] ${cont.join('')} -->`
+        }
+
 
         /**预渲染HTML文件 @param {string} cont */
         const render = (cont) => {
@@ -581,7 +589,11 @@ export class HttpApp {
                 const target = template_name + '.html'
                 const cont = this.readHtml(target, true)
                 // log.debug(cont)
-                return cont ? cont : ''
+                const note = [
+                    makeNote(template_name, ':start'),
+                    makeNote(template_name, ':end')
+                ]
+                return cont ? `${note[0]}${cont}${note[1]}` : ''
             })
             return cont
         }

@@ -24,7 +24,7 @@ li {
 .card-item {
     /* border-bottom: #eee solid .2em; */
     margin-top: .4em;
-    background-color: #fff;
+    /* background-color: #fff; */
     /* border-radius: 1em; */
     /* box-shadow: 1em 1em; */
 }
@@ -37,7 +37,7 @@ li {
 li h3 a {
     /* text-decoration: underline; */
     --icon-color: #949494;
-    color: #00b1c5;
+    color: #66ccff;
 }
 
 /* .intro {
@@ -87,7 +87,8 @@ li h3 a {
     transition: .6s ease all;
 }
 
-.app-list li:focus {
+.app-list li {
+/* .app-list li:focus { */
     max-height: 20em;
 }
 
@@ -98,9 +99,12 @@ li h3 a {
 }
 
 .app-list li h3::after {
-    content: '轻触以展开';
+    content: '详情';
     display: block;
-    float: right;
+    /* float: right; */
+    position: absolute;
+    right: 0;
+    top: 1em;
     font-size: .4em;
     font-weight: 400;
     color: #666;
@@ -111,7 +115,7 @@ li h3 a {
     font-size: .8em;
     padding: .6em .4em;
     /* border-left: #666 .2em solid; */
-    background-color: #fcfeff;
+    background-color: #f9f9f9;
     border-radius: var(--main-radius);
 }
 
@@ -125,22 +129,3 @@ li h3 a {
     margin-top: .2em;
 }
 
-
-
-/* ↓ footer */
-
-footer.main {
-    font-size: .6em;
-    padding: .2em .4em;
-    margin: 0 .2em;
-    /* background: url('/image/bottom_dlx.webp') center bottom no-repeat; */
-    background-size: 12em;
-    padding-bottom: 2em;
-}
-
-footer.main .version {
-    text-align: right;
-}
-footer.main .version::before {
-    content: '版本号:';
-}

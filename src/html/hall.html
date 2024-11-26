@@ -11,7 +11,7 @@
     <!header>
     <main class="hall-player-main space">
     
-        <div class="hall-header">
+        <div class="hall-header" id="top">
             <div class="left title">
                 <h2> 机厅排卡 </h2>
             </div>
@@ -41,10 +41,10 @@
             <span class="last-refresh" id=""><strong id="last-refresh-time">--秒</strong>前刷新</span>
         </div>
     
-        <ul class="row left-icon-items" id="hall-player-list"></ul>
+        <ul class="row left-icon-items" id="hall-player-list" data-show="nickname games wait"></ul>
     
         <!-- window-player-number -->
-        <div class="modal window-change-player">
+        <div class="modal window-change-player decoration char-1">
             <input id="window-change-player" type="checkbox" />
             <label for="window-change-player" class="overlay"></label>
             <article>
@@ -69,7 +69,7 @@
         </div>
     
         <!-- window-filter -->
-        <div class="modal window-filter">
+        <div class="modal window-filter decoration char-1">
             <input id="window-filter" type="checkbox" />
             <label for="window-filter" class="overlay"></label>
             <form id="filter-form">
@@ -135,17 +135,17 @@
                         <section class="cont" id="set-filter-show">
                             <div class="line">
                                 <label>
-                                    <input type="checkbox" name="set-filter-show" value="wait">
+                                    <input type="checkbox" name="set-filter-show" value="wait" checked="true">
                                     <span class="checkable"> 预计等待 </span>
                                 </label>
                                 <label>
-                                    <input type="checkbox" name="set-filter-show">
-                                    <span class="checkable" value="nickname"> 别名 </span>
+                                    <input type="checkbox" name="set-filter-show"  value="nickname" checked="true">
+                                    <span class="checkable"> 别名 </span>
                                 </label>
                             </div>
                             <div class="line">
                                 <label>
-                                    <input type="checkbox" name="set-filter-show" value="games">
+                                    <input type="checkbox" name="set-filter-show" value="games" checked="true">
                                     <span class="checkable"> 游戏项目 </span>
                                 </label>
                             </div>
@@ -161,6 +161,13 @@
                                     <span class="checkable"> 仅显示收藏 </span>
                                 </label>
                                 <section class="info icon-info"> 只有收藏过的机厅会展示 </section>
+                            </div>
+                            <div class="line">
+                                <label>
+                                    <input type="checkbox" name="set-filter-more" value="show-fav" disabled>
+                                    <span class="checkable"> 仅显示营业 </span>
+                                </label>
+                                <section class="info icon-info"> 仅显示正在营业的机厅 </section>
                             </div>
                             <div class="line">
                                 <label>
@@ -181,7 +188,7 @@
     
     
         <!-- window-hall-set -->
-        <div class="modal sticky window-hall-set">
+        <div class="modal sticky window-hall-set decoration char-2">
             <input id="window-hall-set" type="checkbox" />
             <section for="window-hall-set" class="overlay"></section>
             <form id="set-hall-form">
@@ -338,6 +345,9 @@
     
     </main>
 
+    <footer class="main background FESTiVAL">
+        <!footer-version>
+    </footer>
     <script src="script/page-hall.js"> </script>
 </body>
 </html>

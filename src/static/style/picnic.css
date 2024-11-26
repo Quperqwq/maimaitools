@@ -3427,7 +3427,7 @@ input.stack:focus+input,input.stack:focus+textarea,input.stack:focus+select,text
 }
 
 .modal .overlay~* section,.card section {
-    padding: .6em .8em 0;
+    padding: .6em .8em;
 }
 
 .modal .overlay~* hr,.card hr {
@@ -3513,7 +3513,7 @@ input.stack:focus+input,input.stack:focus+textarea,input.stack:focus+select,text
 .modal>input~* {
     opacity: 0;
     max-height: 0;
-    overflow: hidden
+    overflow: hidden;
 }
 
 .modal .overlay {
@@ -3547,7 +3547,7 @@ input.stack:focus+input,input.stack:focus+textarea,input.stack:focus+select,text
     display: block;
     opacity: 1;
     max-height: 10000px;
-    transition: 300ms -1.98906ms;
+    transition: 300ms;
     }
 
 .modal>input:checked~.overlay~* {
