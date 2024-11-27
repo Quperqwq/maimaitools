@@ -1,5 +1,8 @@
 import data from './data.mjs'
+import config from './config.mjs'
 import { log } from './website-common.mjs'
+import http from 'http'
+import exp from 'constants'
 
 /**@typedef {import('./types').GameHallMain} GameHallMain */
 /**@typedef {import('./types').GameHallItem} GameHallItem */
@@ -386,5 +389,61 @@ class GameHall {
     removeGoing(id) {}
 }
 
+/**
+ * maimaiDX API
+ */
+class ApiMai {
+    constructor () {
+        // (!)若传入非法URL配置将会触发报错
+        this.apiHost = config.mai_api
+        
+        
+        
+    }
+
+    /**
+     * 
+     * @typedef
+     * @param {object} param0
+     * @param {'GET' | 'POST'} param0.method 请求方法
+     * @param {string} param0.path 请求路径
+     * @param {object} param0.param 请求参数
+     * @param {object} param0.body 请求体
+     * @param {function(object, string)} callback 
+     */
+    useApi({method = 'GET', path, body = null, param,} = {}, callback) {
+        const req_body = body ? JSON.stringify(body) : void 0
+
+        // ~(last)
+        // 制作请求
+        const req = http.request({
+            'host': this.apiHost,
+            'path': path,
+            'method': method,
+            'headers': {
+                'Content-Type': 'application/json',
+                // 'Content-Length': req_body ? Buffer.byteLength(req_body) : void 0
+            }
+        }, (res) => {
+            let data = ''
+            res.on('data', (chunk) => {
+                data += chunk
+            })
+            res.on('end', () => {
+                callback(JSON.parse(data), '')
+            })
+        })
+        req.on('error', (error) => {
+            callback({}, error.message)
+        })
+
+        if (req_body) {
+            req.write(req_body)
+        }
+        req.end()
+    }
+}
+
 
 export const hall = new GameHall()
+export const maiApi = new ApiMai()

@@ -106,6 +106,7 @@ const global = {
     },
     /**时间相关 */
     time: {
+        /** @type {number} */
         refresh: null
     }
 }
@@ -509,10 +510,11 @@ const refreshList = (callback, {
         if (show_info) infoBar(message, setting)
     }
 
-    global.time.refresh = timeIs()
+    global.time.refresh = null
     // showInfo('刷新中...', {keep: true})
     // main
     useApi('get_hall_data', {}, (res_data, err) => {
+        global.time.refresh = timeIs()
         waitBar(false)
         if (res_data.message) {
             showInfo('刷新失败!')
@@ -629,7 +631,7 @@ const refreshList = (callback, {
                         req_tmp.method = 'del'
                         useApi('change_hall_data', req_tmp, () => {
                             dis(false)
-                            endTrip('那再想想去哪里吧...')
+                            endTrip('那再想想去哪里吧')
                         })
                     }
                     // 确认到达
@@ -691,7 +693,7 @@ const refreshList = (callback, {
                     callbacks.submitPlayerNumber = (show) => {
                         // 提交玩家数量逻辑
                         show.checked = false
-                        // (ADD)这里后续需要增加一个等待提示
+                        waitBar(true)
 
                         useApi('change_hall_data', {
                             id: id,
@@ -700,8 +702,6 @@ const refreshList = (callback, {
                             value: input.value
                         }, (res, err) => {
                             if (err) return infoBar('更新人数失败!')
-                            // (ADD)等待结束
-                            // console.log(res)
                             refreshList()
                         })
                     }

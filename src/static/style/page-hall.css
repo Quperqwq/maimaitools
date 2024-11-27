@@ -507,6 +507,8 @@ ul.state li:not(.none) {
 }
 
 .window-change-player .content .change-player button {
+    width: 2em;
+    height: 2em;
     margin: 0;
     padding: .2em .5em;
     font-size: 2em;

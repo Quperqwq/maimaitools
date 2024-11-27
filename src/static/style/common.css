@@ -98,7 +98,7 @@ footer.main .version {
     margin-right: .4em;
     font-size: .8em;
     text-align: right;
-    opacity: .8;
+    opacity: .95;
 }
 
 footer.main .version .cont {
@@ -112,9 +112,9 @@ footer.main .version .cont #version {
     padding: .2em .4em;
     margin-left: .4em;
     border-radius: var(--main-radius);
-    font-weight: bold;
+    font-weight: 400;
     text-shadow: 0px 0px 3px var(--font-color);
-    background-color: #fff;
+    background-color: #ffffff;
     color: var(--font-color);
 }
 
@@ -215,7 +215,7 @@ footer.background.BUDDiES {
 
 .modal.decoration.char-2 header {
     --decoration-src: url('/image/char/A0F4311275B44342502F59E7647378F5.webp');
-    --top: -4.07em;
+    --top: -4.05em;
 }
 
 /* modal.sticky - header */
@@ -263,6 +263,16 @@ footer.background.BUDDiES {
     text-overflow: ellipsis;
     text-wrap: nowrap;
     white-space: nowrap;
+}
+
+/* input:checkbox - disabled */
+
+input[type="checkbox"]:disabled+.checkable {
+    text-decoration: line-through;
+}
+
+input[type="checkbox"]:disabled+.checkable::before {
+    opacity: .4;
 }
 
 
