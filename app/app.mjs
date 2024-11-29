@@ -1,8 +1,7 @@
 import data from './data.mjs'
 import config from './config.mjs'
 import { log } from './website-common.mjs'
-import http from 'http'
-import exp from 'constants'
+import http from 'https'
 
 /**@typedef {import('./types').GameHallMain} GameHallMain */
 /**@typedef {import('./types').GameHallItem} GameHallItem */
@@ -393,12 +392,96 @@ class GameHall {
  * maimaiDX API
  */
 class ApiMai {
+    /**@typedef {'song' | 'alias' | 'avatar'} MaiDataName 从api获取数据的名称 */
     constructor () {
         // (!)若传入非法URL配置将会触发报错
-        this.apiHost = config.mai_api
+        /**API的域名 */
+        this.api_host = config.mai_api.hostname
+        /**API的端口 */
+        this.api_port = config.mai_api.port
+        /**使用API对应的路径 @type {{[key in MaiDataName]: string}} */
+        const api_path = {
+            /** [曲目列表](https://maimai.lxns.net/docs/api/maimai#get-apiv0maimaisonglist) */
+            'song': '/api/v0/maimai/song/list',
+            /** [别名列表](https://maimai.lxns.net/docs/api/maimai#get-apiv0maimaialiaslist) */
+            'alias': '/api/v0/maimai/alias/list',
+            /** [头像列表](https://maimai.lxns.net/docs/api/maimai#get-apiv0maimaiiconlist) */
+            'avatar': '/api/v0/maimai/icon/list'
+        }
+
+        /** @type {{[key in MaiDataName]: object}} */
+        // this.data = Object.keys(api_path).forEach((data_name) => {
+        //     // ~(last)
+        //     this.get(data_name)
+        // })
+        this.data = {}
+
+        this.api_path = api_path
+    }
+
+    /**
+     * 获取数据名
+     * @param {MaiDataName} target_name 
+     */
+    _getDataName(target_name) {
+        return `mai_data_${target_name}`
+    }
+
+    /**
+     * 打印一条日志
+     * @param  {...string} cont 
+     */
+    _log(...cont) {
+        log.debug('<ApiMai>', ...cont)
+    }
+
+    /**
+     * 会获取到一个数据名对应的内容, 默认获取优先级为 `对象缓存 > 文件/数据库缓存 > API调取`
+     * @param {MaiDataName} target_name 
+     */
+    get(target_name, next) {
+        const obj_data = this.data
+        const data_name = this._getDataName(target_name)
+
+
+        // 来自对象的缓存
+        const obj_cache = obj_data[target_name]
         
+        if (obj_cache) {
+            this._log('data cache in obj')
+            return next(obj_cache)
+        }
+
+        // 来自文件的缓存
+        const file_cache = data.get(data_name)
+        if (Object.keys(file_cache).length > 0) {
+            obj_data[target_name] = file_cache
+            this._log('data cache in file')
+            return next(file_cache)
+        }
+
+        // 没有缓存数据, 来自API获取
+        this._log('get data in api')
+        this.update(target_name, next)
+    }
+
+    /**
+     * 
+     * @param {MaiDataName} target_name 
+     * @param {function(Object)} next 
+     */
+    update(target_name, next) {
+        const obj_data = this.data
+        const data_name = this._getDataName(target_name)
+        const api_path = this.api_path[target_name]
         
-        
+        this.useApi({'method': 'GET', 'path': api_path}, (new_data, err) => {
+            if (err) throw log.error(err)
+            // 如果获取成功则更新缓存
+            obj_data[target_name] = new_data
+            data.update(data_name, new_data)
+            next(new_data)
+        })
     }
 
     /**
@@ -411,15 +494,16 @@ class ApiMai {
      * @param {object} param0.body 请求体
      * @param {function(object, string)} callback 
      */
-    useApi({method = 'GET', path, body = null, param,} = {}, callback) {
+    useApi({method = 'GET', path, body = null, param = {}} = {}, callback) {
         const req_body = body ? JSON.stringify(body) : void 0
 
-        // ~(last)
-        // 制作请求
+        // 向目标服务器发送请求
         const req = http.request({
-            'host': this.apiHost,
+            'hostname': this.api_host,
+            'port': 443,
             'path': path,
             'method': method,
+            'searchParams': param,
             'headers': {
                 'Content-Type': 'application/json',
                 // 'Content-Length': req_body ? Buffer.byteLength(req_body) : void 0
@@ -430,7 +514,11 @@ class ApiMai {
                 data += chunk
             })
             res.on('end', () => {
-                callback(JSON.parse(data), '')
+                let result = {}
+                try {
+                    result = JSON.parse(data)
+                } catch (error) { }
+                callback(result, '')
             })
         })
         req.on('error', (error) => {

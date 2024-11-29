@@ -1,6 +1,6 @@
 import {HttpApp, tool, log} from './website-common.mjs'
 import config from './config.mjs'
-import {hall} from './app.mjs';
+import {hall} from './app.mjs'
 
 const httpd = new HttpApp({
     html_path: './src/html',

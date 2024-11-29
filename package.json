@@ -5,7 +5,8 @@
   "scripts": {
     "test": "node ./app/test.mjs",
     "start": "node ./app/server.mjs",
-    "dev": "nodemon --watch ./app/server.mjs --watch ./app/website-common.mjs --watch ./app/app.mjs --watch ./app/server.mjs"
+    "dev": "nodemon --watch ./app/server.mjs --watch ./app/website-common.mjs --watch ./app/app.mjs --watch ./app/server.mjs",
+    "init": "node ./app/init.mjs"
   },
   "keywords": [
     "maimaidx"

@@ -1,6 +1,11 @@
 # running
 *.log
+npminstall-debug.log
 
 
 # data
 app/data/all_hall.json
+
+
+# config
+app/config.mjs
