@@ -326,7 +326,7 @@ class GameHall {
                 'change': () => {
                     const _value = validNumber(value)
                     if (_value === null) return 'invalid_value'
-                    // ~(last)
+                    // ~(ADD)验证有效性
                     target.map_id = _value
                 }
             }

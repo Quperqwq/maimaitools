@@ -184,7 +184,9 @@ const config = {
         target: 0
     },
     /**用户收藏的机厅 @type {string[]} */
-    fav: []
+    fav: [],
+    /**机厅人数过期时间 */
+    change_player_expired_time: (1000 * 60) * 60 * 4
 }
 
 // 初始化页面函数, 它们通常只会执行一次
@@ -544,6 +546,7 @@ const refreshList = (callback, {
                 const {max_player, player, name, games, nickname, pos} = hall
                 const {input} = doc.input.player_number
                 const {fav: fav_hall} = config
+                const this_time = timeIs()
 
                 /**营业时间段的`string`样式 */
                 const str_open_hours = {
@@ -823,7 +826,7 @@ const refreshList = (callback, {
                 }
 
 
-                // DOM-create ...
+                // DOM-create ... | DOM 开始初始化
 
 
                 // DOM-create main<left, right>
@@ -835,7 +838,7 @@ const refreshList = (callback, {
                 //    ...      | >当前人数<
                 //             |     x
                 // ____________|___________
-                const e_right_title = create('h3', {}, '当前人数')
+                const e_right_title = create('h3', {})
                 // ________________________
                 //    ...      |  当前人数 
                 //             |    >x<
@@ -845,23 +848,12 @@ const refreshList = (callback, {
                     class: `hall-number`,
                     style: `--percent: ${(player / max_player) * 100}%;` // 机厅人数百分比
                 }, player)
-                                
-                // 判断是否在营业范围
-                if (is_open) {
-                    // 营业中
-                    e_right_number.classList.add(setColor(player))
-                    e_right_number.innerText = player
-                } else {
-                    // 休息中
-                    e_right_title.innerText = '正在休息'
-                    e_right_number.classList.add('una')
-                    e_right_number.innerText = '-'
-                }
 
                 const e_right = create('section', { class: 'right' })
+                const _e_player_number_attrib = { for: 'window-change-player', class: 'player-number' }
                 join(e_right, (join(
                     // 不在营业时间内将无法显示更改人数窗口
-                    is_open ? create('label', { for: 'window-change-player' }, showPlayerNumber) : create('div'), {
+                    is_open ? create('label', _e_player_number_attrib, showPlayerNumber) : create('div', _e_player_number_attrib), {
                     title: e_right_title,
                     number: e_right_number
                 }))
@@ -937,7 +929,33 @@ const refreshList = (callback, {
                     ]
                     )
                 )
+
+                // DOM初始化结束
+
                 
+
+                // (FIX)这里以后要做结构优化
+                // 判断是否在营业范围
+                const addClassPlayerNumber = (s) => e_right_number.classList.add(s)
+
+                if (is_open) {
+                    // 营业中
+                    e_right_title.innerText = '正在营业'
+                    e_right_number.innerText = player
+                    addClassPlayerNumber(setColor(player))
+
+                    // 判断人数是否长久未更新
+                    if (isExpiredTime(hall.time.change_player, config.change_player_expired_time)) {
+                        // console.debug(hall.name, '人数已过期')
+                        // e_right_title.innerText = '过期数据'
+                        addClassPlayerNumber('inv')
+                    }
+                } else {
+                    // 休息中
+                    e_right_title.innerText = '正在休息'
+                    e_right_number.innerText = '-'
+                    addClassPlayerNumber('una')
+                }
 
                 // 是否有去机厅的记录
                 const _go_hall = cookie.get('goto_hall')

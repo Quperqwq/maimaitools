@@ -1,7 +1,5 @@
-import { error } from 'console'
 import fs from 'fs'
 import path from 'path'
-import { finished } from 'stream'
 
 const filePath = (path_name) => {
     return path.join('./app', path_name)

@@ -609,7 +609,7 @@ const infoBar = (message = '', setting = {
  * @param {string} message 
  */
 const waitBar = (is_wait = true, message = '') => {
-    // ~(last)可以把等待框做成舞萌主题"与服务器通讯中"的样式
+    // ~(ADD)可以把等待框做成舞萌主题"与服务器通讯中"的样式
     const e_wait_bar = _global.getElement('wait-bar')
 
     if (message) e_wait_bar.querySelector('.content').innerText = message
@@ -623,6 +623,8 @@ const waitBar = (is_wait = true, message = '') => {
 
 // tool & dev
 
+
+// # time
 
 /**
  * 获取时间的可读字符串样式
@@ -696,6 +698,20 @@ const toDayTime = (time) => {
     const padZero = (num) => String(num).padStart(2, '0')
     return `${padZero(hours)}:${padZero(minutes)}`
 }
+
+/**
+ * 获取一个时间是否过期
+ * @param {number} time 被检查时间
+ * @param {number} limit 此时间后算作过期
+ */
+const isExpiredTime = (time, limit) => {
+    const this_time = timeIs()
+    return this_time > (time + limit)
+}
+
+
+// # other
+
 
 /**
  * 获取两个对象不重复(或重复)的值, 将会返回重复字段的内容(确保两个对象的键一致, 将会比对值)

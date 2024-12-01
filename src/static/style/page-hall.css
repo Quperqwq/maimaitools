@@ -427,6 +427,14 @@ ul.state li:not(.none) {
     border-left: var(--border-size) solid #bbb;
 }
 
+#hall-player-list .right .player-number {
+    display: block;
+    width: 5em;
+    /* margin: 0 auto; */
+    text-align: center;
+    --percent-radius: .2em;
+}
+
 #hall-player-list .right .hall-number {
     /* padding-top: .25em; */
     text-align: center;
@@ -446,7 +454,7 @@ ul.state li:not(.none) {
     width: 100%;
     height: .2em;
     background-color: #eee;
-    border-radius: .2em;
+    border-radius: var(--percent-radius);
 }
 
 .right .hall-number::after {
@@ -458,7 +466,7 @@ ul.state li:not(.none) {
     height: .2em;
     background-color: var(--color);
     filter: brightness(.6);
-    border-radius: .2em;
+    border-radius: var(--percent-radius);
 }
 
 
@@ -490,6 +498,11 @@ ul.state li:not(.none) {
     --color: red;
 }
 
+.hall-number.inv {
+    --color: #000;
+    font-style: italic;
+    opacity: .6;
+}
 
 /* ↓window */
 
