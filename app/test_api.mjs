@@ -6,7 +6,12 @@ import { maiApi } from './app.mjs'
     
 // })
 
-maiApi.get('alias', (r) => {
-    console.log(r);
+// maiApi.get('alias', (r) => {
+//     console.log(r)
+    
+// })
+
+maiApi.getSongByAlias('钢琴广告', (r) => {
+    console.log(r)
     
 })

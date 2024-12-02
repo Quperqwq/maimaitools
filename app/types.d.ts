@@ -96,3 +96,48 @@ export interface PlayerComments {
     /**点赞人数 */
     likes: number
 }
+
+
+
+/** MaiAPI - 单个曲目 */
+export interface SongItem {
+    /** 曲目 ID */
+    id: number
+    
+    /** 曲名 */
+    title: string
+
+    /** 艺术家 */
+    artist: string
+
+    /** 曲目分类 */
+    genre: string
+
+    /** 曲目 BPM */
+    bpm: number
+
+    /** 曲目所属区域，值可空 */
+    map: string | null
+
+    /** 曲目首次出现版本 */
+    version: number
+
+    /** 曲目版权信息，值可空 */
+    rights: string | null
+
+    /** 是否被禁用，值可空，默认值为 false */
+    disabled: boolean | null
+
+    /** 谱面难度 */
+    difficulties: any
+    // difficulties: SongDifficulties
+}
+
+/** MaiAPI - 歌曲别名 */
+export interface SongAlias {
+    /** 对应的曲目ID `SongItem.id`  */
+    song_id: number
+
+    /** 曲目的所有别名 */
+    aliases: string[]
+}

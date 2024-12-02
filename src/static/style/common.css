@@ -381,6 +381,26 @@ input[type="checkbox"]:disabled+.checkable::before {
     --content: '\e925';
 }
 
+.icon-user {
+    --content: '\e975';
+}
+
+.icon-users {
+    --content: '\e976';
+}
+
+.icon-user_plus {
+    --content: '\e979';
+}
+
+.icon-user_min {
+    --content: '\e97a';
+}
+
+.icon-user_check {
+    --content: '\e97b';
+}
+
 @media (max-width: 60em) {
 
     /* 手机版大小媒体响应 */

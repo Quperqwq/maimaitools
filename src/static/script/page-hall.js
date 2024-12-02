@@ -836,11 +836,13 @@ const refreshList = (callback, {
                 
                 // ________________________
                 //    ...      | >当前人数<
+                //             |    
                 //             |     x
                 // ____________|___________
                 const e_right_title = create('h3', {})
                 // ________________________
                 //    ...      |  当前人数 
+                //             |    
                 //             |    >x<
                 // ____________|___________
                 const e_right_number = create('h2', {
@@ -848,6 +850,19 @@ const refreshList = (callback, {
                     class: `hall-number`,
                     style: `--percent: ${(player / max_player) * 100}%;` // 机厅人数百分比
                 }, player)
+                // ________________________
+                //    ...      |  当前人数 
+                //             |  > ... <
+                //             |     x
+                // ____________|___________
+                const e_right_info = create('p', {
+                    class: 'info'
+                })
+                /** @param {string} cont */
+                const setRightInfoCont = (cont) => {
+                    e_right_info.innerText = cont
+                    e_right_info.classList.add('have')
+                }
 
                 const e_right = create('section', { class: 'right' })
                 const _e_player_number_attrib = { for: 'window-change-player', class: 'player-number' }
@@ -855,7 +870,8 @@ const refreshList = (callback, {
                     // 不在营业时间内将无法显示更改人数窗口
                     is_open ? create('label', _e_player_number_attrib, showPlayerNumber) : create('div', _e_player_number_attrib), {
                     title: e_right_title,
-                    number: e_right_number
+                    info: e_right_info,
+                    number: e_right_number,
                 }))
                 )
                 // ________________________
@@ -947,8 +963,8 @@ const refreshList = (callback, {
                     // 判断人数是否长久未更新
                     if (isExpiredTime(hall.time.change_player, config.change_player_expired_time)) {
                         // console.debug(hall.name, '人数已过期')
-                        // e_right_title.innerText = '过期数据'
                         addClassPlayerNumber('inv')
+                        setRightInfoCont('过时数据')
                     }
                 } else {
                     // 休息中

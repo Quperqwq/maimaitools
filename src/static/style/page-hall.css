@@ -435,6 +435,10 @@ ul.state li:not(.none) {
     --percent-radius: .2em;
 }
 
+#hall-player-list .right .info.have+.hall-number {
+    font-size: 2.3em;
+}
+
 #hall-player-list .right .hall-number {
     /* padding-top: .25em; */
     text-align: center;
@@ -467,6 +471,18 @@ ul.state li:not(.none) {
     background-color: var(--color);
     filter: brightness(.6);
     border-radius: var(--percent-radius);
+}
+
+#hall-player-list .right .info {
+    /* display: inline-block; */
+    margin: 0;
+    line-height: 1.2em;
+    max-height: 1.2em;
+    color: #fff;
+    background-color: #777;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 

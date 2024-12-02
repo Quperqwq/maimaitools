@@ -1,6 +1,7 @@
 # running
 *.log
 npminstall-debug.log
+log/running.log
 
 
 # data

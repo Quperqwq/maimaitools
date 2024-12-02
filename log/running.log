@@ -5,3 +5,5 @@
 [ERROR] 2024/11/4 14:01:38 | invalid_html_name: dev.html
 [ERROR] 2024/11/4 14:08:58 | invalid_html_name: dev.html
 [ERROR] 2024/11/4 19:24:02 | invalid_path: ./data
+[ERROR] 26.39 | file profile.html not found.
+[ERROR] 48.03 | file profile.html not found.

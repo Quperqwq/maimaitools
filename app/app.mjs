@@ -5,6 +5,8 @@ import http from 'https'
 
 /**@typedef {import('./types').GameHallMain} GameHallMain */
 /**@typedef {import('./types').GameHallItem} GameHallItem */
+/**@typedef {import('./types').SongItem} SongItem */
+/**@typedef {import('./types').SongAlias} SongAlias */
 
 
 /**游戏厅 */
@@ -419,6 +421,9 @@ class ApiMai {
         this.api_path = api_path
     }
 
+
+    // 数据获取与缓存
+
     /**
      * 获取数据名
      * @param {MaiDataName} target_name 
@@ -438,6 +443,7 @@ class ApiMai {
     /**
      * 会获取到一个数据名对应的内容, 默认获取优先级为 `对象缓存 > 文件/数据库缓存 > API调取`
      * @param {MaiDataName} target_name 
+     * @param {function(any)} next 
      */
     get(target_name, next) {
         const obj_data = this.data
@@ -530,6 +536,39 @@ class ApiMai {
         }
         req.end()
     }
+
+
+
+    // 数据输出与应用
+
+    /**
+     * 通过别名获取歌曲
+     * @param {string} key_word 歌曲别名关键词
+     * @param {function(string[]): void} next 
+     */
+    getSongByAlias(key_word, next) {
+        // (ADD)这里后续需要做性能优化
+        this.get('alias', (
+            alias_data
+        ) => {
+            /**@type {SongAlias[]} */
+            const all_alias = alias_data.aliases
+            /** @type {string[]} */
+            const result = []
+            
+            for (let _alias_index = 0; _alias_index < all_alias.length; _alias_index++) {
+                const song_item = all_alias[_alias_index]
+                let is_have = false
+                song_item.aliases.forEach((alias) => {
+                    is_have = alias.includes(key_word) || is_have
+                })
+                if (is_have) result.push(song_item.song_id)
+            }
+            
+            next(result)
+        })
+    }
+
 }
 
 
