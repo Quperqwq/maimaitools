@@ -3,100 +3,134 @@
 /**@typedef {import('../../../app/types').GameHalls} GameHalls */
 /**@typedef {import('../../../app/types').GameHallItem} GameHallItem */
 
-const doc = {
-    window: {
-        change_player: getEBI('window-change-player'),
-        show_detail: getEBI('window-hall-detail'),
-        show_set_hall: getEBI('window-hall-set'),
-        filter: getEBI('window-filter')
-    },
-    input: {
-        player_number: {
-            submit: getEBI('submit-player-number'),
-            input: getEBI('current-player-number'),
-            add: getEBI('add-player-number'),
-            min: getEBI('min-player-number'),
-            refresh: getEBI('refresh-halls')
+
+const getDoc = () => {
+    /** getEBI(getElementById)简写形式 */
+    const gi = getEBI
+
+    /** 当的root element依据 @type {null | Element} */
+    let target = null
+    /**
+     * 设置target的值
+     * @param {string} id_name 
+     */
+    const setTarget = (id_name) => {
+        target = gi(id_name)
+        return target
+    }
+    /**
+     * 通过`setTarget`设置的值获取一个元素
+     * @param {string} query 
+     */
+    const get = (query) => {
+        if (!(target instanceof Element)) return
+        return target.querySelector(query)
+    }
+
+
+    return {
+        window: {
+            change_player: gi('window-change-player'),
+            show_detail: gi('window-hall-detail'),
+            show_set_hall: gi('window-hall-set'),
+            filter: gi('window-filter')
         },
-        hall_set: {
-            form: getEBI('set-hall-form'),
-            submit: getEBI('submit-hall-set'),
-            name: getEBI('set-hall-name'),
-            nickname: {
-                /**ul li*n */
-                element: getEBI('set-hall-nickname-list'),
-                /**input Element */
-                input: getEBI('set-hall-nickname')
+        input: {
+            player_number: {
+                submit: gi('submit-player-number'),
+                input: gi('current-player-number'),
+                add: gi('add-player-number'),
+                min: gi('min-player-number'),
+                refresh: gi('refresh-halls')
             },
-            pos: getEBI('set-hall-pos'),
-            player: getEBI('set-hall-max_player'),
-            games: {
-                /**ul li*n */
-                element: getEBI('set-hall-games-list')
-                /**input Element */,
-                input: getEBI('set-hall-games')
+            hall_set: {
+                form: gi('set-hall-form'),
+                submit: gi('submit-hall-set'),
+                name: gi('set-hall-name'),
+                nickname: {
+                    /**ul li*n */
+                    element: gi('set-hall-nickname-list'),
+                    /**input Element */
+                    input: gi('set-hall-nickname')
+                },
+                pos: gi('set-hall-pos'),
+                player: gi('set-hall-max_player'),
+                games: {
+                    /**ul li*n */element: gi('set-hall-games-list'),
+                    /**input Element */input: gi('set-hall-games')
+                },
+                open_hours: {
+                    open: getQS('[name="open"]', 'set-hall-open_hours'),
+                    close: getQS('[name="close"]', 'set-hall-open_hours')
+                },
+                map_id: gi('set-hall-map-id'),
+                new_hall: gi('window-hall-new')
             },
-            open_hours: {
-                open: getQS('[name="open"]', 'set-hall-open_hours'),
-                close: getQS('[name="close"]', 'set-hall-open_hours')
+            trip: {
+                finish: gi('trip-finish'),
+                cancel: gi('trip-cancel')
             },
-            map_id: getEBI('set-hall-map-id'),
-            new_hall: getEBI('window-hall-new')
-        },
-        trip: {
-            finish: getEBI('trip-finish'),
-            cancel: getEBI('trip-cancel')
-        },
-        filter: {
-            form: getEBI('filter-form'),
-            submit: getEBI('submit-filter'),
-            /**更多选项 */
-            more: getQSA('[name="set-filter-more"]', 'set-filter-more'),
-            /**过滤游戏 */
-            game: getQSA('[name="set-filter-game"]', 'set-filter-game'),
-            /**显示字段 */
-            show: getQSA('[name="set-filter-show"]', 'set-filter-show'),
-            order: {
-                // target: getEBI('set-filter-order_target'),method: getEBI('set-filter-order_method'),
-                target: getQSA(
-                    '[name="set-filter-order"]',
-                    'set-filter-order_target'
-                ),method: getEBI('set-filter-order_method'),
+            filter: {
+                form: gi('filter-form'),
+                submit: gi('submit-filter'),
+                /**更多选项 */
+                more: getQSA('[name="set-filter-more"]', 'set-filter-more'),
+                /**过滤游戏 */
+                game: getQSA('[name="set-filter-game"]', 'set-filter-game'),
+                /**显示字段 */
+                show: getQSA('[name="set-filter-show"]', 'set-filter-show'),
+                order: {
+                    // target: getEBI('set-filter-order_target'),method: getEBI('set-filter-order_method'),
+                    target: getQSA(
+                        '[name="set-filter-order"]',
+                        'set-filter-order_target'
+                    ),
+                    method: gi('set-filter-order_method'),
+                }
             }
-        }
-    },
-    text: {
-        hall_detail: {
-            name: getEBI('detail-hall-name'),
-            player: getEBI('detail-hall-player'),
-            time_wait: getEBI('detail-hall-time-wait'),
-            time_update: getEBI('detail-hall-time-update'),
-            nickname: getEBI('detail-hall-nickname'),
-            pos: getEBI('detail-hall-pos'),
-            max: getEBI('detail-hall-max'),
-            id: getEBI('detail-hall-id'),
-            open_hours: getEBI('detail-hall-open_hours'),
-            link: {
-                map: getEBI('detail-hall-link-map')
-            }
         },
-        player_number: {
-            name: getEBI('player-number-name'),
-            change_time: getEBI('player-number-change_time') 
+        text: {
+            hall_detail: {
+                name: gi('detail-hall-name'),
+                player: gi('detail-hall-player'),
+                time_wait: gi('detail-hall-time-wait'),
+                time_update: gi('detail-hall-time-update'),
+                nickname: gi('detail-hall-nickname'),
+                pos: gi('detail-hall-pos'),
+                max: gi('detail-hall-max'),
+                id: gi('detail-hall-id'),
+                open_hours: gi('detail-hall-open_hours'),
+                link: {
+                    map: gi('detail-hall-link-map')
+                }
+            },
+            player_number: {
+                name: gi('player-number-name'),
+                change_time: gi('player-number-change_time')
+            },
+            trip: {
+                name: gi('on-trip-name'),
+                pos: gi('on-trip-target'),
+            },
+            hall_detail: {
+                root: setTarget('hall-list-detail'),
+                number: {
+                    sum: get('.sum'),
+                    dis: get('.show'),
+                }
+            },
+
+            // item
+            last_update_time: gi('last-refresh-time'),
         },
-        trip: {
-            name: getEBI('on-trip-name'),
-            pos: getEBI('on-trip-target'),
+        card: {
+            trip: gi('card-trip')
         },
-        time: {
-            last_update: getEBI('last-refresh-time'),
-        }
-    },
-    card: {
-        trip: getEBI('card-trip')
-    },
-    list: getEBI('hall-player-list')
+        list: gi('hall-player-list')
+    }
 }
+
+const doc = getDoc()
 
 /**全局对象 */
 const global = {
@@ -176,7 +210,9 @@ const config = {
         },
         init: false
     },
-    /**正在前往的机厅 */
+    /** 启用过滤 */
+    use_filter: true,
+    /** 正在前往的机厅 */
     going: {
         /**是否在途中 */
         is: false,
@@ -200,7 +236,16 @@ const _init = () => {
         func(...arg)
     }
 
-    const initCommand = {
+
+    /**
+     * 此对象为初始化函数, 在函数体内初始化以防污染全局变量  
+     * 
+     * 增加init command字段内容时需要注意, 格式如下:  
+     * `描述字符: Function`
+     * 
+     * @type {Object.<string, Function: never>}
+     */
+    const init_command = {
         /**玩家人数 */
         playerNumber: () => {
             const { refresh, add, min, input, submit } = doc.input.player_number
@@ -407,9 +452,11 @@ const _init = () => {
                 }
 
                 if (checked_more.includes('save-filter')) { // 需要记住筛选条件
-                    cookie.setObj('filter', config.filter)
+                    local.set('filter', config.filter)
+                    // cookie.setObj('filter', config.filter)
                 } else { // 无需
-                    cookie.del('filter')
+                    local.del('filter')
+                    // cookie.del('filter')
                 }
             }
 
@@ -438,7 +485,8 @@ const _init = () => {
 
                 let cache = config.filter
                 cache = {
-                    ...cookie.getObj('filter')
+                    // ...cookie.get('filter'),
+                    ...local.get('filter'),
                 }
                 config.filter = cache
 
@@ -457,27 +505,35 @@ const _init = () => {
 
         },
 
-        /**时间显示相关 */
-        timer: () => {
-            const {last_update} = doc.text.time
-            const changeRefresh = (cont) => {
+        /**显示上次更新时间 */
+        last_update_time: () => {
+            const {last_update_time: last_update} = doc.text
+            const changeRefreshTime = (cont) => {
                 last_update.innerText = cont
             }
             // 上次刷新时间
             global.timer.last_refresh = setInterval(() => {
                 const {refresh: refresh_time} = global.time
-                if (!refresh_time) return changeRefresh('-')
-                changeRefresh(getElapsedTime(refresh_time))
+                if (!refresh_time) return changeRefreshTime('-')
+                changeRefreshTime(getElapsedTime(refresh_time))
             }, 1000)
         },
 
         /**用户收藏的机厅 */
         fav: () => {
             config.fav = cookie.getArrayData('fav')
+            // config.fav = local.get('fav')
         }
     }
 
-    Object.values(initCommand).forEach(command => command())
+    Object.keys(init_command).forEach(command_key => {
+        const command = init_command[command_key]
+        try {
+            command()
+        } catch (error) {
+            console.error('[running init command fail]', error)
+        }
+    })
 }
 
 /**
@@ -518,7 +574,7 @@ const refreshList = (callback, {
     useApi('get_hall_data', {}, (res_data, err) => {
         global.time.refresh = timeIs()
         waitBar(false)
-        if (res_data.message) {
+        if (!res_data.valid) {
             showInfo('刷新失败!')
             return console.error('refresh fail!', message)
         }
@@ -546,7 +602,7 @@ const refreshList = (callback, {
                 const {max_player, player, name, games, nickname, pos} = hall
                 const {input} = doc.input.player_number
                 const {fav: fav_hall} = config
-                const this_time = timeIs()
+
 
                 /**营业时间段的`string`样式 */
                 const str_open_hours = {
@@ -573,6 +629,20 @@ const refreshList = (callback, {
                 /**时间相关内容 */
                 const time = new Time()
 
+
+
+                // 初始化函数
+
+                
+                // 更新详情
+                const updateDetail = () => {
+                    const {number: {sum, dis}} = doc.text.hall_detail
+                    sum.innerText = Object.keys(org_halls).length
+                    dis.innerText = Object.keys(halls).length
+                }
+                updateDetail()
+
+
                 // 快捷方式
                 /**
                  * 是否在营业时间内
@@ -589,6 +659,8 @@ const refreshList = (callback, {
                 }
 
                 const is_open = inOpenHours()
+
+
 
 
                 // ~创建快捷操作DOM的方式
@@ -614,13 +686,16 @@ const refreshList = (callback, {
                     */
                     const endTrip = (message = '') => {
                         message ? infoBar(message) : null
+                        
                         hall_name.classList.remove('go')
                         trip.classList.remove('show')
                         going.is = false
                         cookie.del('goto_hall')
+
+                        refreshList(void 0, {'show_info': false})
                     }
 
-                    if (!is_trip) endTrip()
+                    if (!is_trip) return endTrip()
 
                     hall_name.classList.add('go')
                     trip.classList.add('show')
@@ -645,7 +720,6 @@ const refreshList = (callback, {
                             dis(false)
                             if (!res_data.valid) return endTrip('前往失败!')
                             endTrip('到了哟')
-                            refreshList()
                         })
                     }
                 }
@@ -678,6 +752,7 @@ const refreshList = (callback, {
                         updateTrip(true)
                         infoBar('已确定行程')
                         cookie.set('goto_hall', id)
+                        refreshList()
                     })
                 }
 
@@ -758,7 +833,7 @@ const refreshList = (callback, {
                         
                         // 营业时间字段
                         if (hall.open_hours) {
-                            console.log(hall.open_hours)
+                            // console.log(hall.open_hours)
                             open.value = toDayTime(hall.open_hours.open)
                             close.value = toDayTime(hall.open_hours.close)
                         }
@@ -805,11 +880,13 @@ const refreshList = (callback, {
                     if (is_fav) {
                         element.classList.replace( 'icon-star_full','icon-star_empty')
                         element.classList.add('not')
-                        cookie.delItem('fav', id)
+                        cookie.delItem('fav')
+                        // local.del('fav')
                     } else {
                         element.classList.replace('icon-star_empty', 'icon-star_full')
                         element.classList.remove('not')
                         cookie.addItem('fav', id)
+                        // local.set('fav', id)
                     }
                     is_fav = !is_fav
                 }
@@ -974,9 +1051,11 @@ const refreshList = (callback, {
                 }
 
                 // 是否有去机厅的记录
+                // ~(FIX)
                 const _go_hall = cookie.get('goto_hall')
                 if (+_go_hall === id) {
                     // 如果有
+                    console.log(config.going);
                     
                     config.going.is = true
                     if (_init) updateTrip(true)
@@ -1078,7 +1157,12 @@ const refreshList = (callback, {
             // console.log(halls); 
             main(halls)
         }
-        runFilter()
+
+        if (config.use_filter) {
+            runFilter()
+        } else {
+            main(org_halls)
+        }
     })
 }
 

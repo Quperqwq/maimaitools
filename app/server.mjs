@@ -1,6 +1,6 @@
 import {HttpApp, tool, log} from './website-common.mjs'
 import config from './config.mjs'
-import {hall} from './app.mjs'
+import {hall, maiApi} from './app.mjs'
 
 const httpd = new HttpApp({
     html_path: './src/html',
@@ -21,6 +21,8 @@ httpd.page('/profile', 'profile.html')
 httpd.page('/hall', 'hall.html')
 
 httpd.page('/dev', 'dev.html')
+
+httpd.page('/admin', 'admin.html')
 
 // httpd.page('/score', 'score.html')
 
@@ -74,10 +76,49 @@ httpd.api('change_hall_data', (req, res, end) => {
 })
 
 
+
+/**
+ * 创建一个机厅
+ * @example
+ * {
+ *  target: 'new_hall'
+ *  value: GameHallItem
+ * }
+ */
 httpd.api('new_hall', (req, _, end) => {
     const {value = {}} = req
     const name = value.name
     return end(hall.new(name, value))
+})
+
+/**
+ * 搜索一个曲目
+ * @example
+ * {
+ *  target: 'search_song'
+ *  keyword: string
+ *  type: 'alias' | 'name' | undefine
+ * }
+ */
+httpd.api('search_song', (req, res, end) => {
+    
+    const {keyword, type} = req
+    if (!tool.isType(keyword, 'string')) return end('invalid_type')
+    let method = maiApi.searchSong
+
+    switch (type) {
+        case 'alias':
+            method = maiApi.searchSongByAlias
+            break
+        case 'name':
+            method = maiApi.searchSongByName
+            break
+    }
+    
+    method.bind(maiApi)(keyword, (songs) => {
+        res.data = songs
+        end()
+    })
 })
 
 

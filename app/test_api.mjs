@@ -11,7 +11,18 @@ import { maiApi } from './app.mjs'
     
 // })
 
-maiApi.getSongByAlias('钢琴广告', (r) => {
+maiApi.searchSongByAlias('找对象', (r) => {
     console.log(r)
-    
 })
+// let num = 0
+// console.time('get_song_sum')
+// while (num < 100) {
+//     console.time('get_song')
+//     maiApi.getSongByAlias('找对象', (r) => {
+//         // console.log(r)
+//     })
+//     console.timeEnd('get_song')
+    
+//     num++
+// }
+// console.timeEnd('get_song_sum')

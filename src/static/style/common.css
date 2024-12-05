@@ -90,21 +90,25 @@ body.safari hr.slide {
 
 
 /* footer */
+footer {
+    position: relative;
+}
 
 /* footer - version */
 
 footer.main .version {
     --font-color: #0074d9;
-    margin-right: .4em;
+    position: absolute;
+    right: 1em;
+    bottom: 1em;
     font-size: .8em;
-    text-align: right;
     opacity: .95;
 }
 
 footer.main .version .cont {
     display: inline-block;
     border-radius: var(--main-radius);
-    background-color: #f9feff;
+    background-color: #d0d0d0;
     padding: .4em .6em;
 }
 
@@ -120,7 +124,7 @@ footer.main .version .cont #version {
 
 footer.main .version .cont::before {
     content: '版本号:';
-    color: #0083ff;
+    color: #fff;
 }
 
 /* footer - background */

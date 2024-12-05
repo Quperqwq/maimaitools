@@ -119,8 +119,20 @@ class Tools {
         }
     }
 
-
-    
+    /**
+     * 验证一个值是否是指定类型
+     * @param {any} value 需要验证的值
+     * @param {string} type_of 指定类型
+     */
+    isType(value, type_of) {
+        const type = type_of.toLowerCase()
+        switch (type) {
+            case 'array':
+                return Array.isArray(value)
+            default:
+                return typeof(value) === type
+        }
+    }
     /**
      * 获取可读的日期字符串
      * @param {'day_time' | 'date' | 'to_hours' | 'hours'} [style] 获取的格式

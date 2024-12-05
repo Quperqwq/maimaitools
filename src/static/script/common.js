@@ -62,7 +62,7 @@ const useApi = (target, req_data = {}, callback) => {
         }
     }
     xhr.onerror = () => {
-        console.error('Request', xhr.status)
+        console.error('Request fail', xhr.status)
         
         return typeof(callback) === 'function' ? callback({}, 'req_fail') : void 0
     }
@@ -217,6 +217,10 @@ const getElements = (obj) => {
     })
     return new_obj
 }
+
+
+
+// class
 
 class InputList {
     /**
@@ -471,6 +475,53 @@ class Cookie {
 }
 const cookie = new Cookie()
 
+/**
+ * 设置LocalStorage
+ */
+class SetLocalStorage {
+    constructor () {}
+
+    /**
+     * 设置一个LocalStorage
+     * @param {string} key 设置键
+     * @param {any} value 设置值
+     */
+    set(key, value) {
+        let set_value = ''
+        if (typeof(value) === 'string') {
+            set_value = value
+        } else {
+            set_value = JSON.stringify(value)
+        }
+        localStorage.setItem(key, set_value)
+    }
+
+    /**
+     * 获取一个LocalStorage的指定键内容
+     * @param {string} key 指定键
+     * @param {any} [normal] 如果不存在该值将返回这个默认值
+     */
+    get(key, normal = '') {
+        let result = localStorage.getItem(key)
+        if (result === null) return normal
+        try {
+            result = JSON.parse(result)
+        } catch (e) {}
+        return result
+    }
+
+    /**
+     * 删除一个LocalStorage的指定键内容
+     * @param {string} key 指定键
+     * @returns {never}
+     */
+    del(key) {
+        localStorage.removeItem(key)
+    }
+}
+/**通过快捷方式设置LocalStorage */
+const local = new SetLocalStorage()
+
 
 /**一个简单的排序算法 */
 class Sorting {
@@ -571,6 +622,16 @@ class Sorting {
         return this.is_reverse ? returns.reverse() : returns
     }
 }
+
+class Dev {
+    constructor() {}
+    
+    printElementSize(element = document.body) {
+        console.log('width of: ', element.clientWidth, ', height of: ', element.clientHeight)
+        return element
+    }
+}
+const dev = new Dev()
 
 
 /**

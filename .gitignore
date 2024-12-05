@@ -1,11 +1,9 @@
 # running
 *.log
-npminstall-debug.log
-log/running.log
 
 
 # data
-app/data/all_hall.json
+app/data/*
 
 
 # config

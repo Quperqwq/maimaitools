@@ -11,11 +11,18 @@
     <!header>
     <main class="hall-player-main space">
     
+        <!-- <div id="card-search" class="search">
+            <form class="input">
+                <input type="search" class="keyword" placeholder="输入关键词">
+            </form>
+        </div> -->
+
         <div class="hall-header" id="top">
             <div class="left title">
                 <h2> 机厅排卡 </h2>
             </div>
             <div class="right operate">
+                <!-- <button type="button" id="start-search" class="pseudo"> 搜索 </button> -->
                 <button type="button" id="refresh-halls" class="pseudo"> 刷新 </button>
                 <label for="window-filter" class="pseudo button"> 筛选 </label>
                 <label id="window-hall-new" for="window-hall-set" class="pseudo button"> 添加机厅 </label>
@@ -37,312 +44,328 @@
             </section>
         </div>
     
-        <div class="time">
-            <span class="last-refresh" id=""><strong id="last-refresh-time">--秒</strong>前刷新</span>
-        </div>
+        <section class="last-update-time">
+            <span class="last-refresh"><strong id="last-refresh-time">--秒</strong>前刷新</span>
+        </section>
     
         <ul class="row left-icon-items" id="hall-player-list" data-show="nickname games wait"></ul>
-    
-        <!-- window-player-number -->
-        <div class="modal window-change-player decoration char-1">
-            <input id="window-change-player" type="checkbox" />
-            <label for="window-change-player" class="overlay"></label>
-            <article>
-                <header>
-                    <h3> 更新机厅人数 </h3>
-                </header>
-                <section class="content">
-                    <h3 class="hall-name" id="player-number-name"> 机厅名 </h3>
-                    <p class="change-time"> <span id="player-number-change_time"> -- </span>前更新 </p>
-                    <hr>
-                    <section class="change-player">
-                        <button class="add-player" id="add-player-number" type="button" id="plus-player"> + </button>
-                        <input class="now-player" id="current-player-number" type="number" name="player" title="当前玩家人数" readonly>
-                        <button class="min-player" id="min-player-number" type="button" id="min-player"> - </button>
-                    </section>
-                </section>
-                <footer>
-                    <button type="button" id="submit-player-number" title="确定"> 确定 </button>
-                    <label for="window-change-player" class="button dangerous"> 取消 </label>
-                </footer>
-            </article>
-        </div>
-    
-        <!-- window-filter -->
-        <div class="modal window-filter decoration char-1">
-            <input id="window-filter" type="checkbox" />
-            <label for="window-filter" class="overlay"></label>
-            <form id="filter-form">
-                <header>
-                    <h3> 更改排序方式 </h3>
-                    <label for="window-filter" class="close">&times;</label>
-                </header>
-                <section class="content left-icon-items no_margin-icon-items">
-                    <!-- content -->
-                    <section class="sort item">
-                        <h2> 排序 </h2>
-                        <section class="cont">
-                            <section class="pad-right" id="set-filter-order_target">
-                                <label> 
-                                    <input type="radio" name="set-filter-order" value="update_time">
-                                    <span class="checkable"> 更新时间 </span>
-                                </label>
-            
-                                <label>
-                                    <input type="radio" name="set-filter-order" value="player" checked>
-                                    <span class="checkable"> 人数 </span>
-                                </label>
-                                :
-                            </section>
-    
-                            <label>
-                                <select name="set-filter-method" title="排序方式" id="set-filter-order_method">
-                                    <option value="asc"> 大到小 </option>
-                                    <option value="desc"> 小到大 </option>
-                                </select>
-                            </label>
-                        </section>
-                    </section>
-    
-                    <section class="show item">
-                        <h2> 指定机台 </h2>
-                        <section class="cont" id="set-filter-game">
-                            <div class="line">
-                                <label> 
-                                    <input type="checkbox" name="set-filter-game" value="舞萌" checked="true">
-                                    <span class="checkable"> 舞萌 </span>
-                                </label>
-                                <label> 
-                                    <input type="checkbox" name="set-filter-game" value="中二节奏"  checked="true">
-                                    <span class="checkable"> 中二节奏 </span>
-                                </label>
-                            </div>
-                            <div class="line">
-                                <label> 
-                                    <input type="checkbox" name="set-filter-game" value="华卡" checked="true">
-                                    <span class="checkable"> 华卡 </span>
-                                </label>
-                                <label > 
-                                    <input type="checkbox" name="set-filter-game" value="舞立方" checked="true">
-                                    <span class="checkable"> 舞立方 </span>
-                                </label>
-                            </div>
-                        </section>
-                    </section>
 
-                    <section class="show item">
-                        <h2> 显示字段 </h2>
-                        <section class="cont" id="set-filter-show">
-                            <div class="line">
-                                <label>
-                                    <input type="checkbox" name="set-filter-show" value="wait" checked="true">
-                                    <span class="checkable"> 预计等待 </span>
-                                </label>
-                                <label>
-                                    <input type="checkbox" name="set-filter-show"  value="nickname" checked="true">
-                                    <span class="checkable"> 别名 </span>
-                                </label>
-                            </div>
-                            <div class="line">
-                                <label>
-                                    <input type="checkbox" name="set-filter-show" value="games" checked="true">
-                                    <span class="checkable"> 游戏项目 </span>
-                                </label>
-                            </div>
-                        </section>
-                    </section>
 
-                    <section class="item">
-                        <section class="cont" id="set-filter-more">
-                            <h2> 更多... </h2>
-                            <div class="line">
-                                <label>
-                                    <input type="checkbox" name="set-filter-more" value="show-fav">
-                                    <span class="checkable"> 仅显示收藏 </span>
-                                </label>
-                                <section class="info icon-info"> 只有收藏过的机厅会展示 </section>
-                            </div>
-                            <div class="line">
-                                <label>
-                                    <input type="checkbox" name="set-filter-more" value="show-fav" disabled>
-                                    <span class="checkable"> 仅显示营业 </span>
-                                </label>
-                                <section class="info icon-info"> 仅显示正在营业的机厅 </section>
-                            </div>
-                            <div class="line">
-                                <label>
-                                    <input type="checkbox" name="set-filter-more" value="save-filter">
-                                    <span class="checkable"> 记住筛选条件 </span>
-                                </label>
-                                <label></label>
-                            </div>
-                        </section>
-                    </section>
-                </section>
-                <footer>
-                    <button type="submit" id="submit-filter"> 确定 </button>
-                    <label for="window-filter" class="button dangerous"> 取消 </label>
-                </footer>
-            </form>
-        </div>
-    
-    
-        <!-- window-hall-set -->
-        <div class="modal sticky window-hall-set decoration char-2">
-            <input id="window-hall-set" type="checkbox" />
-            <section for="window-hall-set" class="overlay"></section>
-            <form id="set-hall-form">
-                <header class="sticky">
-                    <h3> 修改或添加 </h3>
-                    <label for="window-hall-set" class="close">&times;</label>
-                </header>
-                <section class="content">
-                    <!-- content -->
-                    <div class="index">
-                        <h4> 基本信息 </h4>
-                    </div>
-                    <div class="line name">
-                        <label class="title" for="set-hall-name"> 机厅名 </label>
-                        <input id="set-hall-name" type="text" name="hall-name" title="机厅名" minlength="3" maxlength="16" placeholder="输入机厅的名字" required >
-                    </div>
-                    <div class="line nickname">
-                        <label class="title" for="set-hall-nickname"> 机厅别名 </label>
-                        <p class="tip"> 输入完成后，点击其他位置以增加。若需输入更多内容，请重复此操作。 </p>
-                        <section class="input-list">
-                            <ul class="row" id="set-hall-nickname-list">
-                                <li class="item"> nickname1 </li>
-                                <li class="item"> nickname2 </li>
-                            </ul>
-                            <input id="set-hall-nickname" type="text" name="hall-nickname" title="机厅别名" maxlength="8" placeholder="添加...">
-                        </section>
-                    </div>
-                    <div class="line pos">
-                        <label class="title" for="set-hall-pos"> 机厅位置 </label>
-                        <p class="tip"> 一般格式为(省)市、区、街道、商场名、机厅名。 </p>
-                        <textarea id="set-hall-pos" type="text" name="hall-pos" title="机厅位置" minlength="6" maxlength="32" required placeholder="输入机厅在哪里"></textarea>
-                    </div>
-                    <div class="line games">
-                        <label class="title" for="set-hall-games"> 游戏项目 </label>
-                
-                        <section class="input-list">
-                            <ul class="row" id="set-hall-games-list">
-                                <li class="item"> 舞萌 </li>
-                            </ul>
-                            <input id="set-hall-games" type="text" name="hall-games" title="游戏项目" list="data-game-list" maxlength="8" placeholder="添加...">
-                            <datalist id="data-game-list">
-                                <option value="舞萌">
-                                <option value="中二节奏">
-                                <option value="华卡">
-                                <option value="太鼓达人">
-                                <option value="舞立方">
-                            </datalist>
-                        </section>
-                    </div>
-
-                    <div class="index">
-                        <h4> 详细设置 </h4>
-                    </div>
-                    <div class="line max_player">
-                        <label class="title" for="set-hall-max_player"> 最大人数 </label>
-                        <input id="set-hall-max_player" type="number" max="50" min="0" name="hall-max_player" value="10" title="最大人数" placeholder="总得有个上限吧?!">
-                    </div>
-                    <div class="line open-hours new">
-                        <label class="title" for="set-hall-open_hours"> 营业时间 </label>
-                        <p class="tip">
-                            在非营业时间的时候会自动将人数设定为不可用状态。
-                        </p>
-                        <div class="cont flex two" id="set-hall-open_hours">
-                            <label class="open-time">
-                                <span>开店时间</span>
-                                <input type="time" name="open">
-                            </label>
-                            <label class="close-time">
-                                <span>闭店时间</span>
-                                <input type="time" name="close">
-                            </label>
-                        </div>
-                    </div>
-                    <div class="line map-id new">
-                        <label class="title" for="set-hall-map-id">
-                            音游地图ID
-                        </label>
-                        <p class="tip">
-                            填写来自<a href="https://map.bemanicn.com/" title="跳转至音游地图" target="_blank" rel="noopener">音游地图</a>的机厅ID或该机厅在音游地图的链接。
-                        </p>
-                        <input type="text" id="set-hall-map-id" placeholder="输入链接或ID">
-                    </div>
-                </section>
-                <footer>
-                    <button type="submit" id="submit-hall-set"> 就这样 </button>
-                    <label for="window-hall-set" class="button dangerous"> 算了 </label>
-                </footer>
-            </form>
-        </div>
-    
-        <!-- window-player-comment -->
-        <div class="modal">
-            <input id="window-player-comment" type="checkbox" />
-            <label for="window-player-comment" class="overlay"></label>
-            <article>
-                <header>
-                    <h3> 玩家评论 </h3>
-                    <label for="window-player-comment" class="close">&times;</label>
-                </header>
-                <section class="content">
-                    <!-- content -->
-    
-                </section>
-                <footer>
-                    <label for="window-player-comment" class="button right"> 好 </label>
-                </footer>
-            </article>
-        </div>
         
-        <!-- window-hall-detail -->
-        <div class="modal window-hall-detail">
-            <input id="window-hall-detail" type="checkbox" />
-            <label for="window-hall-detail" class="overlay"></label>
-            <article>
-                <header>
-                    <h3> 详情 </h3>
-                    <label for="window-hall-detail" class="close">&times;</label>
-                </header>
-                <section class="content left-icon-items no_margin-icon-items">
-                    <!-- content -->
-                    <p>
-                        <strong id="detail-hall-name">--</strong>当前游玩人数<strong id="detail-hall-player">0</strong>人, 预计需要排队<strong id="detail-hall-time-wait">0分钟</strong>。
-                    </p>
-                    <p>
-                        上次更新时间是<strong id="detail-hall-time-update">0分钟</strong>前。
-                    </p>
-                    <hr>
-                    <p class="item">
-                        <span class="title">机厅ID:</span><span class="cont" id="detail-hall-id"></span>
-                    </p>
-                    <p class="item">
-                        <span class="title">机厅别名:</span>
-                        <span id="detail-hall-nickname" class="cont"></span>
-                    </p>
-                    <p class="item">
-                        <span class="title">机厅位置:</span><span id="detail-hall-pos" class="cont"></span>
-                    </p>
-                    <p class="item">
-                        <span class="title">营业时间:</span><span id="detail-hall-open_hours" class="cont"></span>
-                    </p>
-                    <p class="item">
-                        <span class="title">最大容纳:</span><span id="detail-hall-max" class="cont"></span>人
-                    </p>
-                    <hr>
-                    <p class="link">
-                        <a id="detail-hall-link-map" class="pseudo button icon-link" href="#" target="_blank"> 音游地图 </a> 
-                    </p>
-                </section>
-                <!-- <footer>
-                    <label for="window-hall-detail" class="button right"> 知道了 </label>
-                </footer> -->
-            </article>
-        </div>
+        <section class="hall-detail" id="hall-list-detail">
+            <div class="inner">
+                <div class="title"> 刷新信息 </div>
+                <div class="line">
+                    共<strong class="sum">-</strong>条机厅数据
+                </div>
+                <div class="line">
+                    已显示<strong class="show">-</strong>条数据
+                </div>
+            </div>
+        </section>
+
+        <!-- window-area -->
+        <article class="window-item">
+            <!-- window-player-number -->
+            <div class="modal window-change-player decoration">
+                <input id="window-change-player" type="checkbox" />
+                <label for="window-change-player" class="overlay"></label>
+                <article>
+                    <header>
+                        <h3> 更新机厅人数 </h3>
+                    </header>
+                    <section class="content">
+                        <h3 class="hall-name" id="player-number-name"> 机厅名 </h3>
+                        <p class="change-time"> <span id="player-number-change_time"> -- </span>前更新 </p>
+                        <hr>
+                        <section class="change-player">
+                            <button class="add-player" id="add-player-number" type="button" id="plus-player"> + </button>
+                            <input class="now-player" id="current-player-number" type="number" name="player" title="当前玩家人数" readonly>
+                            <button class="min-player" id="min-player-number" type="button" id="min-player"> - </button>
+                        </section>
+                    </section>
+                    <footer>
+                        <button type="button" id="submit-player-number" title="确定"> 确定 </button>
+                        <label for="window-change-player" class="button dangerous"> 取消 </label>
+                    </footer>
+                </article>
+            </div>
+        
+            <!-- window-filter -->
+            <div class="modal window-filter decoration">
+                <input id="window-filter" type="checkbox" />
+                <label for="window-filter" class="overlay"></label>
+                <form id="filter-form">
+                    <header>
+                        <h3> 更改排序方式 </h3>
+                        <label for="window-filter" class="close">&times;</label>
+                    </header>
+                    <section class="content left-icon-items no_margin-icon-items">
+                        <!-- content -->
+                        <section class="sort item">
+                            <h2> 排序 </h2>
+                            <section class="cont">
+                                <section class="pad-right" id="set-filter-order_target">
+                                    <label> 
+                                        <input type="radio" name="set-filter-order" value="update_time">
+                                        <span class="checkable"> 更新时间 </span>
+                                    </label>
+                
+                                    <label>
+                                        <input type="radio" name="set-filter-order" value="player" checked>
+                                        <span class="checkable"> 人数 </span>
+                                    </label>
+                                    :
+                                </section>
+        
+                                <label>
+                                    <select name="set-filter-method" title="排序方式" id="set-filter-order_method">
+                                        <option value="asc"> 大到小 </option>
+                                        <option value="desc"> 小到大 </option>
+                                    </select>
+                                </label>
+                            </section>
+                        </section>
+        
+                        <section class="show item">
+                            <h2> 指定机台 </h2>
+                            <section class="cont" id="set-filter-game">
+                                <div class="line">
+                                    <label> 
+                                        <input type="checkbox" name="set-filter-game" value="舞萌" checked="true">
+                                        <span class="checkable"> 舞萌 </span>
+                                    </label>
+                                    <label> 
+                                        <input type="checkbox" name="set-filter-game" value="中二节奏"  checked="true">
+                                        <span class="checkable"> 中二节奏 </span>
+                                    </label>
+                                </div>
+                                <div class="line">
+                                    <label> 
+                                        <input type="checkbox" name="set-filter-game" value="华卡" checked="true">
+                                        <span class="checkable"> 华卡 </span>
+                                    </label>
+                                    <label > 
+                                        <input type="checkbox" name="set-filter-game" value="舞立方" checked="true">
+                                        <span class="checkable"> 舞立方 </span>
+                                    </label>
+                                </div>
+                            </section>
+                        </section>
     
+                        <section class="show item">
+                            <h2> 显示字段 </h2>
+                            <section class="cont" id="set-filter-show">
+                                <div class="line">
+                                    <label>
+                                        <input type="checkbox" name="set-filter-show" value="wait" checked="true">
+                                        <span class="checkable"> 预计等待 </span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" name="set-filter-show"  value="nickname" checked="true">
+                                        <span class="checkable"> 别名 </span>
+                                    </label>
+                                </div>
+                                <div class="line">
+                                    <label>
+                                        <input type="checkbox" name="set-filter-show" value="games" checked="true">
+                                        <span class="checkable"> 游戏项目 </span>
+                                    </label>
+                                </div>
+                            </section>
+                        </section>
+    
+                        <section class="item">
+                            <section class="cont" id="set-filter-more">
+                                <h2> 更多... </h2>
+                                <div class="line">
+                                    <label>
+                                        <input type="checkbox" name="set-filter-more" value="show-fav">
+                                        <span class="checkable"> 仅显示收藏 </span>
+                                    </label>
+                                    <section class="info icon-info"> 只有收藏过的机厅会展示 </section>
+                                </div>
+                                <div class="line">
+                                    <label>
+                                        <input type="checkbox" name="set-filter-more" value="show-fav" disabled>
+                                        <span class="checkable"> 仅显示营业 </span>
+                                    </label>
+                                    <section class="info icon-info"> 仅显示正在营业的机厅 </section>
+                                </div>
+                                <div class="line">
+                                    <label>
+                                        <input type="checkbox" name="set-filter-more" value="save-filter">
+                                        <span class="checkable"> 记住筛选条件 </span>
+                                    </label>
+                                    <label></label>
+                                </div>
+                            </section>
+                        </section>
+                    </section>
+                    <footer>
+                        <button type="submit" id="submit-filter"> 确定 </button>
+                        <label for="window-filter" class="button dangerous"> 取消 </label>
+                    </footer>
+                </form>
+            </div>
+        
+        
+            <!-- window-hall-set -->
+            <div class="modal sticky window-hall-set decoration">
+                <input id="window-hall-set" type="checkbox" />
+                <section for="window-hall-set" class="overlay"></section>
+                <form id="set-hall-form">
+                    <header class="sticky">
+                        <h3> 修改或添加 </h3>
+                        <label for="window-hall-set" class="close">&times;</label>
+                    </header>
+                    <section class="content">
+                        <!-- content -->
+                        <div class="index">
+                            <h4> 基本信息 </h4>
+                        </div>
+                        <div class="line name">
+                            <label class="title" for="set-hall-name"> 机厅名 </label>
+                            <input id="set-hall-name" type="text" name="hall-name" title="机厅名" minlength="3" maxlength="16" placeholder="输入机厅的名字" required >
+                        </div>
+                        <div class="line nickname">
+                            <label class="title" for="set-hall-nickname"> 机厅别名 </label>
+                            <p class="tip"> 输入完成后，点击其他位置以增加。若需输入更多内容，请重复此操作。 </p>
+                            <section class="input-list">
+                                <ul class="row" id="set-hall-nickname-list">
+                                    <li class="item"> nickname1 </li>
+                                    <li class="item"> nickname2 </li>
+                                </ul>
+                                <input id="set-hall-nickname" type="text" name="hall-nickname" title="机厅别名" maxlength="8" placeholder="添加...">
+                            </section>
+                        </div>
+                        <div class="line pos">
+                            <label class="title" for="set-hall-pos"> 机厅位置 </label>
+                            <p class="tip"> 一般格式为(省)市、区、街道、商场名、机厅名。 </p>
+                            <textarea id="set-hall-pos" type="text" name="hall-pos" title="机厅位置" minlength="6" maxlength="32" required placeholder="输入机厅在哪里"></textarea>
+                        </div>
+                        <div class="line games">
+                            <label class="title" for="set-hall-games"> 游戏项目 </label>
+                    
+                            <section class="input-list">
+                                <ul class="row" id="set-hall-games-list">
+                                    <li class="item"> 舞萌 </li>
+                                </ul>
+                                <input id="set-hall-games" type="text" name="hall-games" title="游戏项目" list="data-game-list" maxlength="8" placeholder="添加...">
+                                <datalist id="data-game-list">
+                                    <option value="舞萌">
+                                    <option value="中二节奏">
+                                    <option value="华卡">
+                                    <option value="太鼓达人">
+                                    <option value="舞立方">
+                                </datalist>
+                            </section>
+                        </div>
+    
+                        <div class="index">
+                            <h4> 详细设置 </h4>
+                        </div>
+                        <div class="line max_player">
+                            <label class="title" for="set-hall-max_player"> 最大人数 </label>
+                            <input id="set-hall-max_player" type="number" max="50" min="0" name="hall-max_player" value="10" title="最大人数" placeholder="总得有个上限吧?!">
+                        </div>
+                        <div class="line open-hours new">
+                            <label class="title" for="set-hall-open_hours"> 营业时间 </label>
+                            <p class="tip">
+                                在非营业时间的时候会自动将人数设定为不可用状态。
+                            </p>
+                            <div class="cont flex two" id="set-hall-open_hours">
+                                <label class="open-time">
+                                    <span>开店时间</span>
+                                    <input type="time" name="open">
+                                </label>
+                                <label class="close-time">
+                                    <span>闭店时间</span>
+                                    <input type="time" name="close">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="line map-id new">
+                            <label class="title" for="set-hall-map-id">
+                                音游地图ID
+                            </label>
+                            <p class="tip">
+                                填写来自<a href="https://map.bemanicn.com/" title="跳转至音游地图" target="_blank" rel="noopener">音游地图</a>的机厅ID或该机厅在音游地图的链接。
+                            </p>
+                            <input type="text" id="set-hall-map-id" placeholder="输入链接或ID">
+                        </div>
+                    </section>
+                    <footer>
+                        <button type="submit" id="submit-hall-set"> 就这样 </button>
+                        <label for="window-hall-set" class="button dangerous"> 算了 </label>
+                    </footer>
+                </form>
+            </div>
+        
+            <!-- window-player-comment -->
+            <div class="modal">
+                <input id="window-player-comment" type="checkbox" />
+                <label for="window-player-comment" class="overlay"></label>
+                <article>
+                    <header>
+                        <h3> 玩家评论 </h3>
+                        <label for="window-player-comment" class="close">&times;</label>
+                    </header>
+                    <section class="content">
+                        <!-- content -->
+        
+                    </section>
+                    <footer>
+                        <label for="window-player-comment" class="button right"> 好 </label>
+                    </footer>
+                </article>
+            </div>
+            
+            <!-- window-hall-detail -->
+            <div class="modal window-hall-detail">
+                <input id="window-hall-detail" type="checkbox" />
+                <label for="window-hall-detail" class="overlay"></label>
+                <article>
+                    <header>
+                        <h3> 详情 </h3>
+                        <label for="window-hall-detail" class="close">&times;</label>
+                    </header>
+                    <section class="content left-icon-items no_margin-icon-items">
+                        <!-- content -->
+                        <p>
+                            <strong id="detail-hall-name">--</strong>当前游玩人数<strong id="detail-hall-player">0</strong>人, 预计需要排队<strong id="detail-hall-time-wait">0分钟</strong>。
+                        </p>
+                        <p>
+                            上次更新时间是<strong id="detail-hall-time-update">0分钟</strong>前。
+                        </p>
+                        <hr>
+                        <p class="item">
+                            <span class="title">机厅ID:</span><span class="cont" id="detail-hall-id"></span>
+                        </p>
+                        <p class="item">
+                            <span class="title">机厅别名:</span>
+                            <span id="detail-hall-nickname" class="cont"></span>
+                        </p>
+                        <p class="item">
+                            <span class="title">机厅位置:</span><span id="detail-hall-pos" class="cont"></span>
+                        </p>
+                        <p class="item">
+                            <span class="title">营业时间:</span><span id="detail-hall-open_hours" class="cont"></span>
+                        </p>
+                        <p class="item">
+                            <span class="title">最大容纳:</span><span id="detail-hall-max" class="cont"></span>人
+                        </p>
+                        <hr>
+                        <p class="link">
+                            <a id="detail-hall-link-map" class="pseudo button icon-link" href="#" target="_blank"> 音游地图 </a> 
+                        </p>
+                    </section>
+                    <!-- <footer>
+                        <label for="window-hall-detail" class="button right"> 知道了 </label>
+                    </footer> -->
+                </article>
+            </div>
+        </article>
     </main>
 
     <footer class="main background FESTiVAL">

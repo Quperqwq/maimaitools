@@ -394,7 +394,8 @@ class GameHall {
  * maimaiDX API
  */
 class ApiMai {
-    /**@typedef {'song' | 'alias' | 'avatar'} MaiDataName 从api获取数据的名称 */
+    /**@typedef {'song_list' | 'alias_list' | 'avatar_list'} MaiDataName 从api获取数据的名称 */
+    /**@typedef {number[]} SearchResult 搜索结果 */
     constructor () {
         // (!)若传入非法URL配置将会触发报错
         /**API的域名 */
@@ -404,11 +405,11 @@ class ApiMai {
         /**使用API对应的路径 @type {{[key in MaiDataName]: string}} */
         const api_path = {
             /** [曲目列表](https://maimai.lxns.net/docs/api/maimai#get-apiv0maimaisonglist) */
-            'song': '/api/v0/maimai/song/list',
+            'song_list': '/api/v0/maimai/song/list',
             /** [别名列表](https://maimai.lxns.net/docs/api/maimai#get-apiv0maimaialiaslist) */
-            'alias': '/api/v0/maimai/alias/list',
+            'alias_list': '/api/v0/maimai/alias/list',
             /** [头像列表](https://maimai.lxns.net/docs/api/maimai#get-apiv0maimaiiconlist) */
-            'avatar': '/api/v0/maimai/icon/list'
+            'avatar_list': '/api/v0/maimai/icon/list'
         }
 
         /** @type {{[key in MaiDataName]: object}} */
@@ -542,20 +543,33 @@ class ApiMai {
     // 数据输出与应用
 
     /**
-     * 通过别名获取歌曲
-     * @param {string} key_word 歌曲别名关键词
-     * @param {function(string[]): void} next 
+     * 获取曲目列表
+     * @param {function(SongItem[]): never} next 
      */
-    getSongByAlias(key_word, next) {
+    songList(next) {
+        this.get('song_list', song_list => next(song_list.songs))
+    }
+
+    /**
+     * 获取别名列表
+     * @param {function(SongAlias[]): never} next 
+     */
+    aliasList(next) {
+        this.get('alias_list', alias_list => next(alias_list.aliases))
+    }
+
+    /**
+     * 通过别名搜索歌曲
+     * @param {string} key_word 歌曲别名关键词
+     * @param {function(SearchResult): never} next 
+     */
+    searchSongByAlias(key_word, next) {
         // (ADD)这里后续需要做性能优化
-        this.get('alias', (
-            alias_data
-        ) => {
-            /**@type {SongAlias[]} */
-            const all_alias = alias_data.aliases
-            /** @type {string[]} */
+        this.aliasList((all_alias) => {
+            /** @type {SearchResult} */
             const result = []
             
+            // (ADD)耦合检查
             for (let _alias_index = 0; _alias_index < all_alias.length; _alias_index++) {
                 const song_item = all_alias[_alias_index]
                 let is_have = false
@@ -569,6 +583,42 @@ class ApiMai {
         })
     }
 
+    /**
+     * 通过歌名搜索歌曲
+     * @param {string} key_word 歌曲名关键词
+     * @param {function(SearchResult): never} next 
+     */
+    searchSongByName(key_word, next) {
+        this.songList((all_alias) => {
+            /** @type {SearchResult} */
+            const result = []
+            
+            for (let _alias_index = 0; _alias_index < all_alias.length; _alias_index++) {
+                const song_item = all_alias[_alias_index]
+                if ((song_item.title.includes(key_word))) result.push(song_item.id)
+            }
+            
+            next(result)
+        })
+    }
+
+    /**
+     * 通过歌名和别名搜索歌曲
+     * @param {string} key_word 歌曲名关键词
+     * @param {function(SearchResult): never} next 
+     */
+    searchSong(key_word, next) {
+        // (FIX)对, 我自己也感觉这个结构很丑 TwT; 这也许就是不使用异步函数的后果吧
+        /** @type {SearchResult} */
+        const result = []
+        this.searchSongByAlias(key_word, (alias_result) => {
+            result.push(...alias_result)
+            this.searchSongByName(key_word, (name_result) => {
+                result.push(...name_result)
+                next(result)
+            })
+        })
+    }
 }
 
 

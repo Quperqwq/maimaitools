@@ -104,10 +104,12 @@ ul.row li {
     background-size: 8em;
     background-position: left center;
     border-radius: .8em;
-    transition: margin .4s ease;
+    transition: margin .4s ease, opacity .2s ease;
     z-index: 1;
     flex-direction: column;
     justify-content: space-between;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .trip::after {
@@ -126,6 +128,9 @@ ul.row li {
 
 .trip.show {
     margin-top: var(--margin);
+    opacity: 1;
+    transition: .4s;
+    pointer-events: auto;
 }
 
 .trip .content {
@@ -196,18 +201,20 @@ ul.row li {
     content: '机厅位置:';
 } */
 
-/* ↓time */
-.time {
+
+/* ↓ 上次更新时间 - lsat-update-time */
+
+.last-update-time {
     text-align: center;
     margin-bottom: .4em;
     font-size: .8em;
 }
 
-.time p {
+.last-update-time p {
     margin: 0;
 }
 
-.time .last-refresh {
+.last-update-time .last-refresh {
     display: inline-block;
     background-color: #fafdff;
     color: #484a52;
@@ -215,8 +222,40 @@ ul.row li {
     border-radius: var(--main-radius);
 }
 
+/* ↓ 机厅列表详细信息 - hall-detail */
 
-/* ↓机厅列表-main init */
+.hall-detail {
+    --color: #444;
+    text-align: right;
+    /* padding-right: .6em; */
+    color: var(--color);
+    border-right: .2em solid var(--color);
+}
+
+.hall-detail .inner {
+    display: inline-block;
+    padding: .4em .6em;
+    background-color: #fbfbfb;
+    border-radius: var(--main-radius) 0 0 var(--main-radius);
+}
+
+.hall-detail .title {
+    /* text-align: center; */
+    padding-bottom: .4em;
+    font-size: 1.2em;
+    font-weight: 800;
+}
+
+.hall-detail strong {
+    padding: 0 .25em;
+    margin: 0 .2em;
+    background-color: #9b9b9b;
+    color: #fff;
+    border-radius: .2em;
+}
+
+
+/* ↓机厅列表 - main init */
 
 #hall-player-list {
     list-style: none;
@@ -241,7 +280,7 @@ ul.row li {
 
 
 
-/* ↓机厅列表-main | [this] |    | */
+/* ↓机厅列表 - main | [this] |    | */
 
 #hall-player-list .left {
     width: 75%;
@@ -280,7 +319,7 @@ ul.row li {
     margin-top: .2em;
     padding: .2em 0;
     border-radius: var(--main-radius);
-    height: 1.9em;
+    /* height: 1.9em; */
     color: #00a4ff;
 }
 ul.state li.nickname::before,
@@ -323,7 +362,7 @@ ul.state li:not(.none) {
 
 #hall-player-list .left .more {
     --icon-color: #000;
-    margin-top: .2em;
+    /* margin-top: .2em; */
 }
 
 #hall-player-list .left .more label, #hall-player-list .left .more button {
@@ -475,18 +514,19 @@ ul.state li:not(.none) {
 
 #hall-player-list .right .info {
     /* display: inline-block; */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: calc(var(--main-radius) / 2);
     margin: 0;
     line-height: 1.2em;
     max-height: 1.2em;
     color: #fff;
     background-color: #777;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 
-/* ↓机厅列表-other | ← | [this] | */
+/* ↓机厅列表 - other | ← | [this] | */
 #hall-player-list .other {
 
 }
@@ -516,11 +556,11 @@ ul.state li:not(.none) {
 
 .hall-number.inv {
     --color: #000;
-    font-style: italic;
+    /* font-style: italic; */
     opacity: .6;
 }
 
-/* ↓window */
+/* ↓ 窗口 - window */
 
 /* 机厅玩家人数设置 */
 
@@ -555,7 +595,7 @@ ul.state li:not(.none) {
     /* text-decoration: underline; */
 }
 
-/* window-↓机厅设置 */
+/* window - ↓机厅设置 */
 
 
 .window-hall-set input, .window-hall-set textarea {
