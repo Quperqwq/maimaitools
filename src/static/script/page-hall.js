@@ -112,7 +112,7 @@ const getDoc = () => {
                 name: gi('on-trip-name'),
                 pos: gi('on-trip-target'),
             },
-            hall_detail: {
+            refresh_detail: {
                 root: setTarget('hall-list-detail'),
                 number: {
                     sum: get('.sum'),
@@ -636,7 +636,7 @@ const refreshList = (callback, {
                 
                 // 更新详情
                 const updateDetail = () => {
-                    const {number: {sum, dis}} = doc.text.hall_detail
+                    const {number: {sum, dis}} = doc.text.refresh_detail
                     sum.innerText = Object.keys(org_halls).length
                     dis.innerText = Object.keys(halls).length
                 }
@@ -789,6 +789,8 @@ const refreshList = (callback, {
                 const showDetail = () => {
                     callbacks.showDetail = (elements) => {
                         // 创建引用
+                        console.log(elements);
+                        
                         const {name: e_name, player: e_player, time_update: e_time_update, time_wait: e_time_wait, nickname: e_nickname, pos: e_pos, max: e_max, id: e_id, open_hours: e_open_hours, link: {map: e_link_map}} = elements
                         const {map_id} = hall
 
