@@ -23,7 +23,7 @@ const getDoc = () => {
      * @param {string} query 
      */
     const get = (query) => {
-        if (!(target instanceof Element)) return
+        if (!(target instanceof Element)) return null
         return target.querySelector(query)
     }
 
@@ -120,8 +120,11 @@ const getDoc = () => {
                 }
             },
 
-            // item
-            last_update_time: gi('last-refresh-time'),
+            list_stat: {
+                root: setTarget('list-stat'),
+                last_refresh: get('.time .value'),
+                stat: get('.stat'),
+            },
         },
         card: {
             trip: gi('card-trip')
@@ -136,7 +139,8 @@ const doc = getDoc()
 const global = {
     /**计时器相关 */
     timer: {
-        last_refresh: null
+        last_refresh: null,
+        show_stat: null
     },
     /**时间相关 */
     time: {
@@ -145,6 +149,7 @@ const global = {
     }
 }
 
+/**回调 */
 const callbacks = {
     /**当提交玩家人数时会触发此函数,该函数会传入一个控制window是否显示的Element元素 @type {function(Element): void}  */
     submitPlayerNumber: () => {},
@@ -189,17 +194,20 @@ const callbacks = {
 
 }
 
+/**配置信息 */
 const config = {
     /** 过滤或排序方法 */
     filter: {
         /**过滤 */
         show: {
-            /** 过滤机台 @type {string[]} */
+            /** 过滤机台(对应`doc.input.filter.game`) @type {string[]} */
             game: [],
-            /** 仅显示收藏 */
-            fav: false,
-            /**显示字段 @type {string[]} */
-            fields: []
+            // /** 仅显示收藏 */
+            // fav: false,
+            /**显示字段(对应`doc.input.filter.more`) @type {string[]} */
+            fields: [],
+            /**更多设置(对应`doc.input.filter.more`) @type {string[]} */
+            more: []
         },
         /** 排序 */
         order: {
@@ -446,7 +454,7 @@ const _init = () => {
                     'show': {
                         'game': checked_games,
                         'fields': checked_show,
-                        'fav': checked_more.includes('show-fav')
+                        'more': checked_more
                     },
                     'init': true
                 }
@@ -475,7 +483,7 @@ const _init = () => {
                  * @param {string} config_key 
                  */
                 const reloadStat = (cont, input_elements) => {
-                    console.log(cont, input_elements);
+                    // console.log(cont, input_elements);
                     
                     const _cont = Array.isArray(cont) ? cont : [cont]
                     input_elements.forEach((element) => {
@@ -494,6 +502,8 @@ const _init = () => {
                     // 重置按钮之前的状态
                     reloadStat(cache.show.game, es_game)
                     reloadStat(cache.show.fields, es_show)
+                    reloadStat(cache.show.more, es_more)
+                    
                     // reloadStat([cache.fav ? '' : 'show-fav'], es_more)
                     
                     reloadStat(cache.order.target, es_target)
@@ -507,7 +517,7 @@ const _init = () => {
 
         /**显示上次更新时间 */
         last_update_time: () => {
-            const {last_update_time: last_update} = doc.text
+            const {last_refresh: last_update} = doc.text.list_stat
             const changeRefreshTime = (cont) => {
                 last_update.innerText = cont
             }
@@ -517,6 +527,23 @@ const _init = () => {
                 if (!refresh_time) return changeRefreshTime('-')
                 changeRefreshTime(getElapsedTime(refresh_time))
             }, 1000)
+        },
+
+        /**侦听状态 */
+        stat: () => {
+            const {stat} = doc.text.list_stat
+            window.addEventListener('offline', () => {
+                stat.classList.add('have-offline')
+            })
+            window.addEventListener('online', () => {
+                stat.classList.remove('have-offline')
+                stat.classList.add('have-online')
+                // ~(last)
+                clearTimeout(global.timer.show_stat)
+                global.timer.show_stat = setTimeout(() => {
+                    stat.classList.remove('have-online')
+                }, 5000)
+            })
         },
 
         /**用户收藏的机厅 */
@@ -789,7 +816,7 @@ const refreshList = (callback, {
                 const showDetail = () => {
                     callbacks.showDetail = (elements) => {
                         // 创建引用
-                        console.log(elements);
+                        // console.log(elements);
                         
                         const {name: e_name, player: e_player, time_update: e_time_update, time_wait: e_time_wait, nickname: e_nickname, pos: e_pos, max: e_max, id: e_id, open_hours: e_open_hours, link: {map: e_link_map}} = elements
                         const {map_id} = hall
@@ -1074,8 +1101,18 @@ const refreshList = (callback, {
          */
         const runFilter = () => {
             // 处理来自config.sorting的排序 org_halls => halls
+
+            // 创建引用
             const {filter, fav: fav_hall} = config
+
             if (!filter.init) return main(org_halls) // 如果filter的配置没有初始化则使不进行处理使用原始值
+
+            const {show: {game: show_games, more: show_more, fields: show_fields}, order: {target}} = filter
+            // console.log(show_more);
+            
+            /** 仅显示收藏*/const only_fav = show_more.includes('show-fav')
+            
+
 
             /**
              * 排序依据对应的方法
@@ -1084,6 +1121,8 @@ const refreshList = (callback, {
             let sortingMethod = () => {}
             const sorting = new Sorting(filter.order.method === 'desc' ? false : true)
             const halls = []
+
+
             Object.keys(org_halls).forEach((key) => {
                 // Func) 定义函数
 
@@ -1127,7 +1166,6 @@ const refreshList = (callback, {
 
                 // Start) 从这里开始
 
-                const {show: {game: show_games, fav: show_fav, fields: show_fields}, order: {target}} = filter
 
                 const id = +key
                 const hall = org_halls[id]
@@ -1136,7 +1174,7 @@ const refreshList = (callback, {
                 if (!have(hall.games, show_games)) return
 
                 // 过滤条件 (仅显示收藏)
-                if (show_fav) {
+                if (only_fav) {
                     if (!fav_hall.includes(`${id}`)) return
                 }
 

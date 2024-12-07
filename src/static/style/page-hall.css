@@ -80,6 +80,9 @@ ul.row li {
     /* margin-top: .6em; */
     display: flex;
     height: 100%;
+    background-color: #fff;
+    border-radius: var(--main-radius););
+    padding: 0 .5em;
 }
 
 .right.operate :not(:last-child) {
@@ -202,24 +205,62 @@ ul.row li {
 } */
 
 
-/* ↓ 上次更新时间 - lsat-update-time */
+/* ↓ 上次更新时间 - list-stat */
 
-.last-update-time {
+.list-stat {
+    overflow: hidden;
     text-align: center;
-    margin-bottom: .4em;
+    margin-bottom: .6em;
+    /* padding-bottom: .2em; */
     font-size: .8em;
 }
 
-.last-update-time p {
-    margin: 0;
-}
-
-.last-update-time .last-refresh {
+.list-stat .time .inner {
     display: inline-block;
     background-color: #fafdff;
     color: #484a52;
-    padding: .4em .6em;
+    padding: .2em .6em;
     border-radius: var(--main-radius);
+}
+
+.list-stat .line {
+    margin: 0;
+    padding: 0;
+    margin-top: .4em;
+}
+
+.list-stat .stat {
+    position: absolute;
+    --height: 1.6em;
+    height: var(--height);
+    top: calc(var(--height) * -1);
+    right: 0;
+    left: 0;
+    transition: .4s top;
+}
+
+.list-stat .stat[class*="have-"] {
+    top: 0;
+}
+
+.list-stat .stat::after {
+    --font-size: calc(var(--height) - .4em);
+    border-radius: var(--main-radius);
+    line-height: var(--font-size);
+    font-style: var(--font-size);
+    padding: .2em .6em;
+}
+
+.list-stat .stat.have-offline::after {
+    content: '与服务器断开通讯';
+    background-color: #f00;
+    color: #fff;
+}
+
+.list-stat .stat.have-online::after {
+    content: '已恢复连接';
+    background-color: #0b0;
+    color: #fff;
 }
 
 /* ↓ 机厅列表详细信息 - hall-detail */
@@ -235,7 +276,7 @@ ul.row li {
 .hall-detail .inner {
     display: inline-block;
     padding: .4em .6em;
-    background-color: #fbfbfb;
+    /* background-color: #fbfbfb; */
     border-radius: var(--main-radius) 0 0 var(--main-radius);
 }
 
@@ -326,7 +367,7 @@ ul.state li.nickname::before,
 ul.state li.wait::before,
 ul.state li.games::before {
     display: inline-block;
-    height: 1em;
+    /* height: 1em; */
     color: #aeaeae;
 }
 

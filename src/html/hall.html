@@ -10,22 +10,17 @@
 <body>
     <!header>
     <main class="hall-player-main space">
-    
-        <!-- <div id="card-search" class="search">
-            <form class="input">
-                <input type="search" class="keyword" placeholder="输入关键词">
-            </form>
-        </div> -->
+
 
         <div class="hall-header" id="top">
             <div class="left title">
                 <h2> 机厅排卡 </h2>
             </div>
-            <div class="right operate">
-                <!-- <button type="button" id="start-search" class="pseudo"> 搜索 </button> -->
-                <button type="button" id="refresh-halls" class="pseudo"> 刷新 </button>
-                <label for="window-filter" class="pseudo button"> 筛选 </label>
-                <label id="window-hall-new" for="window-hall-set" class="pseudo button"> 添加机厅 </label>
+            <div class="right operate left-icon-items no_margin-icon-items">
+                <button type="button" id="refresh-halls" class="pseudo icon-refresh" title="刷新"> </button>
+                <label for="window-hall-search" id="start-search" class="pseudo button icon-search" title="搜索"> </label>
+                <label for="window-filter" class="pseudo button icon-sort" title="筛选"> </label>
+                <label for="window-hall-set" id="window-hall-new" class="pseudo button icon-plus" title="添加机厅"> </label>
             </div>
         </div>
     
@@ -44,8 +39,11 @@
             </section>
         </div>
     
-        <section class="last-update-time">
-            <span class="last-refresh"><strong id="last-refresh-time">--秒</strong>前刷新</span>
+        <section id="list-stat" class="list-stat">
+            <p class="line stat"> </p>
+            <p class="line time">
+                <span class="inner"><strong class="value">--秒</strong>前刷新</span>
+            </p>
         </section>
     
         <ul class="row left-icon-items" id="hall-player-list" data-show="nickname games wait"></ul>
@@ -67,7 +65,8 @@
         <!-- window-area -->
         <article class="window-item">
             <!-- window-player-number -->
-            <div class="modal window-change-player decoration">
+            <!-- 特别注意: char-x这个类名为窗口坐板娘图片样式, 请不要再把它手贱删掉了! -->
+            <div class="modal window-change-player decoration char-1">
                 <input id="window-change-player" type="checkbox" />
                 <label for="window-change-player" class="overlay"></label>
                 <article>
@@ -92,7 +91,7 @@
             </div>
         
             <!-- window-filter -->
-            <div class="modal window-filter decoration">
+            <div class="modal window-filter decoration char-2">
                 <input id="window-filter" type="checkbox" />
                 <label for="window-filter" class="overlay"></label>
                 <form id="filter-form">
@@ -187,7 +186,7 @@
                                 </div>
                                 <div class="line">
                                     <label>
-                                        <input type="checkbox" name="set-filter-more" value="show-fav" disabled>
+                                        <input type="checkbox" name="set-filter-more" value="show-open" disabled>
                                         <span class="checkable"> 仅显示营业 </span>
                                     </label>
                                     <section class="info icon-info"> 仅显示正在营业的机厅 </section>
@@ -363,6 +362,25 @@
                     <!-- <footer>
                         <label for="window-hall-detail" class="button right"> 知道了 </label>
                     </footer> -->
+                </article>
+            </div>
+
+            <div class="modal window-hall-search decoration char-2">
+                <input id="window-hall-search" type="checkbox" />
+                <label for="window-hall-search" class="overlay"></label>
+                <article>
+                    <header>
+                        <h3> 搜索机厅 </h3>
+                        <label for="window-hall-search" class="close">&times;</label>
+                    </header>
+                    <section class="content">
+                        <!-- content -->
+        
+                    </section>
+                    <footer>
+                        <button type="button" id=""> 确定 </button>
+                        <label for="window-hall-search" class="button dangerous"> 取消 </label>
+                    </footer>
                 </article>
             </div>
         </article>

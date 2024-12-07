@@ -325,6 +325,7 @@ input[type="checkbox"]:disabled+.checkable::before {
     --content: '\e984';
 }
 
+/* 应改成 .icon-arr_top_right { */
 .icon-arr-top-right {
     --content: '\ea3b';
 }
@@ -403,6 +404,14 @@ input[type="checkbox"]:disabled+.checkable::before {
 
 .icon-user_check {
     --content: '\e97b';
+}
+
+.icon-sort {
+    --content: '\ea4c';
+}
+
+.icon-plus {
+    --content: '\ea0a';
 }
 
 @media (max-width: 60em) {
