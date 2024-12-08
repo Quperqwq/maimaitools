@@ -46,7 +46,7 @@
             </p>
         </section>
     
-        <ul class="row left-icon-items" id="hall-player-list" data-show="nickname games wait"></ul>
+        <ul class="row left-icon-items simple" id="hall-player-list" data-show="nickname games wait"></ul>
 
 
         
@@ -90,7 +90,7 @@
                 </article>
             </div>
         
-            <!-- window-filter -->
+            <!-- 更改排序方式 window-filter -->
             <div class="modal window-filter decoration char-2">
                 <input id="window-filter" type="checkbox" />
                 <label for="window-filter" class="overlay"></label>
@@ -209,7 +209,7 @@
             </div>
         
         
-            <!-- window-hall-set -->
+            <!-- 机厅设置 window-hall-set -->
             <div class="modal sticky window-hall-set decoration">
                 <input id="window-hall-set" type="checkbox" />
                 <section for="window-hall-set" class="overlay"></section>
@@ -301,8 +301,8 @@
                 </form>
             </div>
         
-            <!-- window-player-comment -->
-            <div class="modal">
+            <!-- 玩家评论  window-player-comment -->
+            <div class="modal window-player-comment">
                 <input id="window-player-comment" type="checkbox" />
                 <label for="window-player-comment" class="overlay"></label>
                 <article>
@@ -320,7 +320,7 @@
                 </article>
             </div>
             
-            <!-- window-hall-detail -->
+            <!-- 机厅详情 window-hall-detail -->
             <div class="modal window-hall-detail">
                 <input id="window-hall-detail" type="checkbox" />
                 <label for="window-hall-detail" class="overlay"></label>
@@ -352,7 +352,7 @@
                             <span class="title">营业时间:</span><span id="detail-hall-open_hours" class="cont"></span>
                         </p>
                         <p class="item">
-                            <span class="title">最大容纳:</span><span id="detail-hall-max" class="cont"></span>人
+                            <span class="title">最大容纳:</span><span class="cont"><span id="detail-hall-max"></span>人</span>
                         </p>
                         <hr>
                         <p class="link">
@@ -365,23 +365,38 @@
                 </article>
             </div>
 
-            <div class="modal window-hall-search decoration char-2">
+            <!-- 机厅搜索 window-hall-search -->
+            <div class="modal normal-style window-hall-search decoration char-2 left-icon-items no_margin-icon-items">
                 <input id="window-hall-search" type="checkbox" />
                 <label for="window-hall-search" class="overlay"></label>
-                <article>
+                <form id="hall-search-form">
                     <header>
                         <h3> 搜索机厅 </h3>
                         <label for="window-hall-search" class="close">&times;</label>
                     </header>
                     <section class="content">
                         <!-- content -->
-        
+                        <section class="search">
+                            <input type="search" name="input" placeholder="输入关键词">
+                            <button type="submit" class="start icon-search" title="搜索"></button>
+                        </section>
+                        <p class="tip"> 搜索目标 </p>
+                        <section id="hall-search-type" class="select flex three">
+                            <label>
+                                <input type="radio" name="search-type" value="name">
+                                <span class="checkable"> 机厅名 </span>
+                            </label>
+                            <label>
+                                <input type="radio" name="search-type" value="alias">
+                                <span class="checkable"> 别名 </span>
+                            </label>
+                            <label>
+                                <input type="radio" name="search-type" value="all" checked>
+                                <span class="checkable"> 两者都 </span>
+                            </label>
+                        </section>
                     </section>
-                    <footer>
-                        <button type="button" id=""> 确定 </button>
-                        <label for="window-hall-search" class="button dangerous"> 取消 </label>
-                    </footer>
-                </article>
+                </form>
             </div>
         </article>
     </main>

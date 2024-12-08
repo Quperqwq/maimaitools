@@ -33,7 +33,8 @@ const getDoc = () => {
             change_player: gi('window-change-player'),
             show_detail: gi('window-hall-detail'),
             show_set_hall: gi('window-hall-set'),
-            filter: gi('window-filter')
+            filter: gi('window-filter'),
+            hall_search: gi('window-hall-search')
         },
         input: {
             player_number: {
@@ -87,6 +88,10 @@ const getDoc = () => {
                     ),
                     method: gi('set-filter-order_method'),
                 }
+            },
+            hall_search: {
+                form: gi('hall-search-form'),
+                type: getQSA('[name="search-type"]', 'hall-search-type')
             }
         },
         text: {
@@ -516,7 +521,7 @@ const _init = () => {
         },
 
         /**显示上次更新时间 */
-        last_update_time: () => {
+        lastUpdateTime: () => {
             const {last_refresh: last_update} = doc.text.list_stat
             const changeRefreshTime = (cont) => {
                 last_update.innerText = cont
@@ -550,6 +555,15 @@ const _init = () => {
         fav: () => {
             config.fav = cookie.getArrayData('fav')
             // config.fav = local.get('fav')
+        },
+
+        /**搜索机厅 */
+        searchHall: () => {
+            const { form, type } = doc.input.hall_search
+            form.addEventListener('submit', (event) => {
+                event.preventDefault()
+                // ~(last)
+            })
         }
     }
 
@@ -608,7 +622,7 @@ const refreshList = (callback, {
         showInfo('刷新完成')
         /**@type {GameHalls} */
         const org_halls = res_data.data
-        console.log('hall data:', res_data.data)
+        // console.log('hall data:', res_data.data)
         if (typeof(callback) === 'function') callback()
 
         if (err) return showInfo('更新失败!')
@@ -986,7 +1000,8 @@ const refreshList = (callback, {
                 // ____________|___________
                 // DOM-create left
                 const e_left = create('section', { class: 'left' })
-                const e_more = create('h3', { class: 'more' })
+
+                const e_more = create('section', { class: 'more cont' })
                 join(e_more, { // (TAG)机厅卡片控件
                     // 收藏
                     fav: create('button', {
@@ -1013,7 +1028,7 @@ const refreshList = (callback, {
                     ),
                     // 机厅状态
                     state: join(
-                        create('ul', { class: 'row state hidden-scrollbar' }), {
+                        create('ul', { class: 'row state hidden-scrollbar cont' }), {
                         // tag: createLi('', { class: 'tag none' }),
                         // 别称
                         nickname: nickname.length > 0 ? createLi(
@@ -1185,7 +1200,7 @@ const refreshList = (callback, {
                 sortingMethod()
             })
             // console.log(sorting.basis);
-            console.debug('value of:', sorting.value)
+            // console.debug('value of:', sorting.value)
             
             // 将排序后的数据格式化
             const output = sorting.getValues()

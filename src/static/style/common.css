@@ -252,6 +252,21 @@ footer.background.BUDDiES {
 .shadow-red { --shadow-color: #f20; }
 
 
+/* common style - search */
+.search {
+    --border-radius: .4em;
+    display: flex;
+}
+
+.search input[type="search"] {
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+}
+
+.search button[type="submit"] {
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    padding: 0 .6em;
+}
+
 
 /* other */
 
@@ -279,6 +294,18 @@ input[type="checkbox"]:disabled+.checkable::before {
     opacity: .4;
 }
 
+/* normal-style */
+.normal-style button {
+    margin: 0;
+    padding: 0;
+}
+
+.normal-style button:hover,
+.normal-style button:active,
+.normal-style button:focus
+{
+    box-shadow: none;
+}
 
 
 
