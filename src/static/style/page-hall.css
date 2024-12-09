@@ -24,6 +24,7 @@ ul.row li {
     --main-bgc: #f5f6fd;
     font-size: .8em;
     overflow: hidden;
+    /* background-color: #666; */
 }
 
 .hall-header {
@@ -33,6 +34,9 @@ ul.row li {
     background-color: var(--main-bgc);
     /* box-shadow: 0em 0em 2px 0px; */
     border-radius: var(--main-radius);
+    border: solid #00849e .3em;
+    border-top: 0;
+    border-bottom: 0;
     padding: 0 1em;
     align-items: center;
     z-index: 5;
@@ -70,7 +74,7 @@ ul.row li {
 } */
 
 .left.title h2 {
-    color: #333;
+    color: #000000;
     display: inline-block;
     vertical-align: middle;
     padding: .6em 0em;
@@ -215,6 +219,10 @@ ul.row li {
     font-size: .8em;
 }
 
+.list-stat p {
+    margin: 0;
+}
+
 .list-stat .time .inner {
     display: inline-block;
     background-color: #fafdff;
@@ -261,6 +269,26 @@ ul.row li {
     content: '已恢复连接';
     background-color: #0b0;
     color: #fff;
+}
+
+/* 搜索条件显示 */
+.list-stat .line.search {
+    display: none;
+    text-align: left;
+    margin-top: 1.2em;
+    font-size: 1.4em;
+}
+
+.list-stat .line.search.have {
+    display: block;
+}
+
+.list-stat .line.search p {
+    padding-left: 1em;
+}
+
+.list-stat .line.search .operate {
+    text-align: right;
 }
 
 /* ↓ 机厅列表详细信息 - hall-detail */
@@ -326,7 +354,18 @@ ul.row li {
 /* ↓机厅列表 - main | [this] |    | */
 
 #hall-player-list .left {
-    width: 75%;
+    position: relative;
+    width: 70%;
+    height: 100%;
+}
+
+#hall-player-list .left::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 0 .1em .1em var(--background-color);
+    pointer-events: none;
 }
 
 #hall-player-list li.hall-item {
@@ -417,7 +456,7 @@ ul.state li:not(.none) {
 {
     font-size: .9em;
     font-weight: 400;
-    color: #444;
+    color: #000000;
     /* background-color: #fdfaff; */
     margin: 0;
     padding: .2em .4em;
@@ -503,7 +542,9 @@ ul.state li:not(.none) {
     left: 0;
     right: 0;
     overflow: hidden;
-    text-align: center;
+    padding-left: .4em;
+    /* text-align: center; */
+    text-align: left;
     font-size: var(--font-size);
     font-weight: 400;
     line-height: var(--font-size);
@@ -512,14 +553,13 @@ ul.state li:not(.none) {
     transition: .2s color;
 }
 
-#hall-player-list.simple .left .name.go {
-    color: #00b200;
-}
-
 #hall-player-list.simple .left .name .content {
     display: inline-block;
     max-width: 100%;
+    height: var(--font-size);
+    overflow: hidden;
     overflow-x: scroll;
+    white-space: nowrap;
     padding: 0 .4em;
     background-color: var(--background-color);
     box-shadow: var(--background-color) 0 0 16px 8px;
@@ -527,6 +567,10 @@ ul.state li:not(.none) {
 
 #hall-player-list.simple .left .name::after {
     content: '';
+}
+
+#hall-player-list.simple .left .name.go {
+    color: #00b200;
 }
 
 
@@ -562,17 +606,23 @@ ul.state li:not(.none) {
 #hall-player-list .right {
     display: flex;
     height: 6.5em;
+    /* width: 25%; */
     padding-left: var(--padding);
     border-left: var(--border-size) solid var(--border-color);
     align-items: center;
 }
 
 #hall-player-list .right .player-number {
+    --percent-radius: .2em;
     display: block;
     width: 5em;
     /* margin: 0 auto; */
     text-align: center;
-    --percent-radius: .2em;
+}
+
+#hall-player-list .right .player-number h3 {
+    color: var(--title-color);
+
 }
 
 #hall-player-list .right .info.have+.hall-number {
@@ -580,6 +630,7 @@ ul.state li:not(.none) {
 }
 
 #hall-player-list .right .hall-number {
+    --percent-height: 9px;
     /* padding-top: .25em; */
     text-align: center;
     position: relative;
@@ -596,7 +647,7 @@ ul.state li:not(.none) {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 9px;
+    height: var(--percent-height);
     background-color: #eee;
     border-radius: var(--percent-radius);
 }
@@ -607,7 +658,7 @@ ul.state li:not(.none) {
     position: absolute;
     bottom: 0;
     width: var(--percent);
-    height: .2em;
+    height: var(--percent-height);
     background-color: var(--color);
     filter: brightness(.6);
     border-radius: var(--percent-radius);
@@ -620,16 +671,27 @@ ul.state li:not(.none) {
     text-overflow: ellipsis;
     border-radius: calc(var(--main-radius) / 2);
     margin: 0;
+    font-size: 1em;
     line-height: 1.2em;
     max-height: 1.2em;
     color: #fff;
-    background-color: #888;
+    background-color: #dadada;
 }
 
 
 /* ↓机厅列表 - other | ← | [this] | */
 #hall-player-list .other {
 
+}
+
+/* 根据状态来显示颜色 */
+
+.player-number {
+    --title-color: #000;
+}
+
+.player-number.open {
+    --title-color: green;
 }
 
 
@@ -854,6 +916,7 @@ ul.state li:not(.none) {
 .modal.window-filter .content {
     padding: 1em;
     padding-top: 0;
+    color: #444;
 }
 
 .window-filter .content h2 {
@@ -861,11 +924,13 @@ ul.state li:not(.none) {
     padding-top: 1em;
     padding-bottom: .4em;
     font-size: 1.2em;
+    text-align: center;
+    color: #000000;
 }
 
 .window-filter .content .item:not(:first-child) {
     margin-top: 1em;
-    border-top: #c6c6c6 .2em solid;
+    border-top: #dadada .1em solid;
 }
 
 .window-filter .content .sort .cont {

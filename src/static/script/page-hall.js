@@ -90,8 +90,9 @@ const getDoc = () => {
                 }
             },
             hall_search: {
-                form: gi('hall-search-form'),
-                type: getQSA('[name="search-type"]', 'hall-search-type')
+                form: setTarget('hall-search-form'),
+                type: getQSA('[name="search-type"]', 'hall-search-type'),
+                input: get('[type="search"]')
             }
         },
         text: {
@@ -130,6 +131,13 @@ const getDoc = () => {
                 last_refresh: get('.time .value'),
                 stat: get('.stat'),
             },
+
+            search: {
+                root: setTarget('search-text'),
+                basis: get('.basis'),
+                keyword: get('.keyword'),
+                result: get('.result'),
+            },
         },
         card: {
             trip: gi('card-trip')
@@ -139,6 +147,20 @@ const getDoc = () => {
 }
 
 const doc = getDoc()
+
+// 全局函数
+
+/**
+ * 获取一个关闭窗口的函数
+ * @param {Element} element 
+ */
+const getCloseWindowFunc = (element) => {
+    return () => {
+        element.checked = false
+    }
+}
+
+
 
 /**全局对象 */
 const global = {
@@ -196,7 +218,11 @@ const callbacks = {
      */
     onTripCancel: (is_disabled) => {  },
 
-
+    /**
+     * 当用户搜索时
+     * ~(last)
+     */
+    search: () => {  }
 }
 
 /**配置信息 */
@@ -222,6 +248,15 @@ const config = {
             method: ''
         },
         init: false
+    },
+    /**设置搜索(检索)条件 */
+    search: {
+        /**是否启用搜索 */
+        enable: true,
+        /**搜索关键词 */
+        keyword: '',
+        /**搜索方法 @type {'all' | 'alias' | 'name'} */
+        method: 'all'
     },
     /** 启用过滤 */
     use_filter: true,
@@ -543,11 +578,10 @@ const _init = () => {
             window.addEventListener('online', () => {
                 stat.classList.remove('have-offline')
                 stat.classList.add('have-online')
-                // ~(last)
                 clearTimeout(global.timer.show_stat)
                 global.timer.show_stat = setTimeout(() => {
                     stat.classList.remove('have-online')
-                }, 5000)
+                }, 3000)
             })
         },
 
@@ -559,10 +593,22 @@ const _init = () => {
 
         /**搜索机厅 */
         searchHall: () => {
-            const { form, type } = doc.input.hall_search
+            const { form, input, type: es_type } = doc.input.hall_search
+            const { hall_search } = doc.window
+            const close = getCloseWindowFunc(hall_search)
+
+            // 当提交搜索内容时
             form.addEventListener('submit', (event) => {
                 event.preventDefault()
-                // ~(last)
+                
+                const keyword = input.value
+                const type = getCheckedElement(es_type)[0]
+                config.search = {
+                    'enable': true,
+                    'keyword': keyword,
+                    'method': type
+                }
+                close()
             })
         }
     }
@@ -911,6 +957,7 @@ const refreshList = (callback, {
                                 return infoBar('更新时出现错误')
                             }
                             infoBar('修改成功')
+                            refreshList(void 0, {'show_info': false})
                         })
                     }
                 }
@@ -953,7 +1000,11 @@ const refreshList = (callback, {
                 const e_main = create('section', { class: 'main' })
 
                 // DOM-create right
-                
+
+                // root
+                //    ...      | > ... <
+                const _e_player_number_attrib = { for: 'window-change-player', class: 'player-number' }
+                const e_right_root = is_open ? create('label', _e_player_number_attrib, showPlayerNumber) : create('div', _e_player_number_attrib)
                 // ________________________
                 //    ...      | >当前人数<
                 //             |    
@@ -985,14 +1036,12 @@ const refreshList = (callback, {
                 }
 
                 const e_right = create('section', { class: 'right' })
-                const _e_player_number_attrib = { for: 'window-change-player', class: 'player-number' }
-                join(e_right, (join(
-                    // 不在营业时间内将无法显示更改人数窗口
-                    is_open ? create('label', _e_player_number_attrib, showPlayerNumber) : create('div', _e_player_number_attrib), {
-                    title: e_right_title,
-                    info: e_right_info,
-                    number: e_right_number,
-                }))
+                join(e_right, (
+                    join(e_right_root, {
+                        title: e_right_title,
+                        info: e_right_info,
+                        number: e_right_number,
+                    }))
                 )
                 // ________________________
                 //             |   ...
@@ -1077,6 +1126,7 @@ const refreshList = (callback, {
 
                 if (is_open) {
                     // 营业中
+                    e_right_root.classList.add('open')
                     e_right_title.innerText = '正在营业'
                     e_right_number.innerText = player
                     addClassPlayerNumber(setColor(player))

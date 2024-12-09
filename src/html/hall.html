@@ -44,6 +44,22 @@
             <p class="line time">
                 <span class="inner"><strong class="value">--秒</strong>前刷新</span>
             </p>
+            <section class="line search have" id="search-text">
+                <div class="inner">
+                    <p>
+                        <span class="basis">--</span>关键词"<span class="keyword">--</span>"的搜索结果
+                    </p>
+                    <p>
+                        共<span class="result">-</span>条
+                    </p>
+                </div>
+                <div class="operate">
+                    <!-- ~(last) -->
+                    <button type="button"> 取消搜索 </button>
+                </div>
+                
+                <hr>
+            </section>
         </section>
     
         <ul class="row left-icon-items simple" id="hall-player-list" data-show="nickname games wait"></ul>
@@ -376,8 +392,9 @@
                     </header>
                     <section class="content">
                         <!-- content -->
-                        <section class="search">
-                            <input type="search" name="input" placeholder="输入关键词">
+                        <section class="modal-search">
+                            <input type="search" name="input" placeholder="输入关键词" maxlength="32" required>
+                            <!-- <button type="reset" title="重新输入" class="icon-refresh"></button> -->
                             <button type="submit" class="start icon-search" title="搜索"></button>
                         </section>
                         <p class="tip"> 搜索目标 </p>

@@ -16,6 +16,10 @@
 }
 
 body {
+    /* 使用第三方字体 */
+    font-family: '寒蝉全圆体';
+    font-weight: 400;
+    letter-spacing: 0;
     margin: 0 auto;
     max-width: 38em;
     min-width: 22em;
@@ -253,18 +257,59 @@ footer.background.BUDDiES {
 
 
 /* common style - search */
-.search {
+.modal-search {
     --border-radius: .4em;
+    --size: 2em;
+    --font-size: calc(var(--size) / 2);
+    --padding: 1em;
+    padding: var(--padding) !important;
+    position: relative;
     display: flex;
 }
 
-.search input[type="search"] {
-    border-radius: var(--border-radius) 0 0 var(--border-radius);
+.modal-search [class*="icon-"]::before {
+    font-size: var(--font-size);
 }
 
-.search button[type="submit"] {
+.modal-search input[type="search"] {
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+    border-right: 0;
+    height: var(--size);
+}
+
+.modal-search button[type="reset"] {
+    --this-size: calc(var(--size) / 2);
+    position: absolute;
+    right: calc(var(--size) + 1em);
+    /* bottom: 0; */
+    top: calc((var(--size) / 4) + var(--padding));
+    width: var(--this-size);
+    height: var(--this-size);
+    opacity: 0;
+    pointer-events: none;
+    background-color: transparent;
+    color: #000;
+}
+
+
+.modal-search input[type="search"]:focus+button[type="reset"] {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-search button[type="submit"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 0 var(--border-radius) var(--border-radius) 0;
     padding: 0 .6em;
+    height: var(--size);
+    width: var(--size);
+    transition: box-shadow .1s;
+}
+
+.modal-search button[type="submit"]:active {
+    box-shadow: inset 0 0 10em #ffffff5e;
 }
 
 
