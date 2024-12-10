@@ -191,6 +191,7 @@ footer.background.BUDDiES {
 }
 
 .modal.decoration .content {
+    overflow: hidden;
     overflow-y: scroll;
     max-height: 60vh;
     border-radius: var(--main-radius);

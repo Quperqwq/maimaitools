@@ -1,4 +1,4 @@
-const version = 'SkyBlue-Meow'
+const version = 'SkyBlue-Woof'
 
 /**@typedef {import('../../../app/types').apiResBody} apiResBody */
 /**@typedef {import('../../../app/types').apiReqBody} apiReqBody */
@@ -633,6 +633,43 @@ class Dev {
 }
 const dev = new Dev()
 
+/**获取DOM操作的快捷方式 */
+class GetDom {
+    constructor() {
+        this.target = null
+    }
+
+    /**
+     * 设置一个新的依据目标
+     * @param {string} id_name 
+     */
+    setTarget(id_name) {
+        const target = getEBI(id_name)
+        if (!(target instanceof Element)) {
+            throw new Error('target not found.', id_name)
+        }
+        this.target = target
+        return target
+    }
+
+    /**
+     * 通过`setTarget`设置的值获取一个匹配的元素
+     * @param {string} query 选择器
+     */
+    get(query) {
+        if (!(this.target instanceof Element)) return null
+        return this.target.querySelector(query)
+    }
+
+    /**
+     * 通过`setTarget`设置的值获取一组匹配的元素
+     * @param {string} query 选择器
+     */
+    getAll(query) {
+        if (!(this.target instanceof Element)) return []
+        return this.target.querySelectorAll(query)
+    }
+}
 
 /**
  * 冒出一个消息提示
@@ -744,7 +781,8 @@ const getDayTime = () => {
 const toDayTime = (time) => {
     if (time === null || time === void 0) return null
     if (time < 0) time = 0
-    if (time > 1400) time = 1440
+    if (time > 1440) time = 1440
+    if (time === 1440) time = 0
     if (time === '') time = '0:0'
     const num_time = +time
     if (Number.isNaN(num_time)) {
@@ -854,6 +892,28 @@ const getElapsedTime = (time) => {
 const valid = (value, normal) => {
     if (Array.isArray(value)) return value.length > 0 ? value : normal
     return value ? value : normal
+}
+
+/**
+ * 确保一个值符合预期类型
+ * @param {any} value 需要检查的值
+ * @param {'string' | 'number' | 'function' | 'boolean' | 'array'} is_type 预期类型
+ * @param {any} normal 若不符合预期指定为默认值
+ */
+const validType = (value, is_type, normal) => {
+    const type = is_type.toLowerCase()
+    const the_type = typeof(value)
+    if (the_type === type) return value
+
+    let is_valid = false
+    switch (is_type) {
+        case 'array':
+            is_valid = Array.isArray(value)
+            break
+        default:
+            return normal
+    }
+    return is_valid ? value : normal
 }
 
 

@@ -11,8 +11,7 @@
     <!header>
     <main class="hall-player-main space">
 
-
-        <div class="hall-header" id="top">
+        <section class="hall-header" id="top">
             <div class="left title">
                 <h2> 机厅排卡 </h2>
             </div>
@@ -22,9 +21,9 @@
                 <label for="window-filter" class="pseudo button icon-sort" title="筛选"> </label>
                 <label for="window-hall-set" id="window-hall-new" class="pseudo button icon-plus" title="添加机厅"> </label>
             </div>
-        </div>
+        </section>
     
-        <div id="card-trip" class="trip">
+        <section id="card-trip" class="trip">
             <section class="content text-ellipsis">
                 <div class="line">
                     <span id="on-trip-name" class="name"> xx机厅 </span>
@@ -37,7 +36,7 @@
                 <button class="pseudo" id="trip-cancel" type="button"> 不去了 </button>
                 <button class="pseudo" id="trip-finish" type="button"> 已到达 </button>
             </section>
-        </div>
+        </section>
     
         <section id="list-stat" class="list-stat">
             <p class="line stat"> </p>
@@ -54,15 +53,17 @@
                     </p>
                 </div>
                 <div class="operate">
-                    <!-- ~(last) -->
-                    <button type="button"> 取消搜索 </button>
+                    <button type="button" id="cancel-search" class="pseudo"> 查看全部 </button>
                 </div>
                 
                 <hr>
             </section>
         </section>
     
-        <ul class="row left-icon-items simple" id="hall-player-list" data-show="nickname games wait"></ul>
+        <section class="list-area">
+            <ul class="row left-icon-items simple" id="hall-player-list" data-show="nickname games wait"></ul>
+            <!-- <~!page-nav> -->
+        </section>
 
 
         
@@ -284,7 +285,7 @@
                             <label class="title" for="set-hall-max_player"> 最大人数 </label>
                             <input id="set-hall-max_player" type="number" max="50" min="0" name="hall-max_player" value="10" title="最大人数" placeholder="总得有个上限吧?!">
                         </div>
-                        <div class="line open-hours new">
+                        <div class="line open-hours">
                             <label class="title" for="set-hall-open_hours"> 营业时间 </label>
                             <p class="tip">
                                 在非营业时间的时候会自动将人数设定为不可用状态。
@@ -300,7 +301,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="line map-id new">
+                        <div class="line map-id">
                             <label class="title" for="set-hall-map-id">
                                 音游地图ID
                             </label>
@@ -397,20 +398,44 @@
                             <!-- <button type="reset" title="重新输入" class="icon-refresh"></button> -->
                             <button type="submit" class="start icon-search" title="搜索"></button>
                         </section>
+                        <!-- <hr> -->
                         <p class="tip"> 搜索目标 </p>
-                        <section id="hall-search-type" class="select flex three">
-                            <label>
-                                <input type="radio" name="search-type" value="name">
-                                <span class="checkable"> 机厅名 </span>
-                            </label>
-                            <label>
-                                <input type="radio" name="search-type" value="alias">
-                                <span class="checkable"> 别名 </span>
-                            </label>
-                            <label>
-                                <input type="radio" name="search-type" value="all" checked>
-                                <span class="checkable"> 两者都 </span>
-                            </label>
+                        <section id="hall-search-type" class="select">
+                            <div class="line flex three">
+                                <label>
+                                    <input type="radio" name="search-type" value="name">
+                                    <span class="checkable"> 机厅名 </span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="search-type" value="alias">
+                                    <span class="checkable"> 别名 </span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="search-type" value="alias_and_name">
+                                    <span class="checkable"> 别名和机厅名 </span>
+                                </label>
+                            </div>
+                            <div class="line flex three">
+                                <label>
+                                    <input type="radio" name="search-type" value="position">
+                                    <span class="checkable"> 位置 </span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="search-type" value="all" checked>
+                                    <span class="checkable"> 全部 </span>
+                                </label>
+                            </div>
+                        </section>
+                        <p class="tip"> 搜索选项 </p>
+                        <section>
+                            <div class="line flex three">
+                                <label>
+                                    <input type="checkbox" name="search-operate" value="filter" checked>
+                                    <span class="checkable">
+                                        启用过滤
+                                    </span>
+                                </label>
+                            </div>
                         </section>
                     </section>
                 </form>

@@ -5,36 +5,126 @@
 
 
 const getDoc = () => {
+    /**
+     * DOM对象的window, 用于控制网页内特定CSS选择器该元素的选择状态
+     * 
+     */
+    class WindowElement {
+        /**
+         * 创建一个窗口实例
+         * @param {HTMLInputElement} element
+         */
+        constructor(element) {
+            if (!(element instanceof HTMLInputElement)) throw Error('invalid element', element)
+
+            this.element = element
+            this.callback = {
+                /**@type {null | function} */
+                open: null,
+                /**@type {null | function} */
+                close: null
+            }
+
+            element.addEventListener('change', () => {
+                /**
+                 * 尝试运行一个函数
+                 * @param {function | null} func 
+                 */
+                const runFunc = (func) => {
+                    if (typeof(func) === 'function') func()
+                }
+                if (element.checked) {
+                    runFunc(this.callback.open)
+                    // 当窗口对象被打开时
+
+                    return
+                } else {
+                    runFunc(this.callback.close)
+                    // 当窗口对象被关闭时
+
+                    return
+                }
+            })
+        }
+
+        get is_open() { return this.element.checked }
+
+        /**关闭这个窗口 */
+        close() { this.element.checked = false }
+
+        /**打开这个窗口 */
+        open() { this.element.checked = true }
+
+        /**
+         * 当窗口被打开时触发事件
+         * @param {function} method 
+        */
+        onOpen(method) {
+            this.callback.open = method
+        }
+
+        /**
+         * 当窗口被关闭时触发事件
+         * @param {function} method 
+         */
+        onClose(method) {
+            this.callback.close = method
+        }
+    }
+
+
     /** getEBI(getElementById)简写形式 */
     const gi = getEBI
 
-    /** 当的root element依据 @type {null | Element} */
-    let target = null
+    // /** 当的root element依据 @type {null | Element} */
+    // let target = null
+    // /**
+    //  * 设置target的值
+    //  * @param {string} id_name 
+    //  */
+    // const setTarget = (id_name) => {
+    //     target = gi(id_name)
+    //     return target
+    // }
+    // /**
+    //  * 通过`setTarget`设置的值获取一个元素
+    //  * @param {string} query 
+    //  */
+    // const get = (query) => {
+    //     if (!(target instanceof Element)) return null
+    //     return target.querySelector(query)
+    // }
+
+    // /**
+    //  * 通过`setTarget`设置的值获取一组元素
+    //  * @param {string} query 
+    //  */
+    // const getAll = (query) => {
+    //     if (!(target instanceof Element)) return []
+    //     return target.querySelectorAll(query)
+    // }
+
+    const dom = new GetDom()
+    const setTarget = dom.setTarget.bind(dom)
+    const get = dom.get.bind(dom)
+    const getAll = dom.getAll.bind(dom)
+
+
     /**
-     * 设置target的值
+     * 获取一个窗口的类
      * @param {string} id_name 
      */
-    const setTarget = (id_name) => {
-        target = gi(id_name)
-        return target
+    const getWindow = (id_name) => {
+        return new WindowElement(gi(id_name))
     }
-    /**
-     * 通过`setTarget`设置的值获取一个元素
-     * @param {string} query 
-     */
-    const get = (query) => {
-        if (!(target instanceof Element)) return null
-        return target.querySelector(query)
-    }
-
 
     return {
         window: {
-            change_player: gi('window-change-player'),
-            show_detail: gi('window-hall-detail'),
-            show_set_hall: gi('window-hall-set'),
-            filter: gi('window-filter'),
-            hall_search: gi('window-hall-search')
+            change_player: getWindow('window-change-player'),
+            show_detail: getWindow('window-hall-detail'),
+            show_set_hall: getWindow('window-hall-set'),
+            filter: getWindow('window-filter'),
+            hall_search: getWindow('window-hall-search')
         },
         input: {
             player_number: {
@@ -91,8 +181,10 @@ const getDoc = () => {
             },
             hall_search: {
                 form: setTarget('hall-search-form'),
-                type: getQSA('[name="search-type"]', 'hall-search-type'),
-                input: get('[type="search"]')
+                type: getAll('[name="search-type"]'),
+                operate: getAll('[name="search-operate"]'),
+                input: get('[type="search"]'),
+                show_all: getEBI('cancel-search')
             }
         },
         text: {
@@ -148,19 +240,6 @@ const getDoc = () => {
 
 const doc = getDoc()
 
-// 全局函数
-
-/**
- * 获取一个关闭窗口的函数
- * @param {Element} element 
- */
-const getCloseWindowFunc = (element) => {
-    return () => {
-        element.checked = false
-    }
-}
-
-
 
 /**全局对象 */
 const global = {
@@ -176,9 +255,10 @@ const global = {
     }
 }
 
+
 /**回调 */
 const callbacks = {
-    /**当提交玩家人数时会触发此函数,该函数会传入一个控制window是否显示的Element元素 @type {function(Element): void}  */
+    /**当提交玩家人数时会触发此函数,该函数会传入一个控制window是否显示的Element元素 @type {function(WindowElement): void}  */
     submitPlayerNumber: () => {},
     // showPlayerNumber: () => {},
     /**
@@ -220,7 +300,6 @@ const callbacks = {
 
     /**
      * 当用户搜索时
-     * ~(last)
      */
     search: () => {  }
 }
@@ -250,12 +329,13 @@ const config = {
         init: false
     },
     /**设置搜索(检索)条件 */
+    /**@typedef {'all' | 'alias' | 'name' | 'position' | 'alias_and_name'} SearchMethod */
     search: {
         /**是否启用搜索 */
-        enable: true,
+        enable: false,
         /**搜索关键词 */
         keyword: '',
-        /**搜索方法 @type {'all' | 'alias' | 'name'} */
+        /**搜索方法 @type {SearchMethod}  */
         method: 'all'
     },
     /** 启用过滤 */
@@ -334,8 +414,7 @@ const _init = () => {
         /**机厅详情 */
         hallDetail: () => {
             const { show_detail } = doc.window
-            show_detail.addEventListener('change', (event) => {
-                if (!event.target.checked) return
+            show_detail.onOpen(() => {
                 runCommand(callbacks.showDetail, doc.text.hall_detail)
             })
         },
@@ -395,15 +474,14 @@ const _init = () => {
                             infoBar('新建失败!')
                             console.error('error message:', message)
                         }
-                        show_set_hall.checked = false
+                        show_set_hall.close()
                         refreshList()
                     })
                 }
             })
 
             // 打开窗口
-            show_set_hall.addEventListener('change', (event) => {
-                if (!event.target.checked) return
+            show_set_hall.onOpen(() => {
                 form.reset()
                 
                 runCommand(callbacks.showSetHall, list, getFormData())
@@ -436,7 +514,7 @@ const _init = () => {
                     } else {
                         submit.innerText = '就这样'
                         submit.disabled = false
-                        show_set_hall.checked = false
+                        show_set_hall.close()
                     }
                 }
                 /* 在这里调用 */runCommand(callbacks.submitSetHall, form_data, onWait)
@@ -508,11 +586,12 @@ const _init = () => {
                 }
             }
 
-            // 提交时
+            // 提交筛选条件时
             form.addEventListener('submit', (event) => {
                 event.preventDefault()
                 changeConfig()
-                filter.checked = false
+                config.use_filter = true
+                filter.close()
                 refreshList()
             })
             const init = () => {
@@ -587,28 +666,38 @@ const _init = () => {
 
         /**用户收藏的机厅 */
         fav: () => {
-            config.fav = cookie.getArrayData('fav')
-            // config.fav = local.get('fav')
+            // config.fav = cookie.getArrayData('fav')
+            config.fav = validType(local.get('fav'), 'array', [])
         },
 
         /**搜索机厅 */
         searchHall: () => {
-            const { form, input, type: es_type } = doc.input.hall_search
+            const { form, input, type: es_type, operate: es_operate, show_all } = doc.input.hall_search
             const { hall_search } = doc.window
-            const close = getCloseWindowFunc(hall_search)
 
             // 当提交搜索内容时
             form.addEventListener('submit', (event) => {
                 event.preventDefault()
                 
                 const keyword = input.value
-                const type = getCheckedElement(es_type)[0]
+                const type = getCheckedElement(es_type)[0] // 搜索类型
+                const operate = getCheckedElement(es_operate) // 选项
                 config.search = {
                     'enable': true,
                     'keyword': keyword,
                     'method': type
                 }
-                close()
+                
+                config.use_filter = operate.includes('filter') // 是否启用过滤
+
+                refreshList()
+                hall_search.close()
+            })
+
+            // 当点击查看所有机全部(取消搜索)时
+            show_all.addEventListener('click', () => {
+                config.search.enable = false
+                refreshList()
             })
         }
     }
@@ -659,36 +748,62 @@ const refreshList = (callback, {
     // showInfo('刷新中...', {keep: true})
     // main
     useApi('get_hall_data', {}, (res_data, err) => {
-        global.time.refresh = timeIs()
+        // DOM操作
         waitBar(false)
         if (!res_data.valid) {
             showInfo('刷新失败!')
             return console.error('refresh fail!', message)
         }
         showInfo('刷新完成')
+        if (err) return showInfo('更新失败!')
+
+
+        // 创建引用/初始化值
+        global.time.refresh = timeIs()
         /**@type {GameHalls} */
         const org_halls = res_data.data
-        // console.log('hall data:', res_data.data)
-        if (typeof(callback) === 'function') callback()
+        if (typeof(callback) === 'function') {
+            callback()
+        }
 
-        if (err) return showInfo('更新失败!')
+        /**
+         * 遍历每个机厅
+         * @param {function(GameHallItem)} callback 
+         */
+        const forEachHall = (callback) => {
+            Object.keys(org_halls).forEach((_id) => {
+                const id = +_id
+                const hall_item = org_halls[id]
+                hall_item.id = id
+                callback(hall_item)
+            })
+        }
+
+        /** 机厅列表的数组形式 @type {GameHallItem[]} */
+        const hall_list = []
+        forEachHall((hall) => {
+            hall_list.push(hall)
+        })
+
 
         // step.1) 初始化内容
         doc.list.innerHTML = ''
 
         /**
-         * step.3) 进行内容创建
+         * step.2) 进行内容创建
          * @param {GameHallItem[]} halls 
          */
         const main = (halls) => {
+            // console.log(halls);
+            
             Object.keys(halls).forEach((key) => {
 
                 // 根据对象创建网页元素并绑定相关事件
                 const hall = halls[+key]
                 const id = typeof(hall.id) === 'number' ? hall.id : +key
                 const {max_player, player, name, games, nickname, pos} = hall
-                const {input} = doc.input.player_number
                 const {fav: fav_hall} = config
+                const {input: es_input} = doc
 
 
                 /**营业时间段的`string`样式 */
@@ -700,7 +815,8 @@ const refreshList = (callback, {
                 const open_hours_period = str_open_hours.open + ' - ' + str_open_hours.close
 
                 /**用户是否收藏了此机厅 */
-                let is_fav = fav_hall.includes(`${id}`)
+                let is_fav = fav_hall.includes(id)
+                
 
                 class Time {
                     constructor() {
@@ -777,7 +893,8 @@ const refreshList = (callback, {
                         hall_name.classList.remove('go')
                         trip.classList.remove('show')
                         going.is = false
-                        cookie.del('goto_hall')
+                        // cookie.del('goto_hall')
+                        local.del('goto_hall')
 
                         refreshList(void 0, {'show_info': false})
                     }
@@ -838,7 +955,8 @@ const refreshList = (callback, {
                         }
                         updateTrip(true)
                         infoBar('已确定行程')
-                        cookie.set('goto_hall', id)
+                        // cookie.set('goto_hall', id)
+                        local.set('goto_hall', id)
                         refreshList()
                     })
                 }
@@ -847,6 +965,7 @@ const refreshList = (callback, {
                 const showPlayerNumber = () => {
                     // 更新机厅名
                     const {name, change_time} = doc.text.player_number
+                    const {input} = doc.input.player_number
                     name.innerText = hall.name
                     change_time.innerText = time.change
                     
@@ -857,7 +976,7 @@ const refreshList = (callback, {
                     input.min = 0
                     callbacks.submitPlayerNumber = (show) => {
                         // 提交玩家数量逻辑
-                        show.checked = false
+                        show.close()
                         waitBar(true)
 
                         useApi('change_hall_data', {
@@ -925,6 +1044,7 @@ const refreshList = (callback, {
                             // console.log(hall.open_hours)
                             open.value = toDayTime(hall.open_hours.open)
                             close.value = toDayTime(hall.open_hours.close)
+                            // (FIX)这里容易出现赋值错误
                         }
                     }
 
@@ -968,16 +1088,22 @@ const refreshList = (callback, {
                  */
                 const favHall = (_, element) => {
                     if (is_fav) {
+                        // 取消收藏
                         element.classList.replace( 'icon-star_full','icon-star_empty')
                         element.classList.add('not')
-                        cookie.delItem('fav')
-                        // local.del('fav')
+
+                        config.fav = config.fav.filter(id_item => +id_item !== id)
+                        // cookie.delItem('fav', id)
                     } else {
+                        // 收藏
                         element.classList.replace('icon-star_empty', 'icon-star_full')
                         element.classList.remove('not')
-                        cookie.addItem('fav', id)
+
+                        config.fav.push(id)
+                        // cookie.addItem('fav', id)
                         // local.set('fav', id)
                     }
+                    local.set('fav', config.fav)
                     is_fav = !is_fav
                 }
 
@@ -1146,10 +1272,11 @@ const refreshList = (callback, {
 
                 // 是否有去机厅的记录
                 // ~(FIX)
-                const _go_hall = cookie.get('goto_hall')
+                // const _go_hall = cookie.get('goto_hall')
+                const _go_hall = local.get('goto_hall')
                 if (+_go_hall === id) {
                     // 如果有
-                    console.log(config.going);
+                    // console.log(config.going);
                     
                     config.going.is = true
                     if (_init) updateTrip(true)
@@ -1162,15 +1289,16 @@ const refreshList = (callback, {
         
 
         /**
-         * step.2) 对原始内容进行排序
+         * fork.1) 对原始内容进行排序
+         * @returns {GameHallItem[]}
          */
-        const runFilter = () => {
+        const runFilter = (halls = hall_list) => {
             // 处理来自config.sorting的排序 org_halls => halls
 
             // 创建引用
             const {filter, fav: fav_hall} = config
 
-            if (!filter.init) return main(org_halls) // 如果filter的配置没有初始化则使不进行处理使用原始值
+            if (!filter.init) return org_halls // 如果filter的配置没有初始化则使不进行处理使用原始值
 
             const {show: {game: show_games, more: show_more, fields: show_fields}, order: {target}} = filter
             // console.log(show_more);
@@ -1185,10 +1313,10 @@ const refreshList = (callback, {
              */
             let sortingMethod = () => {}
             const sorting = new Sorting(filter.order.method === 'desc' ? false : true)
-            const halls = []
+            const result = []
 
 
-            Object.keys(org_halls).forEach((key) => {
+            halls.forEach((hall) => {
                 // Func) 定义函数
 
                 /**
@@ -1230,17 +1358,14 @@ const refreshList = (callback, {
                 }
 
                 // Start) 从这里开始
-
-
-                const id = +key
-                const hall = org_halls[id]
+                const id = hall.id
 
                 // 过滤条件 (是否包含指定游戏)
                 if (!have(hall.games, show_games)) return
 
                 // 过滤条件 (仅显示收藏)
                 if (only_fav) {
-                    if (!fav_hall.includes(`${id}`)) return
+                    if (!fav_hall.includes(id)) return
                 }
 
                 // 过滤条件 (显示字段)
@@ -1249,25 +1374,117 @@ const refreshList = (callback, {
                 // 排序条件
                 sortingMethod()
             })
-            // console.log(sorting.basis);
-            // console.debug('value of:', sorting.value)
+
             
             // 将排序后的数据格式化
             const output = sorting.getValues()
             output.forEach((item, index) => {
                 const hall = item[1]
                 hall.id = item[0]
-                halls[index] = hall
+                result[index] = hall
             })
-            // console.log(halls); 
-            main(halls)
+            return result
         }
 
-        if (config.use_filter) {
-            runFilter()
-        } else {
-            main(org_halls)
+        /**
+         * fork.2) 对原始内容进行搜索
+         * @returns {GameHallItem[]}
+         */
+        const runSearch = (halls = hall_list) => {
+            const {keyword, method} = config.search
+            const {root: e_root} = doc.text.search
+            const result = []
+
+            /**
+             * 匹配关键词
+             * @type {{[key in SearchMethod]: function(GameHallItem): boolean}}
+             */
+            const match_keyword = {
+                all: (hall) => {
+                    const this_obj = match_keyword
+                    let result = false
+
+                    Object.keys(this_obj).forEach((method_name) => {
+                        if (method_name === 'all') return
+                        if (!this_obj[method_name](hall)) return
+                        result = true
+                    })
+                    return result
+                },
+                alias: (hall) => {
+                    let result = false
+                    hall.nickname.forEach((alias_item) => {
+                        if (!alias_item.includes(keyword)) return
+                        result = true 
+                    })
+                    return result
+                },
+                name: (hall) => {
+                    return hall.name.includes(keyword)
+                },
+                position: (hall) => {
+                    return hall.pos.includes(keyword)
+                },
+                alias_and_name: (hall) => {
+                    const this_obj = match_keyword
+
+                    return this_obj.alias(hall) || this_obj.name(hall)
+                }
+            }
+
+            /**
+             * 方法名对应的可读文本
+             * @type {{[key in SearchMethod]: string}}
+             */
+            const method_name = {
+                'alias': '别名',
+                'all': '全部',
+                'name': '名称',
+                'position': '位置',
+                'alias_and_name': '别名和名称',
+            }
+
+
+            const searchMethod = match_keyword[method]
+            if (!(typeof(searchMethod) === 'function')) {
+                // 没有相应的搜索功能
+                e_root.classList.remove('have')
+                infoBar('未找到搜索方法!')
+                console.warn('search method', method, 'not fond.')
+                config.search.enable = false
+                return halls
+            }
+            
+            halls.forEach((hall) => {
+                if (!searchMethod(hall)) return
+                result.push(hall)
+            })
+
+            // 更改DOM
+            const updateDom = () => {
+                const { basis, keyword: e_keyword, result: e_result } = doc.text.search
+                basis.innerText = method_name[method]
+                e_keyword.innerText = keyword
+                e_result.innerText = result.length
+                e_root.classList.add('have')
+            }
+
+            updateDom()
+            return result
         }
+
+        let result_halls = hall_list
+
+        // run) 根据条件运行排序或过滤函数
+        if (config.search.enable) {
+            result_halls = runSearch()
+        } else {
+            doc.text.search.root.classList.remove('have')
+        }
+        if (config.use_filter) {
+            result_halls = runFilter(result_halls)
+        }
+        return main(result_halls)
     })
 }
 

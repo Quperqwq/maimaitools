@@ -1,0 +1,71 @@
+/*
+  注意:
+  因代码提示IDE限制  
+  该脚本内容仅供开发模块使用, 在开发完成后需将代码剪切到模块内联标签内
+*/
+
+
+.page-nav ul,
+.page-nav ul li {
+    padding: 0;
+    margin: 0;
+}
+
+.page-nav {
+    --item-size: 2em;
+    --item-radius: .2em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.page-nav button {
+    background-color: transparent;
+    color: #000;
+    border-radius: var(--item-radius);
+}
+
+.page-nav button:hover
+,.page-nav button:active
+,.page-nav button:focus
+ {
+    box-shadow: none;
+}
+
+.page-nav button:active {
+    box-shadow: inset #ebebebbb 0 0 10em;
+}
+
+.page-nav ul {
+    display: flex;
+}
+
+.page-nav ul li {
+    list-style: none;
+}
+
+.page-nav ul li.item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--item-size);
+    height: var(--item-size);
+    border-radius: var(--item-radius);
+    padding: 0 .2em;
+    /* background-color: #afafaf; */
+    color: #000;
+    transition: box-shadow .2s;
+}
+
+.page-nav ul li.item:hover {
+    box-shadow: inset 0 0 5em #e9e9e964;
+}
+
+.page-nav ul li.item:not(:last-child) {
+    margin-right: .4em;
+
+}
+
+.page-nav ul li.item.current {
+    box-shadow: inset 0 0 5em #a5a5a53a;
+}
