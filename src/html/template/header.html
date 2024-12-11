@@ -1,55 +1,117 @@
 <!-- 依赖: common.js -->
 
+<style>
+    /* wait-bar */
+    .wait-bar {
+        /* pointer-events: none; */
+        display: none;
+        transition: opacity .4s ease-out;
+        opacity: 0;
+        z-index: 100001;
+    }
+
+    .wait-bar.show {
+        display: block;
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .wait-bar .overlay {
+        z-index: 100001;
+    }
+
+
+    .wait-bar .center-box {
+        --height: 0em;
+        display: none;
+        position: fixed;
+        top: calc(50% - (var(--height) / 2));
+        width: 100%;
+        height: var(--height);
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .wait-bar.show .center-box {
+        display: flex;
+        --height: 6em;
+    }
+
+    .wait-bar .content {
+        margin: 0;
+        padding: 0;
+        color: #fff;
+        /* background-color: #00000080;
+        padding: 0 .4em; */
+        font-weight: 800;
+        font-size: 2em;
+        border-radius: var(--main-radius);
+    }
+
+
+
+    /* info-bar */
+    .info-bar {
+        position: fixed;
+        overflow: hidden;
+        pointer-events: none;
+        top: -2em;
+        width: 100%;
+        text-align: center;
+        opacity: 0;
+        transition: all ease .4s;
+        z-index: 1000000;
+    }
+
+    .info-bar.show {
+        opacity: 1;
+        top: 2em;
+    }
+
+    .info-bar .content {
+        display: inline-block;
+        padding: .2em 1em;
+        border-radius: .4em;
+        background-color: #0000005f;
+        /* backdrop-filter: blur(2px); */
+        color: #fff;
+        text-shadow: .1em #000;
+        font-weight: 600;
+    }
+
+    /* nav-bar */
+
+    body::before {
+        content: '';
+        display: block;
+        height: 3em;
+    }
+
+    .nav-bar .menu div.title {
+        display: none;
+        background-color: cornflowerblue;
+        color: #fff;
+        text-align: center;
+        font-weight: 800;
+    }
+
+    .nav-bar .menu .menu-item.target {
+        box-shadow: inset 0 0 10em #000000bd;
+        color: #fff;
+    }
+
+    .nav-bar .menu div.title:hover
+    ,.nav-bar .menu div.title:active
+    ,.nav-bar .menu div.title:focus {
+        box-shadow: none;
+    }
+</style>
+
 <!-- wait-bar -->
 <section id="wait-bar" class="wait-bar modal">
-    <style>
-        .wait-bar {
-            pointer-events: none;
-            transition: opacity .4s ease-out;
-            opacity: 0;
-            z-index: 100001;
-        }
-
-        .wait-bar.show {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .wait-bar .overlay {
-            z-index: 100001;
-        }
-
-
-        .wait-bar .center-box {
-            --height: 0em;
-            display: none;
-            position: fixed;
-            top: calc(50% - (var(--height) / 2));
-            width: 100%;
-            height: var(--height);
-            text-align: center;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            overflow: hidden;
-        }
-
-        .wait-bar.show .center-box {
-            display: flex;
-            --height: 6em;
-        }
-
-        .wait-bar .content {
-            margin: 0;
-            padding: 0;
-            color: #fff;
-            /* background-color: #00000080;
-            padding: 0 .4em; */
-            font-weight: 800;
-            font-size: 2em;
-            border-radius: var(--main-radius);
-        }
-    </style>
     <div class="overlay">
         <div class="center-box">
             <p class="content"> 请稍候 </p>
@@ -59,58 +121,14 @@
 
 <!-- info-bar -->
 <section id="info-bar" class="info-bar">
-    <style>
-        .info-bar {
-            position: fixed;
-            overflow: hidden;
-            pointer-events: none;
-            top: -2em;
-            width: 100%;
-            text-align: center;
-            opacity: 0;
-            transition: all ease .4s;
-            z-index: 1000000;
-        }
-
-        .info-bar.show {
-            opacity: 1;
-            top: 2em;
-        }
-
-        .info-bar .content {
-            display: inline-block;
-            padding: .2em 1em;
-            border-radius: .4em;
-            background-color: #0000005f;
-            /* backdrop-filter: blur(2px); */
-            color: #fff;
-            text-shadow: .1em #000;
-            font-weight: 600;
-        }
-    </style>
     <p class="content"> NO-CONTENT </p>
 </section>
 
 <!-- nav-bar -->
-<nav class="nav-bar">
-    <style>
-        body::before {
-            content: '';
-            display: block;
-            height: 3em;
-        }
-
-        .nav-bar .menu div.title {
-            display: none;
-            background-color: cornflowerblue;
-            color: #fff;
-            text-align: center;
-            font-weight: 800;
-        }
-    </style>
+<nav id="page-nav" class="nav-bar">
     <span class="brand">
         <img class="logo" src="/image/logo.png" alt="logo" />
-        <span> maimai tools </span>
+        <span class="title"> maimai tools </span>
     </span>
 
     <input id="bmenub" type="checkbox" class="show">
@@ -118,14 +136,5 @@
 
     <div class="menu left-icon-items">
         <div class="pseudo button title"> MAITOOLS </div>
-        <a href="/" class="pseudo button icon-home"> 首页 </a>
-        <!-- <a href="/profile" class="pseudo button ic
-         on-user"> 我的 </a> -->
-        <a href="/hall" class="pseudo button icon-game"> 机厅 </a>
-        <!-- <a href="/score" class="pseudo button icon-search"> 查分 </a> -->
-        <!-- <a href="/song" class="pseudo button icon-search"> 查歌 </a> -->
-        <!-- <a href="/document" class="pseudo button icon-news"> 帮助 </a> -->
-        <a href="/about" class="pseudo button icon-info"> 关于 </a>
-
     </div>
 </nav>

@@ -36,8 +36,48 @@ const setting = {
             return `https://map.bemanicn.com/shop/${id}`
         }
     },
+    /** 引用外联资源 */
+    resource: {
+        /** 当developers为true时引用以下资源 */
+        dev: {
+            'js': [
+                '/script/__dev.js'
+            ],
+            'css': [
+                '/style/__dev.css'
+            ]
+        },
+        normal: {
+
+        }
+    },
+    /** 导航栏的内容 */
+    nav: [
+        {
+            title: '首页',
+            href: '/',
+            icon: 'icon-home'
+        },
+        {
+            title: '机厅管理',
+            href: '/hall',
+            icon: 'icon-game'
+        },
+        {
+            title: '帮助文档',
+            href: '/document',
+            icon: 'icon-news'
+        },
+        {
+            title: '关于我们',
+            href: '/about',
+            icon: 'icon-info'
+        },
+    ],
     /**用户使用的浏览器类型 @type {string} */
-    browser_type: ''
+    browser_type: '',
+    /** 是否为开发者 */
+    is_developers: false
 }
 
 /**
@@ -333,7 +373,7 @@ class Cookie {
     /**
      * 获取一个cookie的内容
      * @param {string} key cookie对应的键
-     * @returns {string | undefined}
+     * @returns {string | boolean | undefined}
      */
     get(key) {
         const value = this.content.get(key, null)
@@ -641,12 +681,16 @@ class GetDom {
 
     /**
      * 设置一个新的依据目标
-     * @param {string} id_name 
+     * @param {string | Element} element 
      */
-    setTarget(id_name) {
-        const target = getEBI(id_name)
+    setTarget(element) {
+        /** @type {null | Element} */
+        let target = element
+        if (typeof(element) === 'string') {
+            target = getEBI(element)
+        }
         if (!(target instanceof Element)) {
-            throw new Error('target not found.', id_name)
+            throw new Error('target not found.', element)
         }
         this.target = target
         return target
@@ -668,6 +712,58 @@ class GetDom {
     getAll(query) {
         if (!(this.target instanceof Element)) return []
         return this.target.querySelectorAll(query)
+    }
+}
+
+/** 用于快捷操作`picnic.css`导航栏 */
+class DocumentNav {
+    /**
+     * 构建一个`picnic.css`导航栏的类
+     * @param {Element} [nav_element] 
+     */
+    constructor(nav_element = getEBI('page-nav')) {
+        if (!(nav_element instanceof Element)) {throw new Error('element not found.')}
+
+        const dom = new GetDom()
+
+        this.dom = dom
+        this.doc = {
+            root: dom.setTarget(nav_element),
+            title: dom.get('.brand .title'),
+            logo: dom.get('.brand .logo'),
+            menu: {
+                root: dom.setTarget(
+                    dom.get('.menu')
+                ),
+                items: dom.getAll('.menu-item'),
+                title: dom.get('.title'),
+            },
+        }
+    }
+
+    /**
+     * 刷新引用
+     */
+    _refreshNavRef() {
+        this.doc.menu.items = this.doc.menu.root.querySelectorAll('.menu-item')
+    }
+
+    /**
+     * 添加一个导航菜单的内容
+     * @param {string} title 
+     * @param {string} href 
+     * @param {string} icon_set 
+     * @param {boolean} [is_target] 
+     */
+    add(title, href, icon_set, is_target = false) {
+        const {doc} = this
+        const class_name = 'menu-item pseudo button ' + valid(icon_set, '') + (is_target ? ' target' : '')
+        join(doc.menu.root, create('a', {
+            href: href,
+            class: class_name
+        }, title))
+
+        this._refreshNavRef()
     }
 }
 
@@ -944,10 +1040,50 @@ const __init = () => {
     }
     // 设置浏览器类型以便差异化实现特性
     setting.browser_type = getBrowserType()
+
+    // 是否为开发者
+    setting.is_developers = Boolean(cookie.get('developers'))
+
 }
 __init()
 
 document.addEventListener('DOMContentLoaded', () => {
+    /**
+     * 为此页面引入其他资源
+     * @typedef {'js' | 'css'} ImportType
+     * @param {ImportType} type 引入类型
+     * @param {string[]} src 引入路径
+     */
+    const importResource = (type, src) => {
+        const result = []
+        /**
+         * 创建资源引用的方法
+         * @type {{[key in ImportType]: function(string): Element}}
+         */
+        const create_map = {
+            js: (src) => {
+                return create('script', {src: src})
+            },
+            css: (src) => {
+                return create('link', {ref: 'stylesheet', href: src})
+            }
+        }
+        const createRE = create_map[type]
+
+        src.forEach((href) => {
+            result.push(createRE(href))
+        })
+
+        join(document.head, result)
+    }
+
+
+    // 初始化对象
+    /** 导航栏的内容 */
+    const nav_cont = setting.nav
+
+    const nav = new DocumentNav()
+
     // title
     document.title = `${_global.title} - ${document.title}`
 
@@ -955,8 +1091,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const e_version = getEBI('version')
     if (e_version) e_version.innerText = version
 
-    // class set
-    if (setting.browser_type === 'safari') { // 对于safari浏览器样式上进行差异化设置
+    // Element set
+
+    // 对于safari浏览器样式上进行差异化设置
+    if (setting.browser_type === 'safari') { 
         document.body.classList.add('safari')
+        join(document.head,
+            [
+                create('meta', {
+                    name: 'viewport',
+                    content: 'width=device-width,initial-scale=1,mininmum-scale=1,maximum-scale=1,user-scalable=no',
+                    charset: 'UTF-8'
+                }),
+                create('meta', {
+                    name: 'viewport',
+                    content: 'width=device-width, initial-scale=1, maximum-scale=1,user-scalable=0'
+                })
+            ]
+        )
     }
+
+    // 对于nav
+
+    // 对于开发者增加引用内容
+    if (setting.is_developers) {
+        const {js, css} = setting.resource.dev
+        importResource('js', js)
+        importResource('css', css)
+        nav_cont.push({
+            title: '管理面板',
+            href: '/admin',
+            icon: 'icon-users'
+        })
+    }
+
+    // 初始化nav
+    nav_cont.forEach((nav_item) => {
+        const page_path = location.pathname
+        const {title, href, icon} = nav_item
+        nav.add(
+            title,
+            href,
+            icon,
+            page_path === href
+        )
+    })
 })

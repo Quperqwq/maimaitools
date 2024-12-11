@@ -1176,8 +1176,8 @@ const refreshList = (callback, {
                 // DOM-create left
                 const e_left = create('section', { class: 'left' })
 
-                const e_more = create('section', { class: 'more cont' })
-                join(e_more, { // (TAG)机厅卡片控件
+                const e_left_more = create('section', { class: 'more cont' })
+                join(e_left_more, { // (TAG)机厅卡片控件
                     // 收藏
                     fav: create('button', {
                         type: 'button',
@@ -1196,11 +1196,17 @@ const refreshList = (callback, {
                 // 创建机厅名的对象引用, 以便更改样式
                 const e_hall_name = create('h3', { class: 'name icon-go right-icon' })
 
+                // 组合
                 join(e_left, {
+                    // 机厅名
                     title: join(
                         e_hall_name,
                         create('span', { class: 'content hidden-scrollbar' }, name)
                     ),
+                    // 机厅位置
+                    pos: create('p', {
+                        class: 'pos hidden-scrollbar'
+                    }, hall.pos),
                     // 机厅状态
                     state: join(
                         create('ul', { class: 'row state hidden-scrollbar cont' }), {
@@ -1215,7 +1221,7 @@ const refreshList = (callback, {
                         games: createLi(hall.games.toString(), { class: 'games' })
                     }
                     ),
-                    more: e_more
+                    more: e_left_more
                 })
 
                 // DOM-create other

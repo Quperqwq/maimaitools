@@ -298,7 +298,7 @@ ul.row li {
 /* ↓ 机厅列表详细信息 - hall-detail */
 
 .hall-detail {
-    --color: #b7abfb;
+    --color: #9daee0;
     text-align: right;
     /* padding-right: .6em; */
     color: var(--color);
@@ -366,6 +366,11 @@ ul.row li {
     position: relative;
     width: 70%;
     height: 100%;
+}
+
+#hall-player-list .left p {
+    margin: 0;
+    padding: 0;
 }
 
 #hall-player-list .left::before {
@@ -513,6 +518,10 @@ ul.state li:not(.none) {
     align-items: center;
 }
 
+#hall-player-list.normal .left .pos {
+    display: none;
+}
+
 #hall-player-list.normal .left .name::before {
     content: '机厅名称: ';
 }
@@ -586,7 +595,12 @@ ul.state li:not(.none) {
 /* 简洁样式 */
 
 #hall-player-list.simple .left .cont {
-    font-size: 120%;
+    font-size: 110%;
+}
+
+#hall-player-list.simple .left .pos {
+    display: block;
+    overflow-x: scroll;
 }
 
 #hall-player-list.simple {
