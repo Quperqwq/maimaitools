@@ -3,6 +3,7 @@
 /**@typedef {import('../../../app/types').GameHalls} GameHalls */
 /**@typedef {import('../../../app/types').GameHallItem} GameHallItem */
 
+(() => {
 
 const getDoc = () => {
     /**
@@ -75,34 +76,6 @@ const getDoc = () => {
 
     /** getEBI(getElementById)简写形式 */
     const gi = getEBI
-
-    // /** 当的root element依据 @type {null | Element} */
-    // let target = null
-    // /**
-    //  * 设置target的值
-    //  * @param {string} id_name 
-    //  */
-    // const setTarget = (id_name) => {
-    //     target = gi(id_name)
-    //     return target
-    // }
-    // /**
-    //  * 通过`setTarget`设置的值获取一个元素
-    //  * @param {string} query 
-    //  */
-    // const get = (query) => {
-    //     if (!(target instanceof Element)) return null
-    //     return target.querySelector(query)
-    // }
-
-    // /**
-    //  * 通过`setTarget`设置的值获取一组元素
-    //  * @param {string} query 
-    //  */
-    // const getAll = (query) => {
-    //     if (!(target instanceof Element)) return []
-    //     return target.querySelectorAll(query)
-    // }
 
     const dom = new GetDom()
     const setTarget = dom.setTarget.bind(dom)
@@ -233,6 +206,9 @@ const getDoc = () => {
         },
         card: {
             trip: gi('card-trip')
+        },
+        page_nav: {
+            hall: gi('nav-hall_list')
         },
         list: gi('hall-player-list')
     }
@@ -415,7 +391,7 @@ const _init = () => {
         hallDetail: () => {
             const { show_detail } = doc.window
             show_detail.onOpen(() => {
-                runCommand(callbacks.showDetail, doc.text.hall_detail)
+                runCommand(callbacks.showDetail)
             })
         },
 
@@ -745,7 +721,6 @@ const refreshList = (callback, {
     }
 
     global.time.refresh = null
-    // showInfo('刷新中...', {keep: true})
     // main
     useApi('get_hall_data', {}, (res_data, err) => {
         // DOM操作
@@ -786,16 +761,21 @@ const refreshList = (callback, {
         })
 
 
-        // step.1) 初始化内容
-        doc.list.innerHTML = ''
 
         /**
-         * step.2) 进行内容创建
+         * 进行内容创建
          * @param {GameHallItem[]} halls 
          */
         const main = (halls) => {
-            // console.log(halls);
-            
+            console.log(halls);
+
+
+            /**
+             * step.2) 对内容创建
+             * @param {GameHallItem[]} halls 
+             */
+            const initDom = (halls) => {
+            doc.list.innerHTML = '' // 初始化内容
             Object.keys(halls).forEach((key) => {
 
                 // 根据对象创建网页元素并绑定相关事件
@@ -803,7 +783,6 @@ const refreshList = (callback, {
                 const id = typeof(hall.id) === 'number' ? hall.id : +key
                 const {max_player, player, name, games, nickname, pos} = hall
                 const {fav: fav_hall} = config
-                const {input: es_input} = doc
 
 
                 /**营业时间段的`string`样式 */
@@ -818,19 +797,19 @@ const refreshList = (callback, {
                 let is_fav = fav_hall.includes(id)
                 
 
-                class Time {
-                    constructor() {
-                        this.wait = player ? getTime( player / 2 * 15 * 60000 ) : '0秒'
-                    }
+                const time = {
+                    get wait() {
+                        if (!is_open) return '不可用'
+                        return player ? getTime( player / 2 * 15 * 60000 ) : '0秒'
+                    },
                     get update() {
                         return getElapsedTime(hall.time.change)
-                    }
+                    },
                     get change() {
                         return getElapsedTime(hall.time.change_player)
                     }
                 }
                 /**时间相关内容 */
-                const time = new Time()
 
 
 
@@ -861,8 +840,10 @@ const refreshList = (callback, {
                     return false
                 }
 
+                /**当前机厅是否正在营业 */
                 const is_open = inOpenHours()
-
+                /**人数数据是否已过期 */
+                const is_expired = isExpiredTime(hall.time.change_player, config.change_player_expired_time)
 
 
 
@@ -993,11 +974,11 @@ const refreshList = (callback, {
 
                 // 当打开显示详情窗口时
                 const showDetail = () => {
-                    callbacks.showDetail = (elements) => {
+                    callbacks.showDetail = () => {
                         // 创建引用
                         // console.log(elements);
                         
-                        const {name: e_name, player: e_player, time_update: e_time_update, time_wait: e_time_wait, nickname: e_nickname, pos: e_pos, max: e_max, id: e_id, open_hours: e_open_hours, link: {map: e_link_map}} = elements
+                        const {name: e_name, player: e_player, time_update: e_time_update, time_wait: e_time_wait, nickname: e_nickname, pos: e_pos, max: e_max, id: e_id, open_hours: e_open_hours, link: {map: e_link_map}} = doc.text.hall_detail
                         const {map_id} = hall
 
                         // >文字
@@ -1006,7 +987,9 @@ const refreshList = (callback, {
                         e_time_update.innerText = time.update
                         // (i)预计需要排队计算
                         e_time_wait.innerText = time.wait
-                        e_nickname.innerText = valid(nickname.toString(), '暂无别名')
+                        // e_nickname.innerText = valid(nickname.toString(), '暂无别名')
+                        setArrayContent(e_nickname, nickname)
+                        
                         e_pos.innerText = valid(pos, '未指定')
                         e_max.innerText = max_player
                         e_id.innerText = id
@@ -1210,15 +1193,15 @@ const refreshList = (callback, {
                     // 机厅状态
                     state: join(
                         create('ul', { class: 'row state hidden-scrollbar cont' }), {
-                        // tag: createLi('', { class: 'tag none' }),
+                        // tag: createLi('', { class: 'state-item tag none' }),
                         // 别称
                         nickname: nickname.length > 0 ? createLi(
-                            nickname.toString(), { class: 'nickname' }
+                            nickname, { class: 'state-item nickname' }
                         ) : void 0,
                         // 预计等待
-                        wait_time: is_open ? createLi(time.wait, { class: 'wait' }) : void 0,
+                        wait_time: (is_open && player) ? createLi(time.wait, { class: 'state-item wait' }) : void 0,
                         // 游戏项目
-                        games: createLi(hall.games.toString(), { class: 'games' })
+                        games: createLi(hall.games, { class: 'state-item games' })
                     }
                     ),
                     more: e_left_more
@@ -1240,10 +1223,11 @@ const refreshList = (callback, {
                 ])
 
                 // DOM-join main& -> li
+                // ~(last)
                 const e_root = doc.list.appendChild(
-                    join(createLi('', { class: 'hall-item hidden-scrollbar' }), [
+                    join(createLi('', { class: 'hall-item' }), [
                         e_main,
-                        e_other
+                        // e_other
                     ]
                     )
                 )
@@ -1264,7 +1248,7 @@ const refreshList = (callback, {
                     addClassPlayerNumber(setColor(player))
 
                     // 判断人数是否长久未更新
-                    if (isExpiredTime(hall.time.change_player, config.change_player_expired_time)) {
+                    if (is_expired) {
                         // console.debug(hall.name, '人数已过期')
                         addClassPlayerNumber('inv')
                         setRightInfoCont('过时数据')
@@ -1290,6 +1274,19 @@ const refreshList = (callback, {
                 }
 
             })
+            }
+
+            
+            // step.1) 创建页对象
+            const page = new PageNav(doc.page_nav.hall, halls, {
+                'chunk_size': 5,
+                'max_display_page': 6
+            })
+            // 当切换页面时触发更改内容
+            page.onSwitch = (_, curr_index_halls) => {
+                console.log(curr_index_halls);
+                initDom(curr_index_halls)
+            }
         }
 
         
@@ -1496,3 +1493,4 @@ const refreshList = (callback, {
 
 _init()
 refreshList(void 0, {'_init': true})
+})()

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!head>
+    <#head>
     <link rel="stylesheet" href="/style/page-hall.css">
     <title> 机厅管理 </title>
 </head>
 <body>
-    <!header>
+    <#header>
     <main class="hall-player-main space">
 
         <section class="hall-header" id="top">
@@ -62,7 +62,7 @@
     
         <section class="list-area">
             <ul class="row left-icon-items simple" id="hall-player-list" data-show="nickname games wait"></ul>
-            <!-- <~!page-nav> -->
+            <#page-nav: {"id": "nav-hall_list"}>
         </section>
 
 
@@ -348,13 +348,25 @@
                     </header>
                     <section class="content left-icon-items no_margin-icon-items">
                         <!-- content -->
-                        <p>
+                        <!-- <p>
                             <strong id="detail-hall-name">--</strong>当前游玩人数<strong id="detail-hall-player">0</strong>人, 预计需要排队<strong id="detail-hall-time-wait">0分钟</strong>。
                         </p>
                         <p>
                             上次更新时间是<strong id="detail-hall-time-update">0分钟</strong>前。
+                        </p> -->
+                        <!-- <hr> -->
+                        <p class="item">
+                            <span class="title">机厅名:</span><span class="cont" id="detail-hall-name"></span>
                         </p>
-                        <hr>
+                        <p class="item">
+                            <span class="title">上次更新:</span><span class="cont" id="detail-hall-time-update"></span>
+                        </p>
+                        <p class="item">
+                            <span class="title">当前人数:</span><span class="cont" id="detail-hall-player"></span>
+                        </p>
+                        <p class="item">
+                            <span class="title">预计排队:</span><span class="cont" id="detail-hall-time-wait"></span>
+                        </p>
                         <p class="item">
                             <span class="title">机厅ID:</span><span class="cont" id="detail-hall-id"></span>
                         </p>
@@ -444,7 +456,7 @@
     </main>
 
     <footer class="main background FESTiVAL">
-        <!footer-version>
+        <#footer-version>
     </footer>
     <script src="script/page-hall.js"> </script>
 </body>

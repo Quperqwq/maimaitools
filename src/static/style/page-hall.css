@@ -22,6 +22,7 @@ ul.row li {
 
 .hall-player-main {
     --main-bgc: #f5f6fd;
+    position: relative;
     font-size: .8em;
     overflow: hidden;
     /* background-color: #666; */
@@ -30,7 +31,6 @@ ul.row li {
 .hall-header {
     overflow: hidden;
     display: flex;
-    position: relative;
     background-color: var(--main-bgc);
     /* box-shadow: 0em 0em 2px 0px; */
     border-radius: var(--main-radius);
@@ -298,7 +298,7 @@ ul.row li {
 /* ↓ 机厅列表详细信息 - hall-detail */
 
 .hall-detail {
-    --color: #9daee0;
+    --color: #dddddd;
     text-align: right;
     /* padding-right: .6em; */
     color: var(--color);
@@ -317,7 +317,7 @@ ul.row li {
     padding-bottom: .4em;
     font-size: 1.2em;
     font-weight: 800;
-    color: #6a83cf;
+    color: var(--color);
 }
 
 .hall-detail strong {
@@ -336,21 +336,21 @@ ul.row li {
     list-style: none;
     padding: 0;
     /* padding-bottom: 10em; */
-    overflow: hidden;
+    /* overflow: hidden; */
     background-color: var(--background-color);
 }
 
 #hall-player-list li.hall-item {
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    width: 200%;
+    /* flex-direction: row; */
+    /* flex-wrap: nowrap; */
+    /* width: 200%; */
     /* scroll-snap-align: start; */
 }
 
 #hall-player-list .main,
 #hall-player-list .other {
-    width: 50%;
+    width: 100%;
     /* scroll-snap-align: start; */
 }
 
@@ -360,6 +360,11 @@ ul.row li {
 
 .list-area {
     padding-bottom: 10em;
+}
+
+#hall-player-list {
+    --other-area-height: 14em;
+    /* margin-bottom: var(--other-area-height); */
 }
 
 #hall-player-list .left {
@@ -392,17 +397,23 @@ ul.row li {
 }
 
 #hall-player-list li.hall-item {
+    --border-color: #eee;
     margin-bottom: 1em;
     /* overflow-x: scroll; */
     /* scroll-snap-type: x mandatory; */
+
+}
+
+#hall-player-list li.hall-item:last-child {
+    margin-bottom: var(--other-area-height);
 }
 
 #hall-player-list li.hall-item .main {
-    --border-color: #eee;
     /* overflow: hidden; */
     padding: var(--padding);
     border: var(--border-size) solid var(--border-color);
     border-radius: var(--main-radius);
+    transition: border-radius .4s ease;
 }
 
 #hall-player-list h2,
@@ -418,9 +429,18 @@ ul.row li {
     margin-top: .2em;
     padding: .2em 0;
     border-radius: var(--main-radius);
-    /* height: 1.9em; */
+    /* height: 2.1em; */
     color: #00a4ff;
 }
+
+#hall-player-list .left ul.state::before {
+    content: '';
+    display: inline-block;
+    overflow: hidden;
+    width: 0;
+    height: 1em;
+}
+
 ul.state li.nickname::before,
 ul.state li.wait::before,
 ul.state li.games::before {
@@ -439,7 +459,7 @@ ul.state li.games::before {
     content: '';
 }
 
-ul.state li:not(.none) {
+ul.state li.state-item:not(.none) {
     /* display: inline-block; */
     padding: .2em .4em;
     border-radius: .4em;
@@ -462,7 +482,7 @@ ul.state li:not(.none) {
 #hall-player-list .left .more {
     --icon-color: #000;
     font-size: 1.1em;
-    /* margin-top: .2em; */
+    margin-top: .2em;
 }
 
 #hall-player-list .left .more label,
@@ -476,7 +496,7 @@ ul.state li:not(.none) {
     padding: .2em .4em;
 }
 
-#hall-player-list .left .more *:not(:last-child), #hall-player-list .left .state li:not(:last-child) {
+#hall-player-list .left .more *:not(:last-child), #hall-player-list .left ul.state li.state-item:not(:last-child) {
     margin-right: .2em;
 }
 
@@ -601,6 +621,7 @@ ul.state li:not(.none) {
 #hall-player-list.simple .left .pos {
     display: block;
     overflow-x: scroll;
+    color: #444;
 }
 
 #hall-player-list.simple {
@@ -608,6 +629,8 @@ ul.state li:not(.none) {
 }
 
 #hall-player-list.simple li.hall-item {
+    position: relative;
+    /* overflow: visible; */
     margin-bottom: 2em;
 }
 
@@ -680,11 +703,13 @@ ul.state li:not(.none) {
     display: block;
     position: absolute;
     bottom: 0;
+    min-width: var(--percent-height);
     width: var(--percent);
     height: var(--percent-height);
     background-color: var(--color);
-    filter: brightness(.6);
+    /* filter: brightness(.6); */
     border-radius: var(--percent-radius);
+    opacity: var(--percent);
 }
 
 #hall-player-list .right .info {
@@ -702,10 +727,40 @@ ul.state li:not(.none) {
 }
 
 
-/* ↓机厅列表 - other | ← | [this] | */
-#hall-player-list .other {
-
+/* ↓机厅列表 - other |          | */
+/*                  |  [this]  |    */
+#hall-player-list .hall-item .other {
+    position: absolute;
+    /* display: none; */
+    overflow: hidden;
+    display: block;
+    top: 100%;
+    width: 100%;
+    min-height: 0;
+    z-index: 5;
+    transition: .4s ease min-height;
 }
+
+/* 展开other */
+/* #hall-player-list li.hall-item.show-other .other { */
+#hall-player-list li.hall-item:hover .other {
+    min-height: var(--other-area-height);
+
+    background-color: var(--background-color);
+    border-radius: 0 0 var(--main-radius) var(--main-radius);
+    border: var(--border-size) solid var(--border-color);
+    border-top: none;
+
+    box-shadow: 0 1em 1em #00000030;
+}
+
+/* #hall-player-list li.hall-item.show-other .main { */
+#hall-player-list li.hall-item:hover .main {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+}
+
+
 
 /* 根据状态来显示颜色 */
 

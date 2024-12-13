@@ -189,6 +189,25 @@ class Tools {
         }
         return pad(time)
     }
+
+
+    // 字符串处理
+
+    /**
+     * (string.prototype.split())切片一个字符串, 最后一个切片内容是剩余内容
+     * @param {string} cont 需要切片的字符串 
+     * @param {string} splitter 切片依据
+     * @param {number} limit 切片后数组上限
+     */
+    splitStr(cont, splitter, limit = 2) {
+        if (limit <= 0) return []
+        const the_limit = limit - 1
+
+        const cont_list = cont.split(splitter)
+        const result = cont_list.slice(0, the_limit)
+        result.push(cont_list.slice(the_limit).join(splitter))
+        return result
+    }
 }
 
 /**
@@ -595,18 +614,58 @@ export class HttpApp {
         /**预渲染HTML文件 @param {string} cont */
         const render = (cont) => {
             // ~(?)这里以后可以做性能优化
+            /**模板列表 */
             const list = tool.readDir(path_template, 'file_name_no_ext')
             if (list instanceof Error) return ''
-            cont = cont.replace(/<!(\S+?)>/g, (_, template_name) => {
-                if (!list.includes(template_name)) return ''
+            cont = cont.replace(/* 特别注意: 此正则表达式由AI生成 */ /(?<!\\)<#(.*?)(?<!\\)>/g, (_, tag_cont) => {
+                // <#template_name:          { key: value }>
+                //    ^模板名      ^固定为冒号     ^JSON字符串
+                //             表示模板名与数据区分
+                // 例: <#profile: {username: 'name', email: 'xxx@xx.xx'}>
+
+                // 在模板文件中
+                // <element> {{ key = value }} </element>
+                //              ^ 待替换的值会
+                //         在渲染的时候根据参数传递
+
+                const split = tool.splitStr
+                // 预处理标签内容
+                const args = split(tag_cont, ':', 2) // 获取参数
+                const template_name = args[0].trim()
+
+                /**传递的模板参数 @type {Object.<string, any>} */let template_params
+                try { // 尝试解析JSON内容
+                    template_params = JSON.parse(args[1])
+                } catch (e) {
+                    template_params = {}
+                }
+                
+                // 模板读取
+                if (!list.includes(template_name)) return '' // 如果没有该模板
                 const target = template_name + '.html'
-                const cont = this.readHtml(target, true)
-                // log.debug(cont)
-                const note = [
+                let result = this.readHtml(target, true)
+
+                // 模板参数传递
+                result = result.replace(/\{\{\s*([^{}]*?)\s*\}\}/g, (_, args) => {
+                    const param = split(args, '=', 2)
+                    const key = param[0].trim()
+                    const normal = param[1]
+                    const cont = template_params[key]
+
+                    return `${
+                        cont === void 0 ?
+                            typeof(normal) === 'string' ? normal.trim() : ''
+                        : cont
+                    }`
+                })
+                
+
+                // 输出
+                return [
                     makeNote(template_name, ':start'),
+                    result,
                     makeNote(template_name, ':end')
-                ]
-                return cont ? `${note[0]}${cont}${note[1]}` : ''
+                ].join('')
             })
             return cont
         }

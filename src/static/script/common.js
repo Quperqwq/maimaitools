@@ -1,5 +1,6 @@
 const version = 'SkyBlue-Woof'
 
+
 /**@typedef {import('../../../app/types').apiResBody} apiResBody */
 /**@typedef {import('../../../app/types').apiReqBody} apiReqBody */
 
@@ -115,44 +116,156 @@ const useApi = (target, req_data = {}, callback) => {
 
 // DOM
 
-
 /**
- * (DOM)(document.createElement)创建一个元素
- * @param {string} tag_name 传入标签名
- * @param {Object.<string, string>} tag_attrib 标签的属性
- * @param {string | number | function(MouseEvent, element)} cont_or_func 标签内容, 或点击事件的回调函数
- * @param {number | string} [bool_or_str] 指定为true将tag_content(时间戳)的值转换为可读的字符串样式; `cont_or_func`如果是function, 此值指定为字符串会将标签内容指定为此值
+ * (DOM)设置一个数组为元素内容
+ * @param {Element} element 目标元素
+ * @param {string[]} value 设置目标值
  */
-const create = (tag_name, tag_attrib = {}, cont_or_func = '', bool_or_str = false) => {
-    const element = document.createElement(tag_name)
-    Object.keys(tag_attrib).forEach((name) => {
-        const value = tag_attrib[name]
-        element.setAttribute(name, value)
+const setArrayContent = (element, value) => {
+    if (!Array.isArray(value)) throw Error('invalid_type')
+    // 销毁之前的元素
+    const last_e_value = element.querySelector('.array-value')
+    if (last_e_value) {
+        last_e_value.remove()
+    }
+    /**
+     * 添加一个条目
+     * @param {string} cont 
+     */
+    const addItem = (cont, class_set = []) => {
+        const e_item = create('li', true, {
+            class: 'item ' + class_set.join(' ')
+        }, cont)
+        e_root.appendChild(e_item)
+    }
+    const e_root = create('ul', true, {class: 'array-value'})
+    if (value.length <= 0) {
+        addItem('无内容', ['not-have'])
+    } else {
+        value.forEach(cont => addItem(cont) )
+    }
+    join(element, e_root)
+    return element
+}
+
+// 20241211之前的写法
+// /**
+//  * (DOM)(document.createElement)创建一个元素
+//  * @param {string} tag_name 传入标签名
+//  * @param {Object.<string, string>} tag_attrib 标签的属性
+//  * @param {string | number | function(MouseEvent, element)} cont_or_func 标签内容, 或点击事件的回调函数
+//  * @param {number | string} [bool_or_str] 指定为true将tag_content(时间戳)的值转换为可读的字符串样式; `cont_or_func`如果是function, 此值指定为字符串会将标签内容指定为此值
+//  */
+// const create = (tag_name, tag_attrib = {}, cont_or_func = '', bool_or_str = false) => {
+//     const element = document.createElement(tag_name)
+//     Object.keys(tag_attrib).forEach((name) => {
+//         const value = tag_attrib[name]
+//         element.setAttribute(name, value)
+//     })
+
+//     const setInnerHtml = value => element.innerHTML = value
+
+//     switch (typeof cont_or_func) {
+//         case 'string':
+//             setInnerHtml(cont_or_func)
+//             break
+//         case 'number':
+//             if (!bool_or_str) {
+//                 setInnerHtml(cont_or_func)
+//                 break
+//             }
+//             // setInnerHtml(App.toStrTime(cont_or_func))
+//             break
+//         case 'function':
+//             element.addEventListener('click', (event) => {
+//                 cont_or_func(event, element)
+//             })
+//             if (typeof bool_or_str === 'string') {
+//                 element.innerHTML = bool_or_str
+//             }
+//         default:
+//             break
+//     }
+//     return element
+// }
+
+// 20241211后已将此方法重构
+/**
+ * (DOM)(document.createElement)快捷地创建一个元素
+ * @param {string} tag_name 需要创建的标签名
+ * @param  {...number | string[] | string | Object.<string, string> | function(MouseEvent, element) | Element} args
+ * #### 当值`args`为以下类型时为目标元素更改指定属性  
+ * - `string`: 内容;  
+ * - `Object`: 元素对象的初始属性;    
+ * - `function`: 当点击该元素时触发的回调函数;  
+ * - `array`: 为元素创建一个内容列表;
+ * - `bool`: 使用原始值作为innerText;
+ * - `Element`: 为创建的元素添加一个子元素
+ */
+const create = (tag_name, ...args) => {
+    /** 目标元素 */const element = document.createElement(tag_name)
+    /** 当点击时触发的回调 */let callback = null
+    /** 使用原始值 */let use_org = false
+    
+    /**
+     * 设置目标元素的内容
+     * @param {any} value 
+     */
+    const setContent = (value) => {
+        element.innerText = `${value}`
+        return
+    }
+
+    element.addEventListener('click', (event) => {
+        if (!(typeof(callback) === 'function')) return
+        callback(event, element)
     })
 
-    const setInnerHtml = value => element.innerHTML = value
-
-    switch (typeof cont_or_func) {
-        case 'string':
-            setInnerHtml(cont_or_func)
-            break
-        case 'number':
-            if (!bool_or_str) {
-                setInnerHtml(cont_or_func)
+    args.forEach((arg) => {
+        switch (typeof(arg)) {
+            case 'string':
+                // 值为字符串时设置该值为元素的内容
+                setContent(arg)
                 break
-            }
-            // setInnerHtml(App.toStrTime(cont_or_func))
-            break
-        case 'function':
-            element.addEventListener('click', (event) => {
-                cont_or_func(event, element)
-            })
-            if (typeof bool_or_str === 'string') {
-                element.innerHTML = bool_or_str
-            }
-        default:
-            break
-    }
+            case 'object':
+                // fork.1) 值为数组时为元素创建一个内容列表
+                if (Array.isArray(arg)) {
+                    if (use_org) return setContent(arg)
+                    setArrayContent(element, arg)
+                    break
+                }
+                // fork.2) 值为DOM元素为此元素添加这个值为子元素
+                if (arg instanceof Element) {
+                    element.appendChild(arg)
+                    break
+                }
+
+                // default) 值为对象时设置元素的属性
+                Object.keys(arg).forEach((attrib_name) => {
+                    const attrib_value = arg[attrib_name]
+                    element.setAttribute(attrib_name, attrib_value)
+                })
+                break
+            case 'function':
+                // 为函数时更改回调函数
+                callback = arg
+                break
+            case 'number':
+                if (use_org) return setContent(arg)
+                // 值为数字时(默认认为此值为时间戳)将该值转换为可读的字符串样式
+                
+                const date = getTime(arg)
+                element.innerText = date
+                break
+            case 'boolean':
+                use_org = true
+                break
+            default:
+                break
+        }
+        return
+    })
+
     return element
 }
 
@@ -715,13 +828,200 @@ class GetDom {
     }
 }
 
+class PageNav {
+    /**
+     * 构建一个`PageNav`类, 用于做页面选择使用  
+     * ( ! ) 需要配合`page-nav`模板使用
+     * @param {Element} element 
+     * @param {any[]} data 需要进行创建的数组
+     * @param {Object} param2 配置信息
+     * @param {number} [param2.chunk_size=10] 一页显示的元素数量
+     * @param {number} [param2.max_display_page=5] 最大显示页码数量, 最小为5
+     */
+    constructor(element, data, {
+        chunk_size = 10,
+        max_display_page = 5
+    } = {}) {
+        if (!(element instanceof Element)) {throw new Error('invalid element.')}
+
+        const getDoc = () => {
+            const dom = new GetDom()
+            return {
+                root: dom.setTarget(element),
+                list: dom.get('ul.page-list'),
+                input: {
+                    last: dom.get('button.last'),
+                    next: dom.get('button.next')
+                }
+            }
+        }
+        const initDoc = () => {
+            const {input: {last, next}, list, root} = doc
+            // 点击上一页
+            last.addEventListener('click', () => {
+                this.switchPage(this.index - 1)
+            })
+            // 点击下一页
+            next.addEventListener('click', () => {
+                this.switchPage(this.index + 1)
+            })
+            // 事件委托 > 点击页码内元素
+            list.addEventListener('click', (event) => {
+                const {target} = event
+                if (!target.classList.contains('index-item')) return
+                this.switchPage(+target.dataset.index)
+            })
+
+            root.classList.add('show')
+        }
+        const initData = () => {
+            // 将内容按照组大小分割
+            const length = data.length
+            const result = []
+            const group_sum = Math.floor(length / chunk_size) + 1
+            let last_index = 0
+            for (let curr_group = 0; curr_group < group_sum; curr_group++) {
+                // console.log('index of:', last_index, '; from ', last_index, ', to', chunk_size + last_index);
+                const chunk = data.slice(last_index, chunk_size + last_index)
+                if (chunk.length <= 0) continue
+                result.push(chunk)
+                last_index += chunk_size
+            }
+            return result
+        }
+        
+        const doc = getDoc()
+
+        initDoc()
+        const result_data = initData()
+
+        // 初始化对象值
+        this.data = result_data
+        this.max_display_page = max_display_page < 5 ? 5 : max_display_page
+        /**组的数量 */
+        this.length = result_data.length
+        this.doc = doc
+        /**当前页的索引 */
+        this.index = 1
+        /**单页显示元素的数量 */
+        this.item_per = chunk_size
+        /**页码映射为数组索引 */
+        this.data_index = Array.from({ length: this.length }, (_, index) => index + 1)
+        this.onSwitchPage = null
+
+        this.switchPage()
+    }
+
+    /**
+     * 当更改页面时触发回调函数
+     * @param {function(number, any[]): void} callback 
+     */
+    set onSwitch(callback) {
+        /**当更改页面时触发回调函数 @type {null | function(number, any[]): void} */
+        this.onSwitchPage = callback
+        this.switchPage()
+    }
+
+    /**
+     * 切换当前页
+     * @param {number} index 切换到索引
+     */
+    switchPage(index = this.index) {
+        const initDom = () => {
+            /** (`create`的引用)创建一个元素 */
+            const createItem = (...args) => {
+                es_list.push(create('li', true, ...args))
+            }
+            /**
+             * 创建一个页索引元素
+             * @param {number} index_of 创建的index
+             */
+            const createIndexItem = (index_of) => {
+                
+                const class_set = 'index-item' + (index_of === curr_index ? ' current' : '')
+                es_list.push(createItem({
+                    'class': class_set,
+                    'data-index': index_of
+                }, index_of))
+            }
+            const {list} = this.doc
+            const visible = 5
+            const start = 1
+            list.innerHTML = ''
+            const es_list = []
+            let start_index = curr_index - start
+            let end_index = curr_index - visible + max_display_page
+            if (start_index <= 0) {
+                start_index = 0
+                end_index = max_display_page
+            }
+
+            if (end_index >= length) {
+                start_index = length - max_display_page + visible - start
+                end_index = length
+            }
+
+            // console.debug('[PageNav] max_display_page:', max_display_page, ', round:', round, ', index of:', curr_index, ', start:', start_index, ', end:', end_index)
+            console.debug('[PageNav] max_display_page:', max_display_page, ', index of:', curr_index, ', start:', start_index, ', end:', end_index)
+            
+            // 页码前省略号
+            if (start_index > 0) {
+                createIndexItem(1)
+                if ((start_index - 1) !== 0) {
+                    createItem({'class': 'other'}, '...')
+                }
+            }
+
+
+            // 页码生成
+            this.data_index.slice(start_index, end_index).forEach((index) => {
+                createIndexItem(index)
+            })
+
+            // 页码后输入框
+            if ((end_index < length) && (start_index !== 0)) {
+                if ((end_index + 1) !== length) {
+                    const e_input = create('input', {
+                        type: 'number',
+                        placeholder: '跳转至'
+                    })
+                    // 当输入框元素失焦时触发切换页码
+                    e_input.addEventListener('blur', () => {
+                        const switch_target = +e_input.value
+                        if (!switch_target) return
+                        this.switchPage(switch_target)
+                    })
+                    createItem({class: 'other input'}, e_input)
+                }
+                createIndexItem(length)
+            }
+            join(list, es_list)
+        }
+        let curr_index = index
+        const {length, data, max_display_page, onSwitchPage} = this
+        if (1 > index) curr_index = 1 // 确保页码合法
+        if (length < index) curr_index = length
+
+        // if (this.index === curr_index) return
+        
+        this.index = curr_index
+        const result = data[curr_index - 1]
+        this.result = result
+        initDom()
+        if (typeof(onSwitchPage) === 'function') { // 触发回调
+            onSwitchPage(curr_index, result)
+        }
+        return result
+    }
+}
+
 /** 用于快捷操作`picnic.css`导航栏 */
 class DocumentNav {
     /**
      * 构建一个`picnic.css`导航栏的类
      * @param {Element} [nav_element] 
      */
-    constructor(nav_element = getEBI('page-nav')) {
+    constructor(nav_element = getEBI('main-nav')) {
         if (!(nav_element instanceof Element)) {throw new Error('element not found.')}
 
         const dom = new GetDom()
@@ -819,6 +1119,8 @@ const waitBar = (is_wait = true, message = '') => {
 
 
 // # time
+
+
 
 /**
  * 获取时间的可读字符串样式
@@ -1065,7 +1367,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return create('script', {src: src})
             },
             css: (src) => {
-                return create('link', {ref: 'stylesheet', href: src})
+                return create('link', {rel: 'stylesheet', href: src})
             }
         }
         const createRE = create_map[type]
@@ -1122,6 +1424,10 @@ document.addEventListener('DOMContentLoaded', () => {
             title: '管理面板',
             href: '/admin',
             icon: 'icon-users'
+        }, {
+            title: '开发者面板',
+            href: '/dev',
+            icon: 'icon-debug'
         })
     }
 
@@ -1129,11 +1435,6 @@ document.addEventListener('DOMContentLoaded', () => {
     nav_cont.forEach((nav_item) => {
         const page_path = location.pathname
         const {title, href, icon} = nav_item
-        nav.add(
-            title,
-            href,
-            icon,
-            page_path === href
-        )
+        nav.add( title, href, icon, page_path === href )
     })
 })

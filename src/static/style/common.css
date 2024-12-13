@@ -355,6 +355,34 @@ input[type="checkbox"]:disabled+.checkable::before {
 
 
 
+/* 来自脚本创建的元素预设样式 */
+.array-value {
+    --delimiter-color: #8f8f8f;
+    --delimiter-cont: ',';
+}
+
+ul.array-value
+,ul.array-value li.item {
+    display: inline !important;
+    margin: 0 ;
+    padding: 0 ;
+    line-height: 1em;
+}
+
+ul.array-value li:not(:last-child).item {
+    margin-right: .2em ;
+
+}
+
+ul.array-value li:not(:last-child).item::after {
+    content: var(--delimiter-cont);
+    color: var(--delimiter-color);
+}
+
+ul.array-value li.item.not-have {
+    opacity: .4;
+}
+
 
 /* icon */
 
@@ -485,6 +513,11 @@ input[type="checkbox"]:disabled+.checkable::before {
 
 .icon-plus {
     --content: '\ea0a';
+}
+
+.icon-debug
+,.icon-shell {
+    --content: '\ea81';
 }
 
 @media (max-width: 60em) {
