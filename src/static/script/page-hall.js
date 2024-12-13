@@ -315,7 +315,7 @@ const config = {
         method: 'all'
     },
     /** 启用过滤 */
-    use_filter: true,
+    use_filter: false,
     /** 正在前往的机厅 */
     going: {
         /**是否在途中 */
@@ -759,6 +759,7 @@ const refreshList = (callback, {
         forEachHall((hall) => {
             hall_list.push(hall)
         })
+        
 
 
 
@@ -767,7 +768,7 @@ const refreshList = (callback, {
          * @param {GameHallItem[]} halls 
          */
         const main = (halls) => {
-            console.log(halls);
+            // console.log(halls);
 
 
             /**
@@ -1282,9 +1283,11 @@ const refreshList = (callback, {
                 'chunk_size': 5,
                 'max_display_page': 6
             })
+            console.log(page);
+            
             // 当切换页面时触发更改内容
             page.onSwitch = (_, curr_index_halls) => {
-                console.log(curr_index_halls);
+                // console.log(curr_index_halls);
                 initDom(curr_index_halls)
             }
         }
@@ -1477,6 +1480,7 @@ const refreshList = (callback, {
         }
 
         let result_halls = hall_list
+        
 
         // run) 根据条件运行排序或过滤函数
         if (config.search.enable) {
